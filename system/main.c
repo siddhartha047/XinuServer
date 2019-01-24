@@ -15,6 +15,7 @@ process	main(void)
 	while (TRUE) {
 		receive();
 		sleepms(200);
+		kprintf("This is sid");
 		kprintf("\n\nMain process recreating shell\n\n");
 		resume(create(shell, 4096, 20, "shell", 1, CONSOLE));
 	}
