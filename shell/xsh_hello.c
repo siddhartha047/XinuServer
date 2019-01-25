@@ -1,13 +1,15 @@
-/* xsh_exit.c - xshexit */
+/* xsh_hello.c - xsh shell print hello */
 
 #include <xinu.h>
 
 /*------------------------------------------------------------------------
- * xsh_exit  -  shell command returns the exit code causing shell exit
+ * xsh_hello  -  shell command prints hello
  *------------------------------------------------------------------------
  */
 
-shellcmd xsh_exit(int nargs, char *args[])
+shellcmd xsh_hello(int nargs, char *args[])
 {
-	return SHELL_EXIT;
+	hello();
+
+	return 0;
 }

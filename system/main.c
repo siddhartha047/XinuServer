@@ -5,19 +5,22 @@
 process	main(void)
 {
 
-	/* Run the Xinu shell */
+	/* Run the Xinu shell */	
+	//Task 2
 
 	recvclr();
-	resume(create(shell, 8192, 50, "shell", 1, CONSOLE));
-
+	pid32 processId=create(shell, 4096, 20, "shell", 1, CONSOLE);		
+	XTEST_KPRINTF("Spawning new shell with PID = %d...\n",processId);  
+	resume(processId);
+	
 	/* Wait for shell to exit and recreate it */
 
 	while (TRUE) {
 		receive();
-		sleepms(200);
-		kprintf("This is sid");
-		kprintf("\n\nMain process recreating shell\n\n");
-		resume(create(shell, 4096, 20, "shell", 1, CONSOLE));
+		sleepms(200);				
+		pid32 processId=create(shell, 4096, 20, "shell", 1, CONSOLE);		
+		XTEST_KPRINTF("Spawning new shell with PID = %d...\n",processId);  
+		resume(processId);
 	}
 	return OK;
     
