@@ -1,4 +1,4 @@
-cscope 15 /u/antor/u12/das90/xinu-cs503-spring2019               0000666900
+cscope 15 /u/antor/u12/das90/xinu-cs503-spring2019               0000667279
 	@config/conf.c
 
 3 
@@ -38377,13 +38377,13 @@ x
 	#htÚl
 (
 x
-) ((((x)>>24) & 0x000000ff) | (((x)>> 8) & 0x0000ff00) | \
+è((((x)>>24è& 0x000000ffè| (((x)>> 8è& 0x0000ff00è| \
+
+	)
 
 621 (((
 x
-)<<8è& 0x00ff0000è| (((x)<<24è& 0xff000000))
-
-	)
+)<<8) & 0x00ff0000) | (((x)<<24) & 0xff000000))
 
 622 
 	#Áohs
@@ -38397,13 +38397,19 @@ x
 	#Áohl
 (
 x
-) ((((x)>>24) & 0x000000ff) | (((x)>> 8) & 0x0000ff00) | \
+è((((x)>>24è& 0x000000ffè| (((x)>> 8è& 0x0000ff00è| \
+
+	)
 
 624 (((
 x
-)<<8è& 0x00ff0000è| (((x)<<24è& 0xff000000))
+)<<8) & 0x00ff0000) | (((x)<<24) & 0xff000000))
 
-	)
+628 
+sysÿÎ
+ 
+	`h–lo
+();
 
 	@include/pxe.h
 
@@ -43873,6 +43879,14 @@ xsh_u±ime
 sh–lcmd
  
 xsh_h–p
+ (
+št32
+, *[]);
+
+78 
+sh–lcmd
+ 
+xsh_h–lo
  (
 št32
 , *[]);
@@ -63833,6 +63847,12 @@ xsh_u±ime
 FALSE
 , 
 xsh_h–p
+},
+
+32 {"h–lo", 
+FALSE
+, 
+xsh_h–lo
 }
 
 35 
@@ -65610,6 +65630,30 @@ SHELL_EXIT
 ;
 
 13 
+	}
+}
+
+	@shell/xsh_hello.c
+
+3 
+	~<xšu.h
+>
+
+10 
+sh–lcmd
+ 
+	$xsh_h–lo
+(
+Çrgs
+, *
+¬gs
+[])
+
+12 
+	`h–lo
+();
+
+15 
 	}
 }
 
@@ -75489,6 +75533,36 @@ OK
 	}
 }
 
+	@system/hello.c
+
+4 
+	~<xšu.h
+>
+
+10 
+sysÿÎ
+ 
+	$h–lo
+()
+
+13 
+	`XTEST_KPRINTF
+("Hello system call invoked\n");
+
+15 
+št32
+ 
+»tv®
+=0;
+
+16  
+»tv®
+;
+
+17 
+	}
+}
+
 	@system/init.c
 
 3 
@@ -77083,11 +77157,11 @@ OK
 	$maš
 ()
 
-10 
+11 
 	`»cvþr
 ();
 
-11 
+12 
 pid32
  
 ´oûssId
@@ -77099,11 +77173,13 @@ sh–l
 CONSOLE
 );
 
-12 
-	`XTEST_PRINTF
-("Spawning‚ew shell with PID = %d...\n");
-
 13 
+	`XTEST_KPRINTF
+("S·wnšg‚ew sh–Èw™h PID = %d...\n",
+´oûssId
+);
+
+14 
 	`»sume
 (
 ´oûssId
@@ -77121,7 +77197,7 @@ TRUE
 	`¦“pms
 (200);
 
-22 
+21 
 pid32
  
 ´oûssId
@@ -77133,21 +77209,23 @@ sh–l
 CONSOLE
 );
 
-23 
-	`XTEST_PRINTF
-("Spawning‚ew shell with PID = %d...\n");
+22 
+	`XTEST_KPRINTF
+("S·wnšg‚ew sh–Èw™h PID = %d...\n",
+´oûssId
+);
 
-24 
+23 
 	`»sume
 (
 ´oûssId
 );
 
-26  
+25  
 OK
 ;
 
-28 
+27 
 	}
 }
 
@@ -127494,8 +127572,8 @@ _ASM_GENERIC_ERRNO_BASE_H
 .
 1
 /usr/include
-377
-7596
+379
+7629
 config/conf.c
 config/conf.h
 config/config.l
@@ -127690,6 +127768,7 @@ shell/xsh_date.c
 shell/xsh_devdump.c
 shell/xsh_echo.c
 shell/xsh_exit.c
+shell/xsh_hello.c
 shell/xsh_help.c
 shell/xsh_kill.c
 shell/xsh_memdump.c
@@ -127729,6 +127808,7 @@ system/getstk.c
 system/getticks.c
 system/gettime.c
 system/getutime.c
+system/hello.c
 system/init.c
 system/initialize.c
 system/insert.c

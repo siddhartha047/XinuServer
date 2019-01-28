@@ -1206,9 +1206,15 @@ USHRT_MAX	include/limits.h	28;"	d
 VERSIONFILE	compile/Makefile	/^VERSIONFILE	=	version$/;"	m
 WRITE	config/y.tab.c	/^    WRITE = 271,$/;"	e	enum:yytokentype	file:
 WRITE	config/y.tab.c	254;"	d	file:
+XDEBUG	include/process.h	65;"	d
+XDEBUG_KPRINTF	include/process.h	76;"	d
+XDEBUG_KPRINTF	include/process.h	78;"	d
 XINU	compile/Makefile	/^XINU		=	$(TOPDIR)\/compile\/xinu.elf$/;"	m
 XINUBIN	compile/Makefile	/^XINUBIN		=	$(TOPDIR)\/compile\/xinu.bin$/;"	m
 XINUXBIN	compile/Makefile	/^XINUXBIN	=	$(TOPDIR)\/compile\/xinu$/;"	m
+XTEST	include/process.h	64;"	d
+XTEST_KPRINTF	include/process.h	70;"	d
+XTEST_KPRINTF	include/process.h	72;"	d
 Xtrap	system/intr.S	/^Xtrap:$/;"	l
 YACC	config/Makefile	/^YACC	= ${COMPILER_ROOT}bison -y	# Flag enables yacc-compatible filenames$/;"	m
 YYABORT	config/y.tab.c	714;"	d	file:
@@ -1829,6 +1835,7 @@ halt	system/intr.S	/^halt:$/;"	l
 header	include/pxe.h	/^	byte   header[7];$/;"	m	struct:sysid_entry_point
 header	include/pxe.h	/^	byte header[6];$/;"	m	struct:sysid_bios_struct
 headerType	include/pci.h	/^	unsigned char	headerType;				\/*   e *\/$/;"	m	struct:pci_config_header
+hello	system/hello.c	/^syscall	hello(void)$/;"	f
 hexadump	net/hexdump.c	/^void	hexadump	($/;"	f
 hexdump	net/hexdump.c	/^void	hexdump	($/;"	f
 hexdump	system/debug.c	/^void	hexdump($/;"	f
@@ -2774,6 +2781,7 @@ xsh_date	shell/xsh_date.c	/^shellcmd xsh_date(int nargs, char *args[]) {$/;"	f
 xsh_devdump	shell/xsh_devdump.c	/^shellcmd xsh_devdump ($/;"	f
 xsh_echo	shell/xsh_echo.c	/^shellcmd xsh_echo(int nargs, char *args[])$/;"	f
 xsh_exit	shell/xsh_exit.c	/^shellcmd xsh_exit(int nargs, char *args[])$/;"	f
+xsh_hello	shell/xsh_hello.c	/^shellcmd xsh_hello(int nargs, char *args[])$/;"	f
 xsh_help	shell/xsh_help.c	/^shellcmd xsh_help(int nargs, char *args[])$/;"	f
 xsh_kill	shell/xsh_kill.c	/^shellcmd xsh_kill(int nargs, char *args[]) {$/;"	f
 xsh_memdump	shell/xsh_memdump.c	/^shellcmd xsh_memdump(int nargs, char *args[])$/;"	f
