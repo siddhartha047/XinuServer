@@ -183,8 +183,8 @@ static	void	sysinit()
 	prcount = 1;
 
 	//sid: initialize with 10
-	SR_PRIORITY=10; // Priority of Shortest Remiaing group
-	TS_PRIORITY=10; // Priority of Time sharing group
+	SR_PRIORITY=INITIAL_PRIORITY; // Priority of Shortest Remiaing group
+	TS_PRIORITY=INITIAL_PRIORITY; // Priority of Time sharing group
 
 
 	/* Scheduling is not currently blocked */

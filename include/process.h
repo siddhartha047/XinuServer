@@ -84,3 +84,4 @@ extern	pid32	currpid;	/* Currently executing process		*/
 
 extern pri16 SR_PRIORITY; // Priority of Shortest Remiaing group
 extern pri16 TS_PRIORITY; // Priority of Time sharing group
+#define INITIAL_PRIORITY 10

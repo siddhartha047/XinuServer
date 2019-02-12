@@ -11,8 +11,8 @@ struct	defer	Defer;
 void	resched(void)		/* Assumes interrupts are disabled	*/
 {
 
-	//XDEBUG_KPRINTF("%d",getgprio(SRTIME));
-	//XDEBUG_KPRINTF("%d",getgprio(TSSCHED));
+	XDEBUG_KPRINTF("SRTIME->%d\n",getgprio(SRTIME));
+	XDEBUG_KPRINTF("TSSCHED->%d\n",getgprio(TSSCHED));
 
 
 	struct procent *ptold;	/* Ptr to table entry for old process	*/
@@ -48,7 +48,7 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 	preempt = QUANTUM;		/* Reset time slice for process	*/
 
 	//sid: old vs new info
-	XDEBUG_KPRINTF("[Old %s->%d, New %s->%d]\n\n",ptold->prname,ptold->group,ptnew->prname,ptnew->group);
+	XDEBUG_KPRINTF("[Old %s->%d, New %s->%d]\n",ptold->prname,ptold->group,ptnew->prname,ptnew->group);
 
 	ctxsw(&ptold->prstkptr, &ptnew->prstkptr);
 
