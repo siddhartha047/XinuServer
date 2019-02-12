@@ -38,6 +38,8 @@ extern	syscall	control(did32, int32, int32, int32);
 
 /* in file create.c */
 extern	pid32	create(void *, uint32, pri16, char *, uint32, ...);
+//sid: new create syscall with group
+//extern	pid32	create(void *, uint32, int , pri16, char *, uint32, ...);
 
 /* in file ctxsw.S */
 extern	void	ctxsw(void *, void *);
@@ -622,3 +624,7 @@ extern	syscall	yield(void);
 #define	ntohs(x)  ((0xff & ((x)>>8)) | ( (0xff & (x)) << 8))
 #define	ntohl(x)  ((((x)>>24) & 0x000000ff) | (((x)>> 8) & 0x0000ff00) | \
 		   (((x)<<8) & 0x00ff0000) | (((x)<<24) & 0xff000000))
+
+
+//sid: system call helllo
+extern syscall hello(void);
