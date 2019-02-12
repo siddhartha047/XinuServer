@@ -77,3 +77,6 @@ extern	pid32	currpid;	/* Currently executing process		*/
 #else
 #define XDEBUG_KPRINTF(...)
 #endif
+
+#define SRTIME 1
+#define TSSCHED 2

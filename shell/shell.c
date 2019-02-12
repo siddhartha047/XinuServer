@@ -278,9 +278,14 @@ process	shell (
 
 		/* Spawn child thread for non-built-in commands */
 
+		// child = create(cmdtab[j].cfunc,
+		// 	SHELL_CMDSTK, SHELL_CMDPRIO,
+		// 	cmdtab[j].cname, 2, ntok, &tmparg);
+
 		child = create(cmdtab[j].cfunc,
-			SHELL_CMDSTK, SHELL_CMDPRIO,
+			SHELL_CMDSTK, SRTIME, SHELL_CMDPRIO,
 			cmdtab[j].cname, 2, ntok, &tmparg);
+
 
 		/* If creation or argument copy fails, report error */
 

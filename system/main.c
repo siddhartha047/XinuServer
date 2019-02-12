@@ -14,9 +14,9 @@ process	main(void)
 
 	recvclr();
 
-	prA = create(proc_a, 2000, 30, "proc A", 1, 'A');
-	prB = create(proc_b, 2000, 20, "proc B", 1, 'B');
-	prC = create(proc_c, 2000, 10, "proc C", 1, 'C');
+	prA = create(proc_a, 2000, SRTIME, 30, "proc A", 1, 'A');
+	prB = create(proc_b, 2000, SRTIME, 20, "proc B", 1, 'B');
+	prC = create(proc_c, 2000, SRTIME, 10, "proc C", 1, 'C');
 	
 	resume(prA);
 	resume(prB);
