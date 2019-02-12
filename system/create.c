@@ -39,6 +39,9 @@ pid32	create(
 	prcount++;
 	prptr = &proctab[pid];
 
+	/* sid: add the process to appropriate group */
+	prptr->group=group;
+
 	/* Initialize process table entry for new process */
 	prptr->prstate = PR_SUSP;	/* Initial state is suspended	*/
 	prptr->prprio = priority;

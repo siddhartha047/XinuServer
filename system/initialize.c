@@ -26,6 +26,10 @@ struct	memblk	memlist;	/* List of free memory blocks		*/
 int	prcount;		/* Total number of live processes	*/
 pid32	currpid;		/* ID of currently executing process	*/
 
+pri16 SR_PRIORITY; // Priority of Shortest Remiaing group
+pri16 TS_PRIORITY; // Priority of Time sharing group
+
+
 /* Control sequence to reset the console colors and cusor positiion	*/
 
 #define	CONSOLE_RESET	" \033[0m\033[2J\033[;H"
@@ -177,6 +181,11 @@ static	void	sysinit()
 	/* Count the Null process as the first process in the system */
 
 	prcount = 1;
+
+	//sid: initialize with 10
+	SR_PRIORITY=10; // Priority of Shortest Remiaing group
+	TS_PRIORITY=10; // Priority of Time sharing group
+
 
 	/* Scheduling is not currently blocked */
 

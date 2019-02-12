@@ -18,6 +18,9 @@ extern	status	bufinit(void);
 /* in file chprio.c */
 extern	pri16	chprio(pid32, pri16);
 
+/*sid: in file chgrio.c */
+extern	pri16	chgprio(int group, pri16);
+
 /* in file clkupdate.S */
 extern	uint32	clkcount(void);
 
@@ -119,6 +122,9 @@ extern	pid32	getpid(void);
 
 /* in file getprio.c */
 extern	syscall	getprio(pid32);
+
+/* sid: infile getgprio(int group)*/
+extern	syscall	getgprio(int group);
 
 /* in file getstk.c */
 extern	char	*getstk(uint32);

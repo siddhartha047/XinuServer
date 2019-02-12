@@ -52,6 +52,7 @@ struct procent {		/* Entry in the process table		*/
 	umsg32	prmsg;		/* Message sent to this process		*/
 	bool8	prhasmsg;	/* Nonzero iff msg is valid		*/
 	int16	prdesc[NDESC];	/* Device descriptors for process	*/
+	int group; //sid: added to track group
 };
 
 /* Marker for the top of a process stack (used to help detect overflow)	*/
@@ -78,5 +79,8 @@ extern	pid32	currpid;	/* Currently executing process		*/
 #define XDEBUG_KPRINTF(...)
 #endif
 
-#define SRTIME 1
-#define TSSCHED 2
+#define SRTIME 0
+#define TSSCHED 1
+
+extern pri16 SR_PRIORITY; // Priority of Shortest Remiaing group
+extern pri16 TS_PRIORITY; // Priority of Time sharing group
