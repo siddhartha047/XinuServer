@@ -1,6 +1,7 @@
 /* resched.c - resched, resched_cntl */
 
 #include <xinu.h>
+#include <string.h>
 
 struct	defer	Defer;
 
@@ -10,10 +11,6 @@ struct	defer	Defer;
  */
 void	resched(void)		/* Assumes interrupts are disabled	*/
 {
-
-	// XDEBUG_KPRINTF("SRTIME->%d\n",getgprio(SRTIME));
-	// XDEBUG_KPRINTF("TSSCHED->%d\n",getgprio(TSSCHED));
-
 
 	struct procent *ptold;	/* Ptr to table entry for old process	*/
 	struct procent *ptnew;	/* Ptr to table entry for new process	*/
@@ -25,18 +22,55 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 		return;
 	}
 
-	//sid: group creation
+	//sid: group creation	
 	int index=0;
+	int SRcount=0;
+	int TScount=0;
 	pid32 tpid=getIthItem(readylist,index);
 	struct procent *tpidEntry;
 	while(tpid!=EMPTY){
 		tpidEntry = &proctab[tpid];
 		XDEBUG_KPRINTF("(%s,%d)->",tpidEntry->prname,tpidEntry->group);
+		if(tpidEntry->group==SRTIME){
+			SRcount++;
+		}
+		else if(tpidEntry->group==TSSCHED){
+			TScount++;
+		}		
 		index++;
 		tpid=getIthItem(readylist,index);
 	}
-	XDEBUG_KPRINTF("\nSize :%d\n",index);
+	XDEBUG_KPRINTF("\n[Size: %d, SRcount: %d, TScount: %d]\n",index, SRcount, TScount);
+			
+	//sid: changing group priority
+	ptold = &proctab[currpid];	
+
+	XDEBUG_KPRINTF("Current Process-> %s\n",ptold->prname);
 	
+	if (strncmp(ptold->prname, "prnull",6) != 0)
+	{	
+		SRcount=SRcount-1;      
+	}	
+
+	if(ptold->group==SRTIME){
+		chgprio(SRTIME,INITIAL_PRIORITY+SRcount);
+		chgprio(TSSCHED,getgprio(TSSCHED)+TScount);	
+	}
+	else if(ptold->group==TSSCHED){
+		chgprio(SRTIME,getgprio(SRTIME)+SRcount);
+		chgprio(TSSCHED,INITIAL_PRIORITY+TScount);		
+	}	
+
+
+	XDEBUG_KPRINTF("[SRTIME->%d, TSSCHED->%d]\n",getgprio(SRTIME), getgprio(TSSCHED));	
+
+	//select SR group for scheduling
+	if(getgprio(SRTIME)>=getgprio(TSSCHED)){
+		XDEBUG_KPRINTF("SR group selected\n");
+	}
+	else{ //Select TS group for scheduling
+		XDEBUG_KPRINTF("TS group selected\n");
+	}
 
 
 	/* Point to process table entry for the current (old) process */

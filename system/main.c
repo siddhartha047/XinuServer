@@ -45,7 +45,7 @@ process	main(void)
 		resume(pidB[i]);
 	}
 
-	sleep(10);
+	sleepms(100);
 
 	for(int i=0;i<procesNo;i++){
 		kill(pidA[i]);
