@@ -56,3 +56,35 @@ pid32	getitem(
 	queuetab[next].qprev = prev;
 	return pid;
 }
+
+//sid: get i^th process id from queue
+
+
+pid32	getIthItem(
+	  qid16	q,
+	  int index		/* getIth entry from queue*/
+	)
+{
+
+	pid32	head,tail;
+
+	if (isempty(q)) {
+		return EMPTY;
+	}
+
+	head = queuehead(q);
+	tail = queuetail(q);
+
+	int i=0;
+	while(queuetab[head].qnext!=tail && i<index){
+		head=queuetab[head].qnext;		
+		i++;
+	}
+
+	if(queuetab[head].qnext==tail){
+		return EMPTY;
+		//XDEBUG_KPRINTF("Something went wrong: index exceded queue size\n");
+	}
+
+	return queuetab[head].qnext;	
+}

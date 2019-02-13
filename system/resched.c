@@ -11,8 +11,8 @@ struct	defer	Defer;
 void	resched(void)		/* Assumes interrupts are disabled	*/
 {
 
-	XDEBUG_KPRINTF("SRTIME->%d\n",getgprio(SRTIME));
-	XDEBUG_KPRINTF("TSSCHED->%d\n",getgprio(TSSCHED));
+	// XDEBUG_KPRINTF("SRTIME->%d\n",getgprio(SRTIME));
+	// XDEBUG_KPRINTF("TSSCHED->%d\n",getgprio(TSSCHED));
 
 
 	struct procent *ptold;	/* Ptr to table entry for old process	*/
@@ -24,6 +24,20 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 		Defer.attempt = TRUE;
 		return;
 	}
+
+	//sid: group creation
+	int index=0;
+	pid32 tpid=getIthItem(readylist,index);
+	struct procent *tpidEntry;
+	while(tpid!=EMPTY){
+		tpidEntry = &proctab[tpid];
+		XDEBUG_KPRINTF("(%s,%d)->",tpidEntry->prname,tpidEntry->group);
+		index++;
+		tpid=getIthItem(readylist,index);
+	}
+	XDEBUG_KPRINTF("\nSize :%d\n",index);
+	
+
 
 	/* Point to process table entry for the current (old) process */
 
@@ -48,7 +62,7 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 	preempt = QUANTUM;		/* Reset time slice for process	*/
 
 	//sid: old vs new info
-	XDEBUG_KPRINTF("[Old %s->%d, New %s->%d]\n",ptold->prname,ptold->group,ptnew->prname,ptnew->group);
+	//XDEBUG_KPRINTF("[Old %s->%d, New %s->%d]\n",ptold->prname,ptold->group,ptnew->prname,ptnew->group);
 
 	ctxsw(&ptold->prstkptr, &ptnew->prstkptr);
 
@@ -87,3 +101,33 @@ status	resched_cntl(		/* Assumes interrupts are disabled	*/
 		return SYSERR;
 	}
 }
+
+
+
+
+	// /* Point to process table entry for the current (old) process */
+
+	// ptold = &proctab[currpid];
+
+	// if (ptold->prstate == PR_CURR) {  /* Process remains eligible */
+	// 	if (ptold->prprio > firstkey(readylist)) {
+	// 		return;
+	// 	}
+
+	// 	/* Old process will no longer remain current */
+
+	// 	ptold->prstate = PR_READY;
+	// 	insert(currpid, readylist, ptold->prprio);
+	// }
+
+	//  Force context switch to highest priority ready process 
+
+	// currpid = dequeue(readylist);
+	// ptnew = &proctab[currpid];
+	// ptnew->prstate = PR_CURR;
+	// preempt = QUANTUM;		/* Reset time slice for process	*/
+
+	// //sid: old vs new info
+	// //XDEBUG_KPRINTF("[Old %s->%d, New %s->%d]\n",ptold->prname,ptold->group,ptnew->prname,ptnew->group);
+
+	// ctxsw(&ptold->prstkptr, &ptnew->prstkptr);

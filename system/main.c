@@ -14,7 +14,7 @@ process	main(void)
 
 	recvclr();
 
-	prA = create(proc_a, 2000, SRTIME, 30, "proc A", 1, 'A');
+	/*prA = create(proc_a, 2000, SRTIME, 30, "proc A", 1, 'A');
 	prB = create(proc_b, 2000, TSSCHED, 20, "proc B", 1, 'B');
 	prC = create(proc_c, 2000, TSSCHED, 10, "proc C", 1, 'C');
 	
@@ -28,8 +28,31 @@ process	main(void)
 	kill(prB);
 	kill(prC);
 
-	XTEST_KPRINTF("\nTest Result: A = %d, B = %d, C = %d\n", a_cnt, b_cnt, c_cnt);
-	
+	XTEST_KPRINTF("\nTest Result: A = %d, B = %d, C = %d\n", a_cnt, b_cnt, c_cnt);*/
+
+	int procesNo=10;
+	pid32 pidA[procesNo];
+	pid32 pidB[procesNo];
+
+
+	for(int i=0;i<procesNo;i++){
+		pidA[i]=create(proc_a, 2000, SRTIME, 20, "proc A", 1, 'A');
+		pidB[i]=create(proc_b, 2000, TSSCHED, 10, "proc B", 1, 'B');		
+	}	
+
+	for(int i=0;i<procesNo;i++){
+		resume(pidA[i]);
+		resume(pidB[i]);
+	}
+
+	sleep(10);
+
+	for(int i=0;i<procesNo;i++){
+		kill(pidA[i]);
+		kill(pidB[i]);
+	}
+
+	XTEST_KPRINTF("\nTest Result: A = %d, B = %d\n", a_cnt, b_cnt);
 
 	
 	return OK;
@@ -41,7 +64,7 @@ int proc_a(char ch){
 	while(1){
 		for(int i=0;i<10000;i++);		
 		a_cnt++;	
-		sleepms(100);	
+		//sleepms(100);	
 	}
 	return 0;
 }
@@ -51,7 +74,7 @@ int proc_b(char ch){
 	while(1){
 		for(int i=0;i<10000;i++);		
 		b_cnt++;	
-		sleepms(100);	
+		//sleepms(100);	
 	}
 	return 0;
 }
@@ -61,7 +84,7 @@ int proc_c(char ch){
 	while(1){
 		for(int i=0;i<10000;i++);		
 		c_cnt++;	
-		sleepms(100);	 	
+		//sleepms(100);	 	
 	}
 	return 0;
 }
