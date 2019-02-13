@@ -375,6 +375,7 @@ extern	int32	quark_irq_routing(void);
 /* in file queue.c */
 extern	pid32	enqueue(pid32, qid16);
 extern	pid32	dequeue(qid16);
+extern	pid32	dequeueMinBurst(qid16);
 
 /* in file ramclose.c */
 extern	devcall	ramclose(struct dentry *);

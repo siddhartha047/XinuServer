@@ -41,6 +41,9 @@ pid32	create(
 
 	/* sid: add the process to appropriate group */
 	prptr->group=group;
+	prptr->B=0;
+	prptr->E=0;
+	prptr->Tb=0; //zero means start of process
 
 	/* Initialize process table entry for new process */
 	prptr->prstate = PR_SUSP;	/* Initial state is suspended	*/

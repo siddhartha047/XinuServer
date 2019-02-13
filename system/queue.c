@@ -50,3 +50,45 @@ pid32	dequeue(
 	queuetab[pid].qnext = EMPTY;
 	return pid;
 }
+
+
+pid32	dequeueMinBurst(
+	  qid16		q		/* ID of queue to use		*/
+	)
+{
+	pid32	pid;			/* ID of process removed	*/
+
+	if (isbadqid(q)) {
+		return SYSERR;
+	} else if (isempty(q)) {
+		return EMPTY;
+	}
+
+	//find min burst
+	pid32	head,tail;	
+	head = queuehead(q);
+	tail = queuetail(q);
+
+	
+	head=queuetab[head].qnext;
+	
+	struct procent *tpidEntry;			
+	tpidEntry = &proctab[head];
+
+	int minBurst=tpidEntry->B;
+	pid32 minProcess=head;
+	
+	while(queuetab[head].qnext!=tail){		
+		head=queuetab[head].qnext;	
+		tpidEntry = &proctab[head];	
+		if(tpidEntry->B<minBurst){ //less will round robin as inserted last
+			minBurst=tpidEntry->B;
+			minProcess=head;
+		}		
+	}	
+	pid=getitem(minProcess);	
+	queuetab[pid].qprev = EMPTY;
+	queuetab[pid].qnext = EMPTY;
+	
+	return pid;
+}

@@ -30,7 +30,7 @@ process	main(void)
 
 	XTEST_KPRINTF("\nTest Result: A = %d, B = %d, C = %d\n", a_cnt, b_cnt, c_cnt);*/
 
-	int procesNo=10;
+	int procesNo=1;
 	pid32 pidA[procesNo];
 	pid32 pidB[procesNo];
 

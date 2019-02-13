@@ -52,7 +52,10 @@ struct procent {		/* Entry in the process table		*/
 	umsg32	prmsg;		/* Message sent to this process		*/
 	bool8	prhasmsg;	/* Nonzero iff msg is valid		*/
 	int16	prdesc[NDESC];	/* Device descriptors for process	*/
-	int group; //sid: added to track group	
+	int group; //sid: added to track group
+	int B;	//initial burst
+	int E;	// Expected
+	int Tb; // time stamp for burst
 };
 
 /* Marker for the top of a process stack (used to help detect overflow)	*/
@@ -63,7 +66,7 @@ extern	int32	prcount;	/* Currently active processes		*/
 extern	pid32	currpid;	/* Currently executing process		*/
 
 #define XTEST 1 
-#define XDEBUG 1 	/* set this to 0 when submitting */
+#define XDEBUG 0 	/* set this to 0 when submitting */
 
 //Sid: Added for the assignment
 /* For grading */
@@ -85,3 +88,4 @@ extern	pid32	currpid;	/* Currently executing process		*/
 extern pri16 SR_PRIORITY; // Priority of Shortest Remiaing group
 extern pri16 TS_PRIORITY; // Priority of Time sharing group
 #define INITIAL_PRIORITY 10
+#define ALPHA 0.7
