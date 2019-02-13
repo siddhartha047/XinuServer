@@ -88,3 +88,29 @@ pid32	getIthItem(
 
 	return queuetab[head].qnext;	
 }
+
+
+//sid: size computation
+
+int	getSize(
+	  qid16	q	  
+	)
+{
+
+	pid32	head,tail;
+
+	if (isempty(q)) {
+		return 0;
+	}
+
+	head = queuehead(q);
+	tail = queuetail(q);
+
+	int i=0;
+	while(queuetab[head].qnext!=tail){
+		head=queuetab[head].qnext;		
+		i++;
+	}
+
+	return i;	
+}

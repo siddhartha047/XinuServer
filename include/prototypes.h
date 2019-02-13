@@ -113,7 +113,8 @@ extern	syscall	getc(did32);
 extern	pid32	getfirst(qid16);
 extern	pid32	getlast(qid16);
 extern	pid32	getitem(pid32);
-extern	pid32	getIthItem(qid16,int); //sid: get ith item
+extern	pid32	getIthItem(qid16,int); //sid: get ith
+extern	int		getSize(qid16); //sid: get size of queue
 
 /* in file getmem.c */
 extern	char	*getmem(uint32);

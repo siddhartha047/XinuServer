@@ -37,7 +37,8 @@ process	main(void)
 
 	for(int i=0;i<procesNo;i++){
 		pidA[i]=create(proc_a, 2000, SRTIME, 20, "proc A", 1, 'A');
-		pidB[i]=create(proc_b, 2000, TSSCHED, 10, "proc B", 1, 'B');		
+		//pidB[i]=create(proc_b, 2000, TSSCHED, 10, "proc B", 1, 'B');		
+		pidB[i]=create(proc_b, 2000, SRTIME, 10, "proc B", 1, 'B');		
 	}	
 
 	for(int i=0;i<procesNo;i++){
@@ -45,7 +46,8 @@ process	main(void)
 		resume(pidB[i]);
 	}
 
-	sleepms(100);
+	//sleepms(100);
+	sleep(10);
 
 	for(int i=0;i<procesNo;i++){
 		kill(pidA[i]);

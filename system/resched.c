@@ -5,6 +5,7 @@
 
 struct	defer	Defer;
 
+void printReadyList(qid16 q);
 /*------------------------------------------------------------------------
  *  resched  -  Reschedule processor to highest priority eligible process
  *------------------------------------------------------------------------
@@ -23,29 +24,22 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 	}
 
 	//sid: group creation	
-	int index=0;
-	int SRcount=0;
-	int TScount=0;
-	pid32 tpid=getIthItem(readylist,index);
-	struct procent *tpidEntry;
-	while(tpid!=EMPTY){
-		tpidEntry = &proctab[tpid];
-		XDEBUG_KPRINTF("(%s,%d)->",tpidEntry->prname,tpidEntry->group);
-		if(tpidEntry->group==SRTIME){
-			SRcount++;
-		}
-		else if(tpidEntry->group==TSSCHED){
-			TScount++;
-		}		
-		index++;
-		tpid=getIthItem(readylist,index);
-	}
-	XDEBUG_KPRINTF("\n[Size: %d, SRcount: %d, TScount: %d]\n",index, SRcount, TScount);
+	
+	int SRcount=getSize(SRreadylist);
+	int TScount=getSize(TSreadylist);
+	int totalready=SRcount+TScount;
+
+	//sid: print processes
+	printReadyList(SRreadylist);
+	printReadyList(TSreadylist);
+
+	
+	XDEBUG_KPRINTF("\n[Size: %d, SRcount: %d, TScount: %d]\n",totalready, SRcount, TScount);
 			
 	//sid: changing group priority
 	ptold = &proctab[currpid];	
 
-	XDEBUG_KPRINTF("Current Process-> %s\n",ptold->prname);
+	XDEBUG_KPRINTF("Current Process-> %s, %d\n",ptold->prname,ptold->group);
 	
 	if (strncmp(ptold->prname, "prnull",6) != 0)
 	{	
@@ -67,9 +61,14 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 	//select SR group for scheduling
 	if(getgprio(SRTIME)>=getgprio(TSSCHED)){
 		XDEBUG_KPRINTF("SR group selected\n");
+
+
+		
+		
 	}
 	else{ //Select TS group for scheduling
 		XDEBUG_KPRINTF("TS group selected\n");
+
 	}
 
 
@@ -78,19 +77,19 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 	ptold = &proctab[currpid];
 
 	if (ptold->prstate == PR_CURR) {  /* Process remains eligible */
-		if (ptold->prprio > firstkey(readylist)) {
+		if (ptold->prprio > firstkey(SRreadylist)) {
 			return;
 		}
 
 		/* Old process will no longer remain current */
 
 		ptold->prstate = PR_READY;
-		insert(currpid, readylist, ptold->prprio);
+		insert(currpid, SRreadylist, ptold->prprio);
 	}
 
 	/* Force context switch to highest priority ready process */
 
-	currpid = dequeue(readylist);
+	currpid = dequeue(SRreadylist);
 	ptnew = &proctab[currpid];
 	ptnew->prstate = PR_CURR;
 	preempt = QUANTUM;		/* Reset time slice for process	*/
@@ -136,7 +135,20 @@ status	resched_cntl(		/* Assumes interrupts are disabled	*/
 	}
 }
 
+void printReadyList(qid16 q){
+	int index=0;	
+	pid32 tpid=getIthItem(q,index);
+	struct procent *tpidEntry;
+	while(tpid!=EMPTY){
+		tpidEntry = &proctab[tpid];
+		XDEBUG_KPRINTF("(%s,%d)->",tpidEntry->prname,tpidEntry->group);		
+		index++;
+		tpid=getIthItem(q,index);
+	
+	}
 
+	XDEBUG_KPRINTF("No: %d\n",index);		
+}
 
 
 	// /* Point to process table entry for the current (old) process */
