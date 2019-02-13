@@ -30,15 +30,15 @@ process	main(void)
 
 	XTEST_KPRINTF("\nTest Result: A = %d, B = %d, C = %d\n", a_cnt, b_cnt, c_cnt);*/
 
-	int procesNo=1;
+	int procesNo=10;
 	pid32 pidA[procesNo];
 	pid32 pidB[procesNo];
 
 
 	for(int i=0;i<procesNo;i++){
-		pidA[i]=create(proc_a, 2000, SRTIME, 20, "proc A", 1, 'A');
+		pidA[i]=create(proc_a, 2000, SRTIME, 30, "proc A", 1, 'A');
 		//pidB[i]=create(proc_b, 2000, TSSCHED, 10, "proc B", 1, 'B');		
-		pidB[i]=create(proc_b, 2000, SRTIME, 10, "proc B", 1, 'B');		
+		pidB[i]=create(proc_b, 2000, SRTIME, 1, "proc B", 1, 'B');		
 	}	
 
 	for(int i=0;i<procesNo;i++){
