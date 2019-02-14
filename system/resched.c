@@ -70,7 +70,13 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 			ptold->B=ptold->B+(clktime-ptold->Tb);
 			ptold->E=ALPHA * ptold->B + (1-ALPHA) * ptold->E;					
 			ptold->prstate = PR_READY;
-			insert(currpid, SRreadylist, ptold->prprio);			
+			if(ptold->group==SRTIME){
+				insert(currpid, SRreadylist, ptold->prprio);			
+			}
+			else if(ptold->group==TSSCHED){
+				insert(currpid, TSreadylist, ptold->prprio);			
+			}
+			
 		}
 		else{
 			//blocking
@@ -90,6 +96,28 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 	}
 	else{ //Select TS group for scheduling
 		XDEBUG_KPRINTF("TS group selected\n");
+
+		printReadyList(TSreadylist);
+
+		ptold = &proctab[currpid];
+
+		if (ptold->prstate == PR_CURR) {  /* Process remains eligible */
+			if (ptold->prprio > firstkey(TSreadylist)) {
+				return;
+			}
+
+			/* Old process will no longer remain current */
+
+			ptold->prstate = PR_READY;
+			insert(currpid, TSreadylist, ptold->prprio);
+		}
+
+		/* Force context switch to highest priority ready process */
+
+		currpid = dequeue(TSreadylist);
+		ptnew = &proctab[currpid];
+		ptnew->prstate = PR_CURR;
+		preempt = QUANTUM;		/* Reset time slice for process	*/
 
 	}
 
