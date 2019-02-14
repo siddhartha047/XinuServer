@@ -66,7 +66,7 @@ extern	int32	prcount;	/* Currently active processes		*/
 extern	pid32	currpid;	/* Currently executing process		*/
 
 #define XTEST 1 
-#define XDEBUG 0 	/* set this to 0 when submitting */
+#define XDEBUG 1 	/* set this to 0 when submitting */
 
 //Sid: Added for the assignment
 /* For grading */
