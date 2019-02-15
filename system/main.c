@@ -48,8 +48,8 @@ process	main(void)
 
 	recvclr();
 
-	int cpu=3;
-	int io=3;
+	int cpu=6;
+	int io=6;
 
 	pid32 pidA[cpu+1];
 	pid32 pidB[io+1];
@@ -63,10 +63,12 @@ process	main(void)
 	LOOP2=100;
 
 	for(int i=0;i<cpu;i++){		
-		pidA[i]=create(cpubound, 2000, SRTIME, 1+i*3,cpunames[i] , 1, 'A'+i);					
+		//pidA[i]=create(cpubound, 2000, SRTIME, 1+i*3,cpunames[i] , 1, 'A'+i);					
+		pidA[i]=create(cpubound, 2000, TSSCHED, 1+i*3,cpunames[i] , 1, 'A'+i);					
 	}	
 	for(int i=0;i<io;i++){		
-		pidB[i]=create(iobound, 2000, SRTIME, 1+i*3,ionames[i] , 1, 'a'+i);		
+		//pidB[i]=create(iobound, 2000, SRTIME, 1+i*3,ionames[i] , 1, 'a'+i);		
+		pidB[i]=create(iobound, 2000, TSSCHED, 1+i*3,ionames[i] , 1, 'a'+i);		
 	}	
 
 	for(int i=0;i<cpu;i++){
@@ -126,7 +128,7 @@ int cpubound(char ch){
 			a_cnt++;			
 		}
 		mask = disable();
-		XTEST_KPRINTF("[Ch->%c : Pid->%d, i->%d, prio->%d, preempt->%d\n",ch,currpid,i,(&proctab[currpid])->prprio,preempt);
+		XTEST_KPRINTF("[Ch->%c : Pid->%d, i->%d, prio->%d, preempt->%d, quantum->%d\n",ch,currpid,i,(&proctab[currpid])->prprio,preempt,(&proctab[currpid])->pr_quantum);
 		restore(mask);
 
 		// Using kprintf print the pid followed the outer loop count i,
@@ -146,11 +148,11 @@ int iobound(char ch){
 		for (int j=0; j<LOOP2; j++) {
 			for(int k=0;k<10000;k++);		
 			b_cnt++;			
-			sleepms(100);
+			sleepms(10);
 		}
 
 		mask = disable();
-		XTEST_KPRINTF("[Ch->%c : Pid->%d, i->%d, prio->%d, preempt->%d\n",ch,currpid,i,(&proctab[currpid])->prprio,preempt);
+		XTEST_KPRINTF("[Ch->%c : Pid->%d, i->%d, prio->%d, preempt->%d, quantum->%d\n",ch,currpid,i,(&proctab[currpid])->prprio,preempt,(&proctab[currpid])->pr_quantum);
 		restore(mask);
 	}
 	return 0;

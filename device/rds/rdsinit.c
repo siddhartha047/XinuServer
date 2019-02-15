@@ -35,7 +35,7 @@ devcall	rdsinit (
 
 	// rdptr->rd_comproc = create(rdsprocess, RD_STACK, RD_PRIO,
 	// 					"rdsproc", 1, rdptr);
-	rdptr->rd_comproc = create(rdsprocess, RD_STACK, SRTIME,RD_PRIO,
+	rdptr->rd_comproc = create(rdsprocess, RD_STACK, default_SCH,RD_PRIO,
 						"rdsproc", 1, rdptr);
 	if (rdptr->rd_comproc == SYSERR) {
 		panic("Cannot create remote disk process");

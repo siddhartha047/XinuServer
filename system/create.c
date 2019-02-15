@@ -44,6 +44,7 @@ pid32	create(
 	prptr->B=0;
 	prptr->E=0;
 	prptr->Tb=0; //zero means start of process
+	prptr->pr_quantum=QUANTUM;
 
 	/* Initialize process table entry for new process */
 	prptr->prstate = PR_SUSP;	/* Initial state is suspended	*/

@@ -52,10 +52,11 @@ struct procent {		/* Entry in the process table		*/
 	umsg32	prmsg;		/* Message sent to this process		*/
 	bool8	prhasmsg;	/* Nonzero iff msg is valid		*/
 	int16	prdesc[NDESC];	/* Device descriptors for process	*/
-	int group; //sid: added to track group
-	int B;	//initial burst
-	int E;	// Expected
-	int Tb; // time stamp for burst
+	uint32 group; //sid: added to track group
+	uint32 B;	//initial burst
+	uint32 E;	// Expected
+	uint32 Tb; // time stamp for burst
+	uint32 pr_quantum;
 };
 
 /* Marker for the top of a process stack (used to help detect overflow)	*/
@@ -91,3 +92,13 @@ extern pri16 TS_PRIORITY; // Priority of Time sharing group
 #define INITIAL_PRIORITY 10
 #define ALPHA 7
 #define BURST_FACTOR 1000
+
+#define DTABSIZE 60
+
+struct tsd_ent{
+    int ts_quantum;
+    int ts_tqexp;
+    int ts_slpret;
+};
+
+extern struct tsd_ent tsd_tab[];
