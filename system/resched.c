@@ -59,14 +59,14 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 	if(ptold->group==SRTIME){
 			if (ptold->prstate == PR_CURR) { 
 				//forced
-				ptold->B=ptold->B+(clktime-ptold->Tb)*BURST_FACTOR;
-				//ptold->B=ptold->B+(QUANTUM-preempt)*BURST_FACTOR;
+				//ptold->B=ptold->B+(clktime-ptold->Tb)*BURST_FACTOR;
+				ptold->B=ptold->B+(QUANTUM-preempt)*BURST_FACTOR;
 				ptold->E= ((ptold->B*ALPHA)/10) + ((10-ALPHA) * ptold->E)/10;									
 			}
 			else{
 				//blocking
-				ptold->B=(clktime-ptold->Tb)*BURST_FACTOR;
-				//ptold->B=(QUANTUM-preempt)*BURST_FACTOR;
+				//ptold->B=(clktime-ptold->Tb)*BURST_FACTOR;
+				ptold->B=(QUANTUM-preempt)*BURST_FACTOR;
 				ptold->E= ((ptold->B*ALPHA)/10) + ((10-ALPHA) * ptold->E)/10;
 			}
 

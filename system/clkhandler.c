@@ -46,7 +46,7 @@ void	clkhandler(
 	/*   remaining time reaches zero			     */
 
 	if((--preempt) <= 0) {
-		preempt = QUANTUM; //sid: commented this line :)
+		//preempt = QUANTUM; //sid: commented this line :)
 		resched();
 	}
 }
