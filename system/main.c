@@ -48,8 +48,8 @@ process	main(void)
 
 	recvclr();
 
-	int cpu=6;
-	int io=0;
+	int cpu=3;
+	int io=3;
 
 	pid32 pidA[cpu+1];
 	pid32 pidB[io+1];
@@ -59,7 +59,7 @@ process	main(void)
 
 
 
-	LOOP1=100;
+	LOOP1=1000;
 	LOOP2=100;
 
 	for(int i=0;i<cpu;i++){		
@@ -76,7 +76,7 @@ process	main(void)
 		resume(pidB[i]);
 	}	
 
-	sleep(60);
+	sleep(10);
 
 	
 	for(int i=0;i<cpu;i++){

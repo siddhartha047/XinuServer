@@ -80,9 +80,9 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 			ptold->prstate = PR_READY; 						
 			
 			if(ptold->group==SRTIME){							
-				if (ptold->E < firstkey(SRreadylist)) {
-						return;
-				}					
+				// if (ptold->E < firstkey(SRreadylist)) {
+				// 		return;
+				// }					
 				insertAscending(currpid, SRreadylist, ptold->E);											
 			}
 			else if(ptold->group==TSSCHED){
@@ -114,9 +114,9 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 				insertAscending(currpid, SRreadylist, ptold->E);											
 			}
 			else if(ptold->group==TSSCHED){
-				if (ptold->prprio > firstkey(TSreadylist)) {
-					return;
-				}
+				// if (ptold->prprio > firstkey(TSreadylist)) {
+				// 	return;
+				// }
 				insert(currpid, TSreadylist, ptold->prprio);			
 			}	
 			
