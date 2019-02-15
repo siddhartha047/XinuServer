@@ -24,17 +24,11 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 		return;
 	}
 
-	//sid: group creation	
-	
+	//sid: group creation		
 	int SRcount=getSize(SRreadylist);
 	int TScount=getSize(TSreadylist);
-	int totalready=SRcount+TScount;
+	int totalready=SRcount+TScount;	
 
-	//sid: print processes
-	//printReadyList(SRreadylist);
-	//printReadyList(TSreadylist);
-
-	
 	XDEBUG_KPRINTF("\n[Size: %d, SRcount: %d, TScount: %d]\n",totalready, SRcount, TScount);
 			
 	//sid: changing group priority
@@ -59,34 +53,46 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 
 	XDEBUG_KPRINTF("[SRTIME->%d, TSSCHED->%d]\n",getgprio(SRTIME), getgprio(TSSCHED));	
 
+	
+	ptold = &proctab[currpid];
+	//BURST Calculation
+	if(ptold->group==SRTIME){
+			if (ptold->prstate == PR_CURR) { 
+				//forced
+				ptold->B=ptold->B+(clktime-ptold->Tb)*BURST_FACTOR;
+				//ptold->B=ptold->B+(QUANTUM-preempt)*BURST_FACTOR;
+				ptold->E= ((ptold->B*ALPHA)/10) + ((10-ALPHA) * ptold->E)/10;									
+			}
+			else{
+				//blocking
+				ptold->B=(clktime-ptold->Tb)*BURST_FACTOR;
+				//ptold->B=(QUANTUM-preempt)*BURST_FACTOR;
+				ptold->E= ((ptold->B*ALPHA)/10) + ((10-ALPHA) * ptold->E)/10;
+			}
+
+	}
+
 	//select SR group for scheduling
 	if(getgprio(SRTIME)>=getgprio(TSSCHED)){
 		XDEBUG_KPRINTF("SR group selected\n");			
-
-		ptold = &proctab[currpid];
-
-		if (ptold->prstate == PR_CURR) { 
-			//forced
-			ptold->B=ptold->B+(clktime-ptold->Tb);
-			ptold->E=ALPHA * ptold->B + (1-ALPHA) * ptold->E;					
-			ptold->prstate = PR_READY;
-			if(ptold->group==SRTIME){
-				insert(currpid, SRreadylist, ptold->prprio);			
+	
+		if (ptold->prstate == PR_CURR) {
+			ptold->prstate = PR_READY; 						
+			
+			if(ptold->group==SRTIME){							
+				if (ptold->E < firstkey(SRreadylist)) {
+						return;
+				}					
+				insertAscending(currpid, SRreadylist, ptold->E);											
 			}
 			else if(ptold->group==TSSCHED){
 				insert(currpid, TSreadylist, ptold->prprio);			
-			}
-			
-		}
-		else{
-			//blocking
-			ptold->B=(clktime-ptold->Tb);
-			ptold->E=ALPHA * ptold->B + (1-ALPHA) * ptold->E;
-		}
+			}			
+		}		
 
 		printSRreadylist(SRreadylist);
 
-		currpid = dequeueMinBurst(SRreadylist);//extract min burst
+		currpid = dequeue(SRreadylist);//extract min burst		
 		ptnew = &proctab[currpid];		
 		ptnew->prstate = PR_CURR;		
 		preempt = QUANTUM;		/* Reset time slice for process	*/
@@ -95,24 +101,29 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 
 	}
 	else{ //Select TS group for scheduling
-		XDEBUG_KPRINTF("TS group selected\n");
-
-		printReadyList(TSreadylist);
+		XDEBUG_KPRINTF("TS group selected\n");		
 
 		ptold = &proctab[currpid];
 
 		if (ptold->prstate == PR_CURR) {  /* Process remains eligible */
-			if (ptold->prprio > firstkey(TSreadylist)) {
-				return;
+			
+
+			ptold->prstate = PR_READY; 						
+			
+			if(ptold->group==SRTIME){																
+				insertAscending(currpid, SRreadylist, ptold->E);											
 			}
-
-			/* Old process will no longer remain current */
-
-			ptold->prstate = PR_READY;
-			insert(currpid, TSreadylist, ptold->prprio);
+			else if(ptold->group==TSSCHED){
+				if (ptold->prprio > firstkey(TSreadylist)) {
+					return;
+				}
+				insert(currpid, TSreadylist, ptold->prprio);			
+			}	
+			
 		}
 
 		/* Force context switch to highest priority ready process */
+		printReadyList(TSreadylist);
 
 		currpid = dequeue(TSreadylist);
 		ptnew = &proctab[currpid];
@@ -145,8 +156,7 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 	// preempt = QUANTUM;		/* Reset time slice for process	*/
 
 	//sid: old vs new info
-	XDEBUG_KPRINTF("[Old %s->%d, New %s->%d]\n",ptold->prname,ptold->group,ptnew->prname,ptnew->group);
-	
+	XDEBUG_KPRINTF("[Old %s->%d, New %s->%d]\n",ptold->prname,ptold->group,ptnew->prname,ptnew->group);	
 	ctxsw(&ptold->prstkptr, &ptnew->prstkptr);
 
 	/* Old process returns here when resumed */

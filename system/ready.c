@@ -28,7 +28,8 @@ status	ready(
 	//insert(pid, readylist, prptr->prprio);	
 	//sid: 
 	if(prptr->group==SRTIME){
-		insert(pid, SRreadylist, prptr->prprio);
+		insertAscending(pid, SRreadylist, prptr->E);		
+		//insert(pid, SRreadylist, prptr->prprio);		
 	}
 	else if(prptr->group==TSSCHED){
 		insert(pid, TSreadylist, prptr->prprio);	

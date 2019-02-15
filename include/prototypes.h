@@ -165,6 +165,8 @@ extern	int32	sizmem(void);
 /* in file insert.c */
 extern	status	insert(pid32, qid16, int32);
 
+extern	status	insertAscending(pid32, qid16, int32);
+
 /* in file insertd.c */
 extern	status	insertd(pid32, qid16, int32);
 

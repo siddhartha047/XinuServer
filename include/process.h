@@ -66,7 +66,7 @@ extern	int32	prcount;	/* Currently active processes		*/
 extern	pid32	currpid;	/* Currently executing process		*/
 
 #define XTEST 1 
-#define XDEBUG 0 	/* set this to 0 when submitting */
+#define XDEBUG 1 	/* set this to 0 when submitting */
 
 //Sid: Added for the assignment
 /* For grading */
@@ -84,8 +84,10 @@ extern	pid32	currpid;	/* Currently executing process		*/
 
 #define SRTIME 0
 #define TSSCHED 1
+#define default_SCH 0
 
 extern pri16 SR_PRIORITY; // Priority of Shortest Remiaing group
 extern pri16 TS_PRIORITY; // Priority of Time sharing group
 #define INITIAL_PRIORITY 10
-#define ALPHA 0.7
+#define ALPHA 7
+#define BURST_FACTOR 1000

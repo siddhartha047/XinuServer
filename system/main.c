@@ -1,6 +1,7 @@
 /*  main.c  - main */
 
 #include <xinu.h>
+#include<string.h>
 
 pid32 prA, prB, prC;
 
@@ -53,15 +54,19 @@ process	main(void)
 	pid32 pidA[cpu+1];
 	pid32 pidB[io+1];
 
+	char cpunames[6][6]={"CPU-1","CPU-2","CPU-3","CPU-4","CPU-5","CPU-6"};
+	char ionames[6][5]={"IO-1","IO-2","IO-3","IO-4","IO-5","IO-6"};
 
-	LOOP1=10;
-	LOOP2=10;
 
-	for(int i=0;i<cpu;i++){
-		pidA[i]=create(cpubound, 2000, TSSCHED, 1, "cpubound", 1, 'C');					
+
+	LOOP1=100;
+	LOOP2=100;
+
+	for(int i=0;i<cpu;i++){		
+		pidA[i]=create(cpubound, 2000, SRTIME, 1+i*3,cpunames[i] , 1, 'A'+i);					
 	}	
-	for(int i=0;i<io;i++){	
-		pidB[i]=create(iobound, 2000, TSSCHED, 1, "cpubound", 1, 'I');		
+	for(int i=0;i<io;i++){		
+		pidB[i]=create(iobound, 2000, SRTIME, 1+i*3,ionames[i] , 1, 'a'+i);		
 	}	
 
 	for(int i=0;i<cpu;i++){
@@ -71,7 +76,7 @@ process	main(void)
 		resume(pidB[i]);
 	}	
 
-	sleep(10);
+	sleep(60);
 
 	
 	for(int i=0;i<cpu;i++){

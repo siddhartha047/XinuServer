@@ -283,7 +283,7 @@ process	shell (
 		// 	cmdtab[j].cname, 2, ntok, &tmparg);
 
 		child = create(cmdtab[j].cfunc,
-			SHELL_CMDSTK, SRTIME, SHELL_CMDPRIO,
+			SHELL_CMDSTK, default_SCH, SHELL_CMDPRIO,
 			cmdtab[j].cname, 2, ntok, &tmparg);
 
 

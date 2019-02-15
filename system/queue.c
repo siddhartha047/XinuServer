@@ -72,17 +72,14 @@ pid32	dequeueMinBurst(
 	
 	head=queuetab[head].qnext;
 	
-	struct procent *tpidEntry;			
-	tpidEntry = &proctab[head];
 
-	int minBurst=tpidEntry->B;
+	int minBurst=queuetab[head].qkey;
 	pid32 minProcess=head;
 	
 	while(queuetab[head].qnext!=tail){		
-		head=queuetab[head].qnext;	
-		tpidEntry = &proctab[head];	
-		if(tpidEntry->B<minBurst){ //less will round robin as inserted last
-			minBurst=tpidEntry->B;
+		head=queuetab[head].qnext;			
+		if(queuetab[head].qkey < minBurst){ //less will round robin as inserted last
+			minBurst=queuetab[head].qkey;
 			minProcess=head;
 		}		
 	}	
