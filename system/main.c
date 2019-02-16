@@ -9,11 +9,13 @@ int proc_a(char);
 int proc_b(char);
 int cpubound(char);
 int iobound(char);
+int child1(char);
+int child2(char);
 
 volatile int a_cnt = 0;
 volatile int b_cnt = 0;
-volatile int LOOP1 = 0;
-volatile int LOOP2 = 0;
+volatile int LOOP1 = 1000;
+volatile int LOOP2 = 100;
 
 void test4(void);
 void test3(void);
@@ -22,9 +24,9 @@ void test12(void);
 process	main(void)
 {
 
-	test12();
+	//test12();
 	//test3();
-	//test4();
+	test4();
 	
 	return OK;
     
@@ -63,8 +65,7 @@ void test12(void){
 		resume(pidB[i]);
 	}	
 
-	//resched_cntl(DEFER_STOP);
-	sleep(10);
+	//resched_cntl(DEFER_STOP);	
 	chgprio(SRTIME,20);
 
 	while(1){};
@@ -148,37 +149,47 @@ void test4(void){
 
 	recvclr();
 
-	int cpu=6;
-	int io=0;
-
-	pid32 pidA[cpu+1];
-	pid32 pidB[io+1];
-
-	char cpunames[6][6]={"CPU-1","CPU-2","CPU-3","CPU-4","CPU-5","CPU-6"};
-	char ionames[6][5]={"IO-1","IO-2","IO-3","IO-4","IO-5","IO-6"};
-
-	LOOP1=1000;
-	LOOP2=100;
-
-	resched_cntl(DEFER_START);
-
-	pid32 root=create(cpubound, 2000, TSSCHED, 1 ,'root process' , 1,'1');						
-	pid32 child1=create(cpubound, 2000, TSSCHED, 1 ,'Child 1' , 1, '1');							
-	pid32 child2=create(cpubound, 2000, TSSCHED, 1 ,'Child 2' , 1, '1');						
-
-		
-	resched_cntl(DEFER_START);
-
-	resume(root);
-	resume(child1);
-	resume(child2);
-
-	resched_cntl(DEFER_STOP);	
-
 	intmask mask;    
 	mask = disable();
-	XTEST_KPRINTF("End of main process\n");
+	XTEST_KPRINTF("Main Process ID = %d...\n",(&proctab[currpid])->uid);  		
 	restore(mask);
+
+	pid32 prch1=create(child1, 2000, SRTIME, 1 ,"child1" , 1,'1');						
+	resume(prch1);	
+	
+	sleep(1);
+	setuid(5);
+	sleep(1);	
+		
+	mask = disable();
+	XTEST_KPRINTF("Main Process new ID = %d...\n",(&proctab[currpid])->uid);  		
+	restore(mask);
+
+	pid32 prch2=create(child2, 2000, SRTIME, 2 ,"child2" , 1, '1');								
+	resume(prch2);
+
+	sleep(5);
+
+	if(kill(prch1)==SYSERR){		
+		mask = disable();
+		XTEST_KPRINTF("child1 cannot be killed\n");  		
+		restore(mask);		
+	}else{		
+		mask = disable();
+		XTEST_KPRINTF("child1 killed\n");  		
+		restore(mask);		
+	}
+
+	if(kill(prch2)==SYSERR){		
+		mask = disable();
+		XTEST_KPRINTF("child2 cannot be killed\n");  		
+		restore(mask);		
+	}else{		
+		mask = disable();
+		XTEST_KPRINTF("child2 killed\n");  		
+		restore(mask);		
+	}
+	
 	while(1){};
 }
 
@@ -244,6 +255,29 @@ int iobound(char ch){
 	}
 	return 0;
 }
+
+int child1(char ch){
+	intmask mask;    
+	mask = disable();
+	XTEST_KPRINTF("Starting Child 1 user->%d\n",(&proctab[currpid])->uid);
+	restore(mask);
+
+	while(1){};
+	
+	return 0;
+}
+
+int child2(char ch){
+	intmask mask;    
+	mask = disable();
+	XTEST_KPRINTF("Starting Child 2 user->%d\n",(&proctab[currpid])->uid);
+	restore(mask);
+
+	while(1){};
+	
+	return 0;
+}
+
 
 
 // recvclr();

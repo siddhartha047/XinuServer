@@ -68,7 +68,7 @@ extern	int32	prcount;	/* Currently active processes		*/
 extern	pid32	currpid;	/* Currently executing process		*/
 
 #define XTEST 1 
-#define XDEBUG 1 	/* set this to 0 when submitting */
+#define XDEBUG 0	/* set this to 0 when submitting */
 
 //Sid: Added for the assignment
 /* For grading */
@@ -110,3 +110,5 @@ struct tsd_ent{
 extern struct tsd_ent tsd_tab[];
 
 #define MAX_TS_PRIORITY 58
+
+#define ROOT_USER 0

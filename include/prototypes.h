@@ -20,6 +20,7 @@ extern	pri16	chprio(pid32, pri16);
 
 /*sid: in file chgrio.c */
 extern	pri16	chgprio(int group, pri16);
+extern	int32 setuid(int newuid);
 
 /* in file clkupdate.S */
 extern	uint32	clkcount(void);

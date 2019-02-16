@@ -45,6 +45,7 @@ pid32	create(
 	prptr->E=0;
 	prptr->Tb=0; //zero means start of process
 	prptr->pr_quantum=QUANTUM;
+	prptr->uid=(&proctab[currpid])->uid;
 
 	/* Initialize process table entry for new process */
 	prptr->prstate = PR_SUSP;	/* Initial state is suspended	*/

@@ -27,6 +27,13 @@ syscall	suspend(
 		restore(mask);
 		return SYSERR;
 	}
+
+	//sid:
+	if(!((&proctab[currpid])->uid==(&proctab[pid])->uid ||(&proctab[currpid])->uid==ROOT_USER)){
+		restore(mask);
+		return SYSERR;	
+	}
+	
 	if (prptr->prstate == PR_READY) {
 		getitem(pid);		    /* Remove a ready process	*/
 					    /*   from the ready list	*/

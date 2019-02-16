@@ -24,6 +24,13 @@ pri16	resume(
 		restore(mask);
 		return (pri16)SYSERR;
 	}
+
+	//sid:
+	if(!((&proctab[currpid])->uid==(&proctab[pid])->uid ||(&proctab[currpid])->uid==ROOT_USER)){
+		restore(mask);
+		return SYSERR;	
+	}
+
 	prio = prptr->prprio;		/* Record priority to return	*/
 	ready(pid);
 	restore(mask);

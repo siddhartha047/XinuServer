@@ -283,8 +283,10 @@ static	void	sysinit()
 	prptr = &proctab[NULLPROC];
 	prptr->prstate = PR_CURR;
 	prptr->prprio = 0;
+
 	prptr->group=default_SCH;	
 	prptr->pr_quantum=QUANTUM;
+	prptr->uid=ROOT_USER;
 
 	strncpy(prptr->prname, "prnull", 7);
 	prptr->prstkbase = getstk(NULLSTK);

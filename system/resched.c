@@ -35,7 +35,7 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 	//sid: changing group priority
 	ptold = &proctab[currpid];	
 
-	XDEBUG_KPRINTF("Current Process-> %s, %d, %d\n",ptold->prname,ptold->group, ptold->prprio);
+	XDEBUG_KPRINTF("Current Process-> %s, %d, %d, %d\n",ptold->prname, ptold->uid, ptold->group, ptold->prprio);
 	
 	if (strncmp(ptold->prname, "prnull",6) != 0)
 	{	
