@@ -15,37 +15,80 @@ volatile int b_cnt = 0;
 volatile int LOOP1 = 0;
 volatile int LOOP2 = 0;
 
+void test4(void);
+void test3(void);
+void test12(void);
+
 process	main(void)
 {
-	/*
+
+	test12();
+	//test3();
+	//test4();
+	
+	return OK;
+    
+}
+
+void test12(void){
+
 	recvclr();
 
-	int procesNo=10;
-	pid32 pidA[procesNo];
-	pid32 pidB[procesNo];
+	int cpu=6;
+	int io=0;
+
+	pid32 pidA[cpu+1];
+	pid32 pidB[io+1];
+
+	char cpunames[6][6]={"CPU-1","CPU-2","CPU-3","CPU-4","CPU-5","CPU-6"};
+	char ionames[6][5]={"IO-1","IO-2","IO-3","IO-4","IO-5","IO-6"};
 
 
-	for(int i=0;i<procesNo;i++){
-		pidA[i]=create(proc_a, 2000, SRTIME, 30, "proc A", 1, 'A');
-		pidB[i]=create(proc_b, 2000, SRTIME, 1, "proc B", 1, 'B');		
-		//pidA[i]=create(proc_a, 2000, TSSCHED, 20, "proc A", 1, 'A');
-		//pidB[i]=create(proc_b, 2000, TSSCHED, 10, "proc B", 1, 'B');				
+	LOOP1=100;
+	LOOP2=100;
+
+	for(int i=0;i<cpu;i++){		
+		pidA[i]=create(cpubound, 2000, SRTIME, 1+i*3,cpunames[i] , 1, 'A'+i);							
+	}	
+	for(int i=0;i<io;i++){		
+		pidB[i]=create(iobound, 2000, SRTIME, 1+i*3,ionames[i] , 1, 'a'+i);				
 	}	
 
-	for(int i=0;i<procesNo;i++){
-		resume(pidA[i]);
-		resume(pidB[i]);
-	}
+	//resched_cntl(DEFER_START);
 
+	for(int i=0;i<cpu;i++){
+		resume(pidA[i]);
+	}	
+	for(int i=0;i<io;i++){	
+		resume(pidB[i]);
+	}	
+
+	//resched_cntl(DEFER_STOP);
+	sleep(10);
+	chgprio(SRTIME,20);
+
+	while(1){};
 	sleep(10);
 
-	for(int i=0;i<procesNo;i++){
+	
+	for(int i=0;i<cpu;i++){
 		kill(pidA[i]);
+	}	
+	for(int i=0;i<io;i++){	
 		kill(pidB[i]);
-	}
+	}	
 
-	XTEST_KPRINTF("\nTest Result: A = %d, B = %d\n", a_cnt, b_cnt);*/
 
+
+	intmask mask;    
+	mask = disable();
+	XTEST_KPRINTF("\nTest Result: A = %d, B = %d\n", a_cnt, b_cnt);
+	restore(mask);
+
+}
+
+
+void test3(void){		
 	recvclr();
 
 	int cpu=6;
@@ -99,9 +142,44 @@ process	main(void)
 	XTEST_KPRINTF("\nTest Result: A = %d, B = %d\n", a_cnt, b_cnt);
 	restore(mask);
 
-	
-	return OK;
-    
+}
+
+void test4(void){
+
+	recvclr();
+
+	int cpu=6;
+	int io=0;
+
+	pid32 pidA[cpu+1];
+	pid32 pidB[io+1];
+
+	char cpunames[6][6]={"CPU-1","CPU-2","CPU-3","CPU-4","CPU-5","CPU-6"};
+	char ionames[6][5]={"IO-1","IO-2","IO-3","IO-4","IO-5","IO-6"};
+
+	LOOP1=1000;
+	LOOP2=100;
+
+	resched_cntl(DEFER_START);
+
+	pid32 root=create(cpubound, 2000, TSSCHED, 1 ,'root process' , 1,'1');						
+	pid32 child1=create(cpubound, 2000, TSSCHED, 1 ,'Child 1' , 1, '1');							
+	pid32 child2=create(cpubound, 2000, TSSCHED, 1 ,'Child 2' , 1, '1');						
+
+		
+	resched_cntl(DEFER_START);
+
+	resume(root);
+	resume(child1);
+	resume(child2);
+
+	resched_cntl(DEFER_STOP);	
+
+	intmask mask;    
+	mask = disable();
+	XTEST_KPRINTF("End of main process\n");
+	restore(mask);
+	while(1){};
 }
 
 int proc_a(char ch){	

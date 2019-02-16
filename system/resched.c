@@ -43,17 +43,17 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 		else TScount=TScount-1;
 	}	
 
-	if(ptold->group==SRTIME){
-		chgprio(SRTIME,INITIAL_PRIORITY+SRcount);
-		chgprio(TSSCHED,getgprio(TSSCHED)+TScount);	
+	if(ptold->group==SRTIME){		
+		SR_PRIORITY=SR_INITIAL_PRIORITY+SRcount;
+		TS_PRIORITY=TS_PRIORITY+TScount;		
+
 	}
-	else if(ptold->group==TSSCHED){
-		chgprio(SRTIME,getgprio(SRTIME)+SRcount);
-		chgprio(TSSCHED,INITIAL_PRIORITY+TScount);		
+	else if(ptold->group==TSSCHED){		
+		SR_PRIORITY=SR_PRIORITY+SRcount;
+		TS_PRIORITY=TS_INITIAL_PRIORITY+TScount;				
 	}	
 
-
-	XDEBUG_KPRINTF("[SRTIME->%d, TSSCHED->%d]\n",getgprio(SRTIME), getgprio(TSSCHED));	
+	XDEBUG_KPRINTF("[SR->%d,%d, TS->%d,%d]\n",getgprio(SRTIME),SR_PRIORITY,getgprio(TSSCHED),TS_PRIORITY);	
 
 	
 	ptold = &proctab[currpid];
@@ -90,7 +90,7 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 	}
 
 	//select SR group for scheduling
-	if(getgprio(SRTIME)>=getgprio(TSSCHED)){
+	if(SR_PRIORITY>=TS_PRIORITY){
 		XDEBUG_KPRINTF("SR group selected\n");			
 	
 		if (ptold->prstate == PR_CURR) {

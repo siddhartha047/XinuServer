@@ -18,12 +18,12 @@ pri16	chgprio(
 
 
 	if(group==SRTIME){
-		oldprio = SR_PRIORITY;
-		SR_PRIORITY = newprio;	
+		oldprio = SR_INITIAL_PRIORITY;
+		SR_INITIAL_PRIORITY = newprio;	
 	}
 	else if(group==TSSCHED){
-		oldprio=TS_PRIORITY;
-		TS_PRIORITY=newprio;
+		oldprio=TS_INITIAL_PRIORITY;
+		TS_INITIAL_PRIORITY=newprio;
 	}
 	else{
 		restore(mask);

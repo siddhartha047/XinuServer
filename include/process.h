@@ -57,6 +57,7 @@ struct procent {		/* Entry in the process table		*/
 	uint32 E;	// Expected
 	uint32 Tb; // time stamp for burst
 	uint32 pr_quantum;
+	uint32 uid;
 };
 
 /* Marker for the top of a process stack (used to help detect overflow)	*/
@@ -67,7 +68,7 @@ extern	int32	prcount;	/* Currently active processes		*/
 extern	pid32	currpid;	/* Currently executing process		*/
 
 #define XTEST 1 
-#define XDEBUG 0 	/* set this to 0 when submitting */
+#define XDEBUG 1 	/* set this to 0 when submitting */
 
 //Sid: Added for the assignment
 /* For grading */
@@ -89,7 +90,12 @@ extern	pid32	currpid;	/* Currently executing process		*/
 
 extern pri16 SR_PRIORITY; // Priority of Shortest Remiaing group
 extern pri16 TS_PRIORITY; // Priority of Time sharing group
+
+extern pri16 SR_INITIAL_PRIORITY; // Priority of Shortest Remiaing group
+extern pri16 TS_INITIAL_PRIORITY; // Priority of Time sharing group
+
 #define INITIAL_PRIORITY 10
+
 #define ALPHA 7
 #define BURST_FACTOR 1000
 

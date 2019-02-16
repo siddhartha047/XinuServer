@@ -17,10 +17,10 @@ syscall	getgprio(
 	mask = disable();
 
 	if(group==SRTIME){
-		prio = SR_PRIORITY;		
+		prio = SR_INITIAL_PRIORITY;		
 	}
 	else if(group==TSSCHED){
-		prio=TS_PRIORITY;		
+		prio=TS_INITIAL_PRIORITY;		
 	}
 	else{
 		restore(mask);

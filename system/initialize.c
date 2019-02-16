@@ -29,6 +29,10 @@ pid32	currpid;		/* ID of currently executing process	*/
 pri16 SR_PRIORITY; // Priority of Shortest Remiaing group
 pri16 TS_PRIORITY; // Priority of Time sharing group
 
+pri16 SR_INITIAL_PRIORITY;
+pri16 TS_INITIAL_PRIORITY;
+
+
 
 /* Control sequence to reset the console colors and cusor positiion	*/
 
@@ -254,6 +258,10 @@ static	void	sysinit()
 	//sid: initialize with 10
 	SR_PRIORITY=INITIAL_PRIORITY; // Priority of Shortest Remiaing group
 	TS_PRIORITY=INITIAL_PRIORITY; // Priority of Time sharing group
+	
+	SR_INITIAL_PRIORITY=INITIAL_PRIORITY;
+	TS_INITIAL_PRIORITY=INITIAL_PRIORITY;
+
 
 
 	/* Scheduling is not currently blocked */
