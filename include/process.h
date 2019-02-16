@@ -102,3 +102,5 @@ struct tsd_ent{
 };
 
 extern struct tsd_ent tsd_tab[];
+
+#define MAX_TS_PRIORITY 58

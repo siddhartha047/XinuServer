@@ -74,9 +74,10 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 
 	}
 	else{ 
+		if(ptold->prprio>MAX_TS_PRIORITY)ptold->prprio=MAX_TS_PRIORITY;
 		//TS grouping
 		if (ptold->prstate == PR_CURR) { 
-			//cpu-bound			
+			//cpu-bound						
 			ptold->pr_quantum=tsd_tab[ptold->prprio].ts_quantum;
 			ptold->prprio=tsd_tab[ptold->prprio].ts_tqexp;
 		}
