@@ -78,13 +78,14 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 		//TS grouping
 		if (ptold->prstate == PR_CURR) { 
 			//cpu-bound						
-			ptold->pr_quantum=tsd_tab[ptold->prprio].ts_quantum;
 			ptold->prprio=tsd_tab[ptold->prprio].ts_tqexp;
+			ptold->pr_quantum=tsd_tab[ptold->prprio].ts_quantum;
+			
 		}
 		else{
-			//io-bound
-			ptold->pr_quantum=tsd_tab[ptold->prprio].ts_quantum;
+			//io-bound			
 			ptold->prprio=tsd_tab[ptold->prprio].ts_slpret;	
+			ptold->pr_quantum=tsd_tab[ptold->prprio].ts_quantum;
 		}
 
 	}
@@ -106,12 +107,15 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 
 		printSRreadylist(SRreadylist);
 
-		currpid = dequeue(SRreadylist);//extract min burst		
-		ptnew = &proctab[currpid];		
-		ptnew->prstate = PR_CURR;		
-		preempt = QUANTUM;		/* Reset time slice for process	*/
-		//start burst		
-		ptnew->Tb=clktime;
+		currpid = dequeue(SRreadylist);//extract min burst	
+
+		if(!isbadpid(currpid)){
+			ptnew = &proctab[currpid];		
+			ptnew->prstate = PR_CURR;		
+			preempt = QUANTUM;		/* Reset time slice for process	*/
+			//start burst		
+			ptnew->Tb=clktime;
+		}
 
 	}
 	else{ //Select TS group for scheduling
@@ -134,9 +138,12 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 		printTSreadyList(TSreadylist);
 
 		currpid = dequeue(TSreadylist);
-		ptnew = &proctab[currpid];
-		ptnew->prstate = PR_CURR;
-		preempt = ptnew->pr_quantum;
+		if(!isbadpid(currpid)){
+			ptnew = &proctab[currpid];
+			ptnew->prstate = PR_CURR;
+			preempt = ptnew->pr_quantum;	
+		}
+		
 
 	}	
 
@@ -161,6 +168,14 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 	// ptnew = &proctab[currpid];
 	// ptnew->prstate = PR_CURR;
 	// preempt = QUANTUM;		/* Reset time slice for process	*/
+
+	if(isbadpid(currpid)){
+		XDEBUG_KPRINTF("This shouldn't happen\n");
+		currpid = 0;
+		ptnew = &proctab[currpid];		
+		ptnew->prstate = PR_CURR;		
+		preempt = QUANTUM;
+	}
 
 	//sid: old vs new info
 	XDEBUG_KPRINTF("[Old %s->%d, New %s->%d]\n",ptold->prname,ptold->group,ptnew->prname,ptnew->group);	

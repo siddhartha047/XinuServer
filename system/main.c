@@ -24,9 +24,11 @@ void test12(void);
 process	main(void)
 {
 
-	//test12();
-	//test3();
-	test4();
+	test12();
+	sleep(1);
+	test3();
+	sleep(1);
+	test4();	
 	
 	return OK;
     
@@ -37,7 +39,7 @@ void test12(void){
 	recvclr();
 
 	int cpu=6;
-	int io=0;
+	int io=6;
 
 	pid32 pidA[cpu+1];
 	pid32 pidB[io+1];
@@ -46,7 +48,7 @@ void test12(void){
 	char ionames[6][5]={"IO-1","IO-2","IO-3","IO-4","IO-5","IO-6"};
 
 
-	LOOP1=100;
+	LOOP1=1000;
 	LOOP2=100;
 
 	for(int i=0;i<cpu;i++){		
@@ -56,7 +58,7 @@ void test12(void){
 		pidB[i]=create(iobound, 2000, SRTIME, 1+i*3,ionames[i] , 1, 'a'+i);				
 	}	
 
-	//resched_cntl(DEFER_START);
+	resched_cntl(DEFER_START);
 
 	for(int i=0;i<cpu;i++){
 		resume(pidA[i]);
@@ -65,20 +67,23 @@ void test12(void){
 		resume(pidB[i]);
 	}	
 
-	//resched_cntl(DEFER_STOP);	
-	chgprio(SRTIME,20);
+	resched_cntl(DEFER_STOP);
 
-	while(1){};
-	sleep(10);
+	sleep(5);
+	chgprio(SRTIME,20);		
+	sleep(5);
 
 	
 	for(int i=0;i<cpu;i++){
-		kill(pidA[i]);
+		if(kill(pidA[i])){
+			XTEST_KPRINTF("%s KIlled\n",cpunames[i]);
+		}
 	}	
 	for(int i=0;i<io;i++){	
-		kill(pidB[i]);
+		if(kill(pidB[i])){
+			XTEST_KPRINTF("%s KIlled\n",ionames[i]);	
+		}
 	}	
-
 
 
 	intmask mask;    
@@ -130,10 +135,14 @@ void test3(void){
 
 	
 	for(int i=0;i<cpu;i++){
-		kill(pidA[i]);
+		if(kill(pidA[i])){
+			XTEST_KPRINTF("%s KIlled\n",cpunames[i]);
+		}
 	}	
 	for(int i=0;i<io;i++){	
-		kill(pidB[i]);
+		if(kill(pidB[i])){
+			XTEST_KPRINTF("%s KIlled\n",ionames[i]);	
+		}
 	}	
 
 
