@@ -37,17 +37,19 @@ void mywriter( int, int, int );
 
 int main(int argc, char** argv) {
 	kprintf("\n\nCS503 Lab2 \n\r");
-	kprintf("\n\nRunning test 0\n\r");
-	//test0();
+	kprintf("\n\nRunning test 0\n\r");		
+	test0();	
+	kprintf("\n\nRunning test 1\n\r");
+	test1();
+	kprintf("\n\nRunning test 2\n\r");
+	test2();	
+	kprintf("\n\nRunning test 3\n\r");
+	test3();
+	kprintf("\n\nRunning test 4\n\r");
+	test4();
+
 	mytest0();
-	// kprintf("\n\nRunning test 1\n\r");
-	// test1();
-	// kprintf("\n\nRunning test 2\n\r");
-	// test2();
-	// kprintf("\n\nRunning test 3\n\r");
-	// test3();
-	// kprintf("\n\nRunning test 4\n\r");
-	// test4();
+
 	// kprintf("\n\nRunning test 5\n\r");
 	// test5();
 	// kprintf("\n\nRunning test 6\n\r");
@@ -60,7 +62,11 @@ void mytest0(){
 	
 	int lck;
 	//case 1: reader can achieve writer may not
+	int32 mask;
+	mask=disable();
 	XDEBUG_KPRINTF("Case 1: write won't get lock");
+	restore(mask);
+
 	lck=lcreate();
 	resume( create( myreader, 2000, 20, "reader", 3, lck, 1, 0 ));
 	resume( create( myreader, 2000, 20, "reader", 3, lck, 2, 0 ));
@@ -70,9 +76,12 @@ void mytest0(){
 	resume( create( mywriter, 2000, 20, "writer", 3, lck, 2, 0 ));
 	resume( create( mywriter, 2000, 20, "writer", 3, lck, 3, 0 ));
 
-	sleep(10);
+	sleep(15);
 
+	mask=disable();
 	XDEBUG_KPRINTF("Case 2: reader won't get lock");
+	restore(mask);
+
 	int lck2=lcreate();
 	resume( create( mywriter, 2000, 20, "writer", 3, lck2, 1, 0 ));
 	resume( create( mywriter, 2000, 20, "writer", 3, lck2, 2, 0 ));
@@ -98,17 +107,25 @@ void myreader ( int lck, int num, int prio )
 	  return;
 	}
 
+	intmask mask;
+	mask=disable();
 	kprintf(" Reader%d: Lock ..\n\r", num );
-		
+	restore(mask);
 	
 	sleep(3);	
+	mask=disable();
 	kprintf(" Reader%d: Releasing ..\n\r", num );
+	restore(mask);
 
 	a = releaseall( 1,lck );
-	if( a != OK )
+	if( a != OK ){
 		kprintf(" Reader%d: Lock release failed %d ..\n\r", num, a ); 
-	else
-		kprintf(" Reader%d: Lock release done ..\n\r", num ); 
+	}
+	else{
+		mask=disable();
+		kprintf(" Reader%d: Lock release done ..\n\r", num ); 		
+		restore(mask);		
+	}
 
 	return;
 }
@@ -124,18 +141,20 @@ void mywriter ( int lck, int num, int prio )
 	    return;
 	  }
 	
+	intmask mask=disable();
 	kprintf(" Writer%d: Lock ..\n\r", num );
+	restore(mask);
 		
 	sleep(3);
+	mask=disable();
 	kprintf(" Writer%d: Releasing ..\n\r", num );
+	restore(mask);
 
 	a = releaseall(1, lck );
 	if( a != OK )
 	  kprintf(" Writer%d: Lock release failed %d ..\n\r", num,a ); 
 	return;
 }
-
-
 
 
 /*Test0	- Regression testing
@@ -154,7 +173,7 @@ void test0()
 		{
 			lcks[i] = lcreate();	
 
-			kprintf("(%d, %d) ",lcks[i],(&locktab[lcks[i]])->lstate);
+			//kprintf("(%d, %d) ",lcks[i],(&locktab[lcks[i]])->lstate);
 
 			if( lcks[i] == SYSERR )
 			{

@@ -20,6 +20,11 @@ syscall lock(int32 ldes, int32 type, int32 lpriority) {
 		return SYSERR;
 	}
 
+	if(!(type==READ || type==WRITE)){
+		restore(mask);
+		return SYSERR;	
+	}
+
 	lockptr = &locktab[ldes];
 	if (lockptr->lstate == L_FREE) {
 		restore(mask);
@@ -33,19 +38,16 @@ syscall lock(int32 ldes, int32 type, int32 lpriority) {
 	lockptr->lmode[currpid]=type;
 
 	//sid: locking logics goes here
+	//XDEBUG_KPRINTF("Trying lock %d-> rcount: %d, wcount: %d, rwait: %d, wwait: %d\n",ldes,lockptr->rcount,lockptr->wcount,lockptr->rwait,lockptr->wwait);
 
 	if((lockptr->rcount+lockptr->wcount)==0){
 		//no one holding the lock		
 		if(type==READ){
 			lockptr->rcount++;
 		}
-		else if(type==WRITE){
-			lockptr->wcount++;
-		}
 		else{
-			XDEBUG_KPRINTF("invalid lock type\n");
+			lockptr->wcount++;
 		}		
-
 	}
 	else if(lockptr->rcount>0){
 		//readers holding lock
@@ -57,6 +59,9 @@ syscall lock(int32 ldes, int32 type, int32 lpriority) {
 			prptr->prstate = PR_WAIT;
 			insertlckprio(ldes, currpid, lockptr->lqueue, lpriority, type);						
 			resched();
+			//got the lock now
+			if(type==READ)lockptr->rcount++;		
+			else lockptr->wcount++;
 		}
 		//if no writer waiting just reader 
 		else if(type==READ && lockptr->wwait==0){
@@ -82,6 +87,9 @@ syscall lock(int32 ldes, int32 type, int32 lpriority) {
 			prptr->prstate = PR_WAIT;
 			insertlckprio(ldes, currpid, lockptr->lqueue, lpriority, type);			
 			resched();
+			//got the lock now
+			if(type==READ)lockptr->rcount++;		
+			else lockptr->wcount++;
 		}
 
 	}
@@ -98,6 +106,9 @@ syscall lock(int32 ldes, int32 type, int32 lpriority) {
 		prptr->prstate = PR_WAIT;
 		insertlckprio(ldes, currpid, lockptr->lqueue, lpriority, type);		
 		resched();
+		//got the lock now
+		if(type==READ)lockptr->rcount++;		
+		else lockptr->wcount++;		
 	}
 
 	//after awake from resched
@@ -108,6 +119,9 @@ syscall lock(int32 ldes, int32 type, int32 lpriority) {
 	}
 
 	prptr->locks[ldes]=1;
+	//after awaking hold the lock;	
+
+	//XDEBUG_KPRINTF("Got lock %d-> rcount: %d, wcount: %d, rwait: %d, wwait: %d\n",ldes,lockptr->rcount,lockptr->wcount,lockptr->rwait,lockptr->wwait);
 
 	restore(mask);
 

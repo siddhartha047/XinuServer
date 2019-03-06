@@ -44,6 +44,8 @@ syscall releaseall (int32 numlocks, ...) {
 		 	return SYSERR;	
 		}
 
+		//XDEBUG_KPRINTF("Trying Release %d:-> rcount: %d, wcount: %d, rwait: %d, wwait: %d\n",ldes,lockptr->rcount,lockptr->wcount,lockptr->rwait,lockptr->wwait);
+
 		if(lockptr->lmode[currpid]==READ){
 			lockptr->rcount--;			
 		}
@@ -55,7 +57,7 @@ syscall releaseall (int32 numlocks, ...) {
 
 			if(lockptr->lmode[firstid(lockptr->lqueue)]==READ && lockptr->wwait>0){				
 				//remove all reader before first writer
-				while(lockptr->lmode[firstid(lockptr->lqueue)]==READ){
+				while(lockptr->lmode[firstid(lockptr->lqueue)]!=WRITE){
 					lockptr->rwait--;
 					ready(dequeue(lockptr->lqueue));
 				}
@@ -77,6 +79,8 @@ syscall releaseall (int32 numlocks, ...) {
 		}
 
 		prptr->locks[ldes]=0;
+
+		//XDEBUG_KPRINTF("Release %d:-> rcount: %d, wcount: %d, rwait: %d, wwait: %d\n",ldes,lockptr->rcount,lockptr->wcount,lockptr->rwait,lockptr->wwait);
 
 	}	
 
