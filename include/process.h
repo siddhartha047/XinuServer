@@ -6,6 +6,10 @@
 #define	NPROC		8
 #endif		
 
+#ifndef NLOCKS
+#define NLOCKS 50
+#endif
+
 /* Process state constants */
 
 #define	PR_FREE		0	/* Process table entry is unused	*/
@@ -38,6 +42,8 @@
 
 #define NDESC		5	/* must be odd to make procent 4N bytes	*/
 
+/* Lab 3 TODO - declare variable or #defines here. Add fields to procent */
+
 /* Definition of the process table (multiple of 32 bits) */
 
 struct procent {		/* Entry in the process table		*/
@@ -47,17 +53,14 @@ struct procent {		/* Entry in the process table		*/
 	char	*prstkbase;	/* Base of run time stack		*/
 	uint32	prstklen;	/* Stack length in bytes		*/
 	char	prname[PNMLEN];	/* Process name				*/
-	sid32	prsem;		/* Semaphore on which process waits	*/
+	uint32	prsem;		/* Semaphore on which process waits	*/
 	pid32	prparent;	/* ID of the creating process		*/
 	umsg32	prmsg;		/* Message sent to this process		*/
 	bool8	prhasmsg;	/* Nonzero iff msg is valid		*/
 	int16	prdesc[NDESC];	/* Device descriptors for process	*/
-	uint32 group; //sid: added to track group
-	uint32 B;	//initial burst
-	uint32 E;	// Expected
-	uint32 Tb; // time stamp for burst
-	uint32 pr_quantum;
-	uint32 uid;
+	
+	int32   locks[NLOCKS];	
+
 };
 
 /* Marker for the top of a process stack (used to help detect overflow)	*/
@@ -67,8 +70,9 @@ extern	struct	procent proctab[];
 extern	int32	prcount;	/* Currently active processes		*/
 extern	pid32	currpid;	/* Currently executing process		*/
 
+
 #define XTEST 1 
-#define XDEBUG 0	/* set this to 0 when submitting */
+#define XDEBUG 1 	/* set this to 0 when submitting */
 
 //Sid: Added for the assignment
 /* For grading */
@@ -83,32 +87,3 @@ extern	pid32	currpid;	/* Currently executing process		*/
 #else
 #define XDEBUG_KPRINTF(...)
 #endif
-
-#define SRTIME 0
-#define TSSCHED 1
-#define default_SCH 0
-
-extern pri16 SR_PRIORITY; // Priority of Shortest Remiaing group
-extern pri16 TS_PRIORITY; // Priority of Time sharing group
-
-extern pri16 SR_INITIAL_PRIORITY; // Priority of Shortest Remiaing group
-extern pri16 TS_INITIAL_PRIORITY; // Priority of Time sharing group
-
-#define INITIAL_PRIORITY 10
-
-#define ALPHA 7
-#define BURST_FACTOR 1000
-
-#define DTABSIZE 60
-
-struct tsd_ent{
-    int ts_quantum;
-    int ts_tqexp;
-    int ts_slpret;
-};
-
-extern struct tsd_ent tsd_tab[];
-
-#define MAX_TS_PRIORITY 58
-
-#define ROOT_USER 0

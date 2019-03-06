@@ -2,13 +2,10 @@
 
 #include <xinu.h>
 
-uint32	clktime;		/* Seconds since boot			*/
-uint32	count1000;		/* Milliseconds since last clock tick   */
-qid16	sleepq;			/* Queue of sleeping processes		*/
-uint32	preempt;		/* Preemption counter			*/
-
-volatile struct hpet_csreg *hpet = (struct hpet_csreg *)
-						HPET_BASE_ADDR;
+volatile uint32	clktime;		/* Seconds since boot			*/
+uint32	ctr1000 = 0;			/* Milliseconds since boot		*/
+qid16	sleepq;				/* Queue of sleeping processes		*/
+uint32	preempt;			/* Preemption counter			*/
 
 /*------------------------------------------------------------------------
  * clkinit  -  Initialize the clock and sleep queue at startup (x86)
@@ -16,6 +13,8 @@ volatile struct hpet_csreg *hpet = (struct hpet_csreg *)
  */
 void	clkinit(void)
 {
+	uint16	intv;		/* Clock rate in KHz			*/
+
 	/* Allocate a queue to hold the delta list of sleeping processes*/
 
 	sleepq = newqueue();
@@ -27,26 +26,24 @@ void	clkinit(void)
 	/* Initialize the time since boot to zero */
 
 	clktime = 0;
-        count1000 = 0;
+
 	/* Set interrupt vector for the clock to invoke clkdisp */
 
-	ioapic_irq2vec(2, IRQBASE);
+	set_evec(IRQBASE, (uint32)clkdisp);
 
-	set_ivec(IRQBASE, clkhandler, 0);
+	/* Set the hardware clock: timer 0, 16-bit counter, rate */
+	/*   generator mode, and counter runs in binary		 */
 
-	hpet->gc = 0;
+	outb(CLKCNTL, 0x34);
 
-	hpet->mcv_l = 0;
-	hpet->mcv_u = 0;
+	/* Set the clock rate to 1.190 Mhz; this is 1 ms interrupt rate */
 
-	hpet->t0cc_l |= HPET_TXCC_TVS;
-	hpet->t0cv_l = 14318;
-	hpet->t0cc_l |= HPET_TXCC_TVS;
-	hpet->t0cv_u = 0;
+	intv = 1193;	/* Using 1193 instead of 1190 to fix clock skew	*/
 
-	hpet->t0cc_l = HPET_TXCC_IT | HPET_TXCC_TYP | HPET_TXCC_IE;
+	/* Must write LSB first, then MSB */
 
-	hpet->gc = HPET_GC_OE;
+	outb(CLOCK0, (char) (0xff & intv) );
+	outb(CLOCK0, (char) (0xff & (intv>>8)));
 
 	return;
 }

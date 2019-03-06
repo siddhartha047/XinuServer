@@ -30,7 +30,7 @@ tty:
 		-i ttyinit      -o ionull       -c ionull
 		-r ttyread      -g ttygetc      -p ttyputc
 		-w ttywrite     -s ioerr        -n ttycontrol
-		-intr ttyhandler
+		-intr ttydispatch
 
 /* type of a ethernet device */
 eth:
@@ -38,7 +38,7 @@ eth:
 		-i ethinit	-o ioerr	-c ioerr
 		-r ethread	-g ioerr	-p ioerr
 		-w ethwrite	-s ioerr	-n ethcontrol
-		-intr ethhandler
+		-intr ethdispatch
 
 /* type of a remote disk system device */
 rds:
@@ -54,22 +54,6 @@ ram:
 		-i raminit	-o ramopen	-c ramclose
 		-r ramread	-g ioerr	-p ioerr
 		-w ramwrite	-s ioerr	-n ioerr
-		-intr ionull
-
-/* type of a remote file system device */
-rfs:
-	on udp
-		-i rfsinit	-o rfsopen	-c ioerr
-		-r ioerr	-g ioerr	-p ioerr
-		-w ioerr	-s ioerr	-n rfscontrol
-		-intr ionull
-
-/* type of a remote file pseudo-device */
-rfl:
-	on rfs
-		-i rflinit	-o ioerr	-c rflclose
-		-r rflread	-g rflgetc	-p rflputc
-		-w rflwrite	-s rflseek	-n ioerr
 		-intr ionull
 
 /* type of a local file system master device */
@@ -102,13 +86,13 @@ nam:
 /*   will be present in the system					*/
 
    /* Define the console device to be a tty and specify CSR*/
-   CONSOLE is tty  on uart  csr 0001770 -irq 0041
+   CONSOLE is tty  on uart  csr 0001770 -irq 0052
 
    /* Define a null device */
    NULLDEV is null on nothing
 
    /* Physical Ethernet (raw packet transfer) */
-   ETHER0 is eth   on quark_eth csr 0 -irq 0042
+   ETHER0 is eth   on quark_eth csr 0 -irq 0053
 
    /* Define a namespace device */
    NAMESPACE is nam on top
@@ -118,24 +102,7 @@ nam:
    
    /* Define a ram disk device */
    RAM0 is ram on mem
-
-   /* Define the remote file system device */
-
-   RFILESYS is rfs on udp
-
-   /* Define remote file pseudo-devices */
-
-   RFILE0 is rfl on rfs
-   RFILE1 is rfl on rfs
-   RFILE2 is rfl on rfs
-   RFILE3 is rfl on rfs
-   RFILE4 is rfl on rfs
-   RFILE5 is rfl on rfs
-   RFILE6 is rfl on rfs
-   RFILE7 is rfl on rfs
-   RFILE8 is rfl on rfs
-   RFILE9 is rfl on rfs
-
+   
    /* Define the local file system master device (one per system) */
 
    LFILESYS is lfs on ram

@@ -13,7 +13,7 @@ pid32	enqueue(
 	  qid16		q		/* ID of queue to use		*/
 	)
 {
-	qid16	tail, prev;		/* Tail & previous node indexes	*/
+	int	tail, prev;		/* Tail & previous node indexes	*/
 
 	if (isbadqid(q) || isbadpid(pid)) {
 		return SYSERR;
@@ -34,7 +34,7 @@ pid32	enqueue(
  *------------------------------------------------------------------------
  */
 pid32	dequeue(
-	  qid16		q		/* ID of queue to use		*/
+	  qid16		q		/* ID queue to use		*/
 	)
 {
 	pid32	pid;			/* ID of process removed	*/
@@ -48,44 +48,5 @@ pid32	dequeue(
 	pid = getfirst(q);
 	queuetab[pid].qprev = EMPTY;
 	queuetab[pid].qnext = EMPTY;
-	return pid;
-}
-
-
-pid32	dequeueMinBurst(
-	  qid16		q		/* ID of queue to use		*/
-	)
-{
-	pid32	pid;			/* ID of process removed	*/
-
-	if (isbadqid(q)) {
-		return SYSERR;
-	} else if (isempty(q)) {
-		return EMPTY;
-	}
-
-	//find min burst
-	pid32	head,tail;	
-	head = queuehead(q);
-	tail = queuetail(q);
-
-	
-	head=queuetab[head].qnext;
-	
-
-	int minBurst=queuetab[head].qkey;
-	pid32 minProcess=head;
-	
-	while(queuetab[head].qnext!=tail){		
-		head=queuetab[head].qnext;			
-		if(queuetab[head].qkey < minBurst){ //less will round robin as inserted last
-			minBurst=queuetab[head].qkey;
-			minProcess=head;
-		}		
-	}	
-	pid=getitem(minProcess);	
-	queuetab[pid].qprev = EMPTY;
-	queuetab[pid].qnext = EMPTY;
-	
 	return pid;
 }

@@ -2,66 +2,84 @@
 extern	status	addargs(pid32, int32, int32[], int32,char *, void *);
 
 /* in file arp.c */
-extern	void	arp_init(void);
+
+extern	void	arp_init();
 extern	status	arp_resolve(uint32, byte[]);
 extern	void	arp_in(struct arppacket *);
-extern	int32	arp_alloc(void);
+extern	int32	arp_alloc();
 extern	void	arp_ntoh(struct arppacket *);
 extern	void	arp_hton(struct arppacket *);
 
 /* in file ascdate.c */
+
 extern	status	ascdate(uint32, char *);
 
 /* in file bufinit.c */
+
 extern	status	bufinit(void);
 
 /* in file chprio.c */
+
 extern	pri16	chprio(pid32, pri16);
 
-/*sid: in file chgrio.c */
-extern	pri16	chgprio(int group, pri16);
-extern	int32 setuid(int newuid);
-
 /* in file clkupdate.S */
+
 extern	uint32	clkcount(void);
 
 /* in file clkhandler.c */
-extern	interrupt clkhandler(int32);
+
+extern	interrupt clkhandler(void);
 
 /* in file clkinit.c */
+
 extern	void	clkinit(void);
 
 /* in file clkdisp.S */
+
 extern	void	clkdisp(void);
 
 /* in file close.c */
+
 extern	syscall	close(did32);
 
 /* in file control.c */
+
 extern	syscall	control(did32, int32, int32, int32);
 
 /* in file create.c */
-//extern	pid32	create(void *, uint32, pri16, char *, uint32, ...);
-//sid: new create syscall with group
-extern	pid32	create(void *, uint32, int , pri16, char *, uint32, ...);
+
+extern	pid32	create(void *, uint32, pri16, char *, uint32, ...);
 
 /* in file ctxsw.S */
+
 extern	void	ctxsw(void *, void *);
 
 /* in file dhcp.c */
+
 extern	uint32	getlocalip(void);
 
-/* in file dns.c */
-extern	uint32	dnslookup(char *);
-
 /* in file dot2ip.c */
+
 extern	uint32	dot2ip(char *, uint32 *);
+
+/* in file queue.c */
+
+extern	pid32	enqueue(pid32, qid16);
+extern	pid32	dequeue(qid16);
+
+/* in file intutils.S */
+
+extern	intmask	disable(void);
+
+/* in file intutils.S */
+
+extern	void	enable(void);
 
 /* in file ethinit.c */
 extern 	int32	ethinit(struct dentry *);
 
 /* in file ethhandler.c */
-extern 	interrupt	ethhandler(int32);
+extern 	interrupt	ethhandler();
 
 /* in file ethcontrol.c */
 extern 	devcall ethcontrol(struct dentry *, int32, int32, int32);
@@ -79,9 +97,6 @@ extern  devcall ethread(struct dentry *, char *, int32);
 /* in file ethwrite.c */
 extern 	devcall ethwrite(struct dentry *, char *buf, int32);
 
-/* in file exit.c */
-extern	void	exit(void);
-
 /* in file kprintf.c */
 extern int console_init(void);
 
@@ -91,8 +106,6 @@ extern int remove_irm_protections(void);
 /* in file evec.c */
 extern	int32	initevec(void);
 extern	int32	set_evec(uint32, uint32);
-extern	int32	set_ivec(uint32, void *, int32);
-extern	int32	ioapic_irq2vec(int32, int32);
 extern	void	trap(int32, long *);
 
 /* in file exception.c */
@@ -114,8 +127,6 @@ extern	syscall	getc(did32);
 extern	pid32	getfirst(qid16);
 extern	pid32	getlast(qid16);
 extern	pid32	getitem(pid32);
-extern	pid32	getIthItem(qid16,int); //sid: get ith
-extern	int		getSize(qid16); //sid: get size of queue
 
 /* in file getmem.c */
 extern	char	*getmem(uint32);
@@ -126,14 +137,8 @@ extern	pid32	getpid(void);
 /* in file getprio.c */
 extern	syscall	getprio(pid32);
 
-/* sid: infile getgprio(int group)*/
-extern	syscall	getgprio(int group);
-
 /* in file getstk.c */
 extern	char	*getstk(uint32);
-
-/* in file getticks.c */
-extern	uint64	getticks(void);
 
 /* in file gettime.c */
 extern	status	gettime(uint32 *);
@@ -145,13 +150,13 @@ extern	status	getutime(uint32 *);
 extern	void	halt(void);
 
 /* in file icmp.c */
+
 extern	void	icmp_init(void);
 extern	void	icmp_in(struct netpacket *);
 extern	int32	icmp_register(uint32);
 extern	int32	icmp_recv(int32, char *, int32, uint32);
 extern	status	icmp_send(uint32, uint16, uint16, uint16, char *, int32);
-extern	struct	netpacket *icmp_mkpkt(uint32, uint16, uint16, uint16,
-				      char *, int32);
+extern	struct	netpacket *icmp_mkpkt(uint32, uint16, uint16, uint16, char *, int32);
 extern	status	icmp_release(int32);
 extern	uint16	icmp_cksum(char *, int32);
 extern	void	icmp_hton(struct netpacket *);
@@ -166,17 +171,11 @@ extern	int32	sizmem(void);
 /* in file insert.c */
 extern	status	insert(pid32, qid16, int32);
 
-extern	status	insertAscending(pid32, qid16, int32);
-
 /* in file insertd.c */
 extern	status	insertd(pid32, qid16, int32);
 
 /* in file intr.S */
 extern	uint16	getirmask(void);
-
-/* in file intutils.S */
-extern	intmask	disable(void);
-extern	void	enable(void);
 
 /* in file ioerr.c */
 extern	devcall	ioerr(void);
@@ -185,6 +184,7 @@ extern	devcall	ioerr(void);
 extern	devcall	ionull(void);
 
 /* in file ip.c */
+
 extern	void	ip_in(struct netpacket *);
 extern	status	ip_send(struct netpacket *);
 extern	void	ip_local(struct netpacket *);
@@ -197,24 +197,32 @@ extern	process	ipout(void);
 extern	status	ip_enqueue(struct netpacket *);
 
 /* in file net.c */
+
 extern	void	net_init(void);
-extern	process	netin(void);
+extern	process	netin();
 extern	process	netout(void);
 extern	process	rawin(void);
 extern	void	eth_hton(struct netpacket *);
 extern	void	eth_ntoh(struct netpacket *);
-extern	uint16	getport(void);
+
+/* in file netstart.c */
+
+extern	void	netstart(void);
 
 /* in file kill.c */
+
 extern	syscall	kill(pid32);
 
 /* in file lexan.c */
+
 extern	int32	lexan(char *, int32, char *, int32 *, int32 [], int32 []);
 
 /* in file lfibclear.c */
+
 extern	void	lfibclear(struct lfiblk *, int32);
 
 /* in file lfibget.c */
+
 extern	void	lfibget(did32, ibid32, struct lfiblk *);
 
 /* in file lfibput.c */
@@ -258,9 +266,6 @@ extern	devcall	lflseek(struct dentry *, uint32);
 
 /* in file lflwrite.c */
 extern	devcall	lflwrite(struct dentry *, char *, int32);
-
-/* in file lfscheck.c */
-extern	status	lfscheck(struct lfdir *);
 
 /* in file lfscreate.c */
 extern  status  lfscreate(did32, ibid32, uint32);
@@ -343,7 +348,7 @@ extern	void	pdump(struct netpacket *);
 extern	void	pdumph(struct netpacket *);
 
 /* in file platinit.c */
-extern	void	platinit(void);
+extern	void	platinit();
 
 /* in file ptclear.c */
 extern	void	_ptclear(struct ptentry *, uint16, int32 (*)(int32));
@@ -375,15 +380,10 @@ extern	syscall	putc(did32, char);
 /* in file quark_irq.c */
 extern	int32	quark_irq_routing(void);
 
-/* in file queue.c */
-extern	pid32	enqueue(pid32, qid16);
-extern	pid32	dequeue(qid16);
-extern	pid32	dequeueMinBurst(qid16);
-
 /* in file ramclose.c */
 extern	devcall	ramclose(struct dentry *);
 
-/* in file raminit.c */
+/* in file ramInit.c */
 extern	devcall	raminit(struct dentry *);
 
 /* in file ramopen.c */
@@ -504,12 +504,31 @@ extern	devcall	rfsinit(struct dentry *);
 extern	devcall	rfsopen(struct dentry  *devptr, char *, char *);
 
 /* in file rfscomm.c */
-extern	int32	rfscomm(struct rf_msg_hdr *, int32,
-			struct rf_msg_hdr *, int32);
+extern	int32	rfscomm(struct rf_msg_hdr *, int32, struct rf_msg_hdr *, int32);
+
+/* in file rdsClose.c */
+extern	devcall	rdsClose(struct dentry *);
+
+/* in file rdsControl.c */
+extern	devcall	rdsControl(struct dentry *, int32, int32, int32);
+
+/* in file rdsInit.c */
+extern	devcall	rdsInit(struct dentry *);
+
+/* in file rdsOpen.c */
+extern	devcall	rdsOpen(struct dentry *, char *, char *);
+
+/* in file rdsRead.c */
+extern	devcall	rdsRead(struct dentry *, char *, int32);
+
+/* in file rdsWrite.c */
+extern	devcall	rdsWrite(struct dentry *, char *, int32);
+
+/* in file rdsbufalloc.c */
+extern	struct	rdbuff * rdsbufalloc(struct rdscblk *);
 
 /* in file rdscomm.c */
-extern	status	rdscomm(struct rd_msg_hdr *, int32, struct rd_msg_hdr *,
-			int32, struct rdscblk *);
+extern	status	rdscomm(struct rd_msg_hdr *, int32, struct rd_msg_hdr *, int32, struct rdscblk *);
 
 /* in file rdsprocess.c */
 extern	void	rdsprocess(struct rdscblk *);
@@ -542,8 +561,8 @@ extern	syscall	signal(sid32);
 extern	syscall	signaln(sid32, int32);
 
 /* in file sleep.c */
-extern	syscall	sleepms(int32);
-extern	syscall	sleep(int32);
+extern	syscall	sleepms(uint32);
+extern	syscall	sleep(uint32);
 
 /* in file start.S */
 extern	int32	inb(int32);
@@ -552,10 +571,8 @@ extern	int32	inl(int32);
 extern	int32	outb(int32, int32);
 extern	int32	outw(int32, int32);
 extern	int32	outl(int32, int32);
-extern	int32	insw(int32, int32 ,int32);
 extern	int32	outsw(int32, int32, int32);
-extern	int32	lidt(void);
-extern	int32	cpuid(void);
+extern	int32	insw(int32, int32 ,int32);
 
 /* in file suspend.c */
 extern	syscall	suspend(pid32);
@@ -576,7 +593,7 @@ extern	void	ttyhandle_in(struct ttycblk *, struct uart_csreg *);
 extern	void	ttyhandle_out(struct ttycblk *, struct uart_csreg *);
 
 /* in file ttyhandler.c */
-extern	void	ttyhandler(int32);
+extern	void	ttyhandler(void);
 
 /* in file ttyinit.c */
 extern	devcall	ttyinit(struct dentry *);
@@ -599,8 +616,7 @@ extern	void	udp_init(void);
 extern	void	udp_in(struct netpacket *);
 extern	uid32	udp_register(uint32, uint16, uint16);
 extern	int32	udp_recv(uid32, char *, int32, uint32);
-extern	int32	udp_recvaddr(uid32, uint32 *, uint16 *, char *,
-			     int32, uint32);
+extern	int32	udp_recvaddr(uid32, uint32 *, uint16 *, char *, int32, uint32);
 extern	status	udp_send(uid32, char *, int32);
 extern	status	udp_sendto(uid32, uint32, uint16, char *, int32);
 extern	status	udp_release(uid32);
@@ -629,14 +645,21 @@ extern	void	xdone(void);
 /* in file yield.c */
 extern	syscall	yield(void);
 
+/* Lab 3 functions */
+extern  void  linit(void);
+extern	int32 lcreate(void);
+extern	syscall	ldelete(int32);
+extern	syscall lock(int32, int32, int32);
+
+/* in file insertlckprio.c */
+extern	status	insertlckprio(int32, pid32, qid16, int32, byte);
+
+extern	syscall	releaseall(int32, ...);
+
 /* NETWORK BYTE ORDER CONVERSION NOT NEEDED ON A BIG-ENDIAN COMPUTER */
-#define	htons(x)  ((0xff & ((x)>>8)) | ((0xff & (x)) << 8))
-#define	htonl(x)  ((((x)>>24) & 0x000000ff) | (((x)>> 8) & 0x0000ff00) | \
-		   (((x)<<8) & 0x00ff0000) | (((x)<<24) & 0xff000000))
-#define	ntohs(x)  ((0xff & ((x)>>8)) | ( (0xff & (x)) << 8))
-#define	ntohl(x)  ((((x)>>24) & 0x000000ff) | (((x)>> 8) & 0x0000ff00) | \
-		   (((x)<<8) & 0x00ff0000) | (((x)<<24) & 0xff000000))
-
-
-//sid: system call helllo
-extern syscall hello(void);
+#define	htons(x)   ( ( 0xff & ((x)>>8) ) | ( (0xff & (x)) << 8 ) )
+#define	htonl(x)   (  (((x)>>24) & 0x000000ff) | (((x)>> 8) & 0x0000ff00) | \
+		      (((x)<< 8) & 0x00ff0000) | (((x)<<24) & 0xff000000) )
+#define	ntohs(x)   ( ( 0xff & ((x)>>8) ) | ( (0xff & (x)) << 8 ) )
+#define	ntohl(x)   (  (((x)>>24) & 0x000000ff) | (((x)>> 8) & 0x0000ff00) | \
+		      (((x)<< 8) & 0x00ff0000) | (((x)<<24) & 0xff000000) )

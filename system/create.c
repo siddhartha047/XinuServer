@@ -4,14 +4,15 @@
 
 local	int newpid();
 
+#define	roundew(x)	( (x+3)& ~0x3)
+
 /*------------------------------------------------------------------------
  *  create  -  Create a process to start running a function on x86
  *------------------------------------------------------------------------
  */
 pid32	create(
 	  void		*funcaddr,	/* Address of the function	*/
-	  uint32	ssize,		/* Stack size in bytes		*/
-	  int group,
+	  uint32	ssize,		/* Stack size in words		*/
 	  pri16		priority,	/* Process priority > 0		*/
 	  char		*name,		/* Name (for debugging)		*/
 	  uint32	nargs,		/* Number of args that follow	*/
@@ -29,23 +30,20 @@ pid32	create(
 	mask = disable();
 	if (ssize < MINSTK)
 		ssize = MINSTK;
-	ssize = (uint32) roundmb(ssize);
-	if ( (priority < 1) || ((pid=newpid()) == SYSERR) ||
-	     ((saddr = (uint32 *)getstk(ssize)) == (uint32 *)SYSERR) ) {
+	ssize = (uint32) roundew(ssize);
+	if (((saddr = (uint32 *)getstk(ssize)) ==
+	    (uint32 *)SYSERR ) ||
+	    (pid=newpid()) == SYSERR || priority < 1 ) {
 		restore(mask);
 		return SYSERR;
 	}
 
 	prcount++;
 	prptr = &proctab[pid];
-
-	/* sid: add the process to appropriate group */
-	prptr->group=group;
-	prptr->B=0;
-	prptr->E=0;
-	prptr->Tb=0; //zero means start of process
-	prptr->pr_quantum=QUANTUM;
-	prptr->uid=(&proctab[currpid])->uid;
+	//sid: reset locks
+	for(i=0;i<NLOCKS;i++){
+		prptr->locks[i]=0;
+	}
 
 	/* Initialize process table entry for new process */
 	prptr->prstate = PR_SUSP;	/* Initial state is suspended	*/
@@ -73,12 +71,12 @@ pid32	create(
 	a = (uint32 *)(&nargs + 1);	/* Start of args		*/
 	a += nargs -1;			/* Last argument		*/
 	for ( ; nargs > 0 ; nargs--)	/* Machine dependent; copy args	*/
-		*--saddr = *a--;	/* onto created process's stack	*/
+		*--saddr = *a--;	/*   onto created process' stack*/
 	*--saddr = (long)INITRET;	/* Push on return address	*/
 
 	/* The following entries on the stack must match what ctxsw	*/
 	/*   expects a saved process state to contain: ret address,	*/
-	/*   ebp, interrupt mask, flags, registers, and an old SP	*/
+	/*   ebp, interrupt mask, flags, registerss, and an old SP	*/
 
 	*--saddr = (long)funcaddr;	/* Make the stack look like it's*/
 					/*   half-way through a call to	*/

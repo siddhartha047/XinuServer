@@ -16,14 +16,15 @@ TOPDIR		=	..
 CC		=	${COMPILER_ROOT}gcc
 LD		=	${COMPILER_ROOT}ld
 OBJCOPY		=	${COMPILER_ROOT}objcopy
-XINU		=	$(TOPDIR)/compile/xinu.elf
+XINU		=	$(TOPDIR)/compile/xinu
 XINUBIN		=	$(TOPDIR)/compile/xinu.bin
-XINUXBIN	=	$(TOPDIR)/compile/xinu
+XINUELF		=	$(TOPDIR)/compile/xinu.elf
 MAKEXBIN 	=	$(TOPDIR)/compile/bin/buildxbin
 BUILDMAKE	=	$(TOPDIR)/compile/bin/build-make
 
 MAKEDEP		=	$(CC) -M -MG
 
+TGT		=	xinu
 DEPSFILE	=	.deps
 DEFSFILE	=	.defs
 VERSIONFILE	=	version
@@ -46,13 +47,13 @@ INCLUDE		=	-I$(TOPDIR)/include
 DEFS		= 	-DBSDURG -DVERSION=\""`cat $(VERSIONFILE)`"\"
 
 # Compiler flags
-CFLAGS  = -march=i586 -m32 -fno-builtin -fno-stack-protector -nostdlib -c -Wall -O0 ${DEFS} ${INCLUDE}
+CFLAGS  = -march=i586 -m32 -fno-builtin -fno-stack-protector -nostdlib -c -Wall -O ${DEFS} ${INCLUDE}
 SFLAGS  = ${INCLUDE}
 
 # Loader flags
 LDFLAGS = -dn -m elf_i386 -Map xinu.map -T $(LDSCRIPT)
 
-all:	xinu
+all:	$(TGT)
 
 #--------------------------------------------------------------------------------
 # Handle generation of a new version string when initialize is recompiled
@@ -97,14 +98,13 @@ export
 # Specific additional rules and exceptions
 #--------------------------------------------------------------------------------
 
-xinu:	Makefile rebuild $(BLDDIRS) $(DEFSFILE) $(DEPSFILE) $(CONFH) $(CONFC) $(LD_LIST)
+xinu:	Makefile $(BLDDIRS) $(DEFSFILE) $(DEPSFILE) $(CONFH) $(CONFC) $(LD_LIST)
 	@echo;echo 'Loading object files to produce GRUB bootable xinu'
-	@$(LD) $(LDFLAGS) $(LD_LIST) -o $(XINU)
+	@$(LD) $(LDFLAGS) $(LD_LIST) -o $(XINUELF)
 	@echo;echo 'Building $(XINUBIN)'
-	@objcopy -O binary $(XINU) $(XINUBIN)
-	@echo;echo 'Building $(XINUXBIN)'
-	@$(MAKEXBIN) $(XINUBIN) $(XINUXBIN)
-	@rm -f $(XINUBIN)
+	@objcopy -O binary $(XINUELF) $(XINUBIN)
+	@echo;echo 'Building $(XINU)'
+	@$(MAKEXBIN) $(XINUBIN) $(XINU)
 	@echo
 
 $(BLDDIRS): 
@@ -128,7 +128,7 @@ configure:
 	@echo forcing a rebuild of conf.h and conf.c
 	@make newversion
 	@(cd $(TOPDIR)/config; make install)
-
+	
 clean:
 	@echo removing .o files
 	@rm -f ${LD_LIST}
@@ -137,20 +137,19 @@ clean:
 	@(cd $(TOPDIR)/config; make clean)
 	@echo removing xinu ...
 	@rm -f $(XINU)
-	@rm -f $(XINUXBIN)
+	@rm -f $(XINUBIN)
+	@rm -f $(XINUELF)
 
 #--------------------------------------------------------------------------------
 # Locations of source directories and exceptions (.c and .[sS] files to exclude)
 #--------------------------------------------------------------------------------
 	
 $(DEFSFILE):
-	@rm -f $(DEFSFILE)
-	@echo "" > $(DEFSFILE)
-	@make rebuild
+	@touch $(DEFSFILE)
+	make rebuild
 
 $(DEPSFILE):
-	@rm -f $(DEPSFILE)
-	@echo "" > $(DEPSFILE)
+	@touch $(DEPSFILE)
 	@make depend
 
 rebuild: $(CONFC)
@@ -159,7 +158,7 @@ rebuild: $(CONFC)
 
 defclean:
 	rm -f $(DEFSFILE)
-	echo "" > $(DEFSFILE)
+	touch $(DEFSFILE)
 
 depend: $(DEFSFILE)
 	@echo;echo Making all dependencies in $(DEPSFILE)
@@ -168,6 +167,6 @@ depend: $(DEFSFILE)
 
 depclean:
 	rm -f $(DEPSFILE)
-	echo "" > $(DEPSFILE)
+	touch $(DEPSFILE)
 
 -include $(DEPSFILE)

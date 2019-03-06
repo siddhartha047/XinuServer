@@ -3,10 +3,9 @@
 #include <xinu.h>
 
 /*------------------------------------------------------------------------
- * rdsprocess  -  High-priority background process that repeatedly
- *		  extracts an item from the request queue, sends the
- *		  request to the remote disk server, and handles the
- *		  response, including caching responses blocks
+ * rdsprocess  -  High-priority background process to repeatedly extract
+ *		  an item from the request queue and send the request to
+ *		  the remote disk server
  *------------------------------------------------------------------------
  */
 void	rdsprocess (
@@ -206,7 +205,3 @@ void	rdsprocess (
 	   }
 	}
 }
-
-
-
-

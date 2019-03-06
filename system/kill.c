@@ -11,7 +11,7 @@ syscall	kill(
 	)
 {
 	intmask	mask;			/* Saved interrupt mask		*/
-	struct	procent *prptr;		/* Ptr to process's table entry	*/
+	struct	procent *prptr;		/* Ptr to process' table entry	*/
 	int32	i;			/* Index into descriptors	*/
 
 	mask = disable();
@@ -19,12 +19,6 @@ syscall	kill(
 	    || ((prptr = &proctab[pid])->prstate) == PR_FREE) {
 		restore(mask);
 		return SYSERR;
-	}
-
-	//sid: add user checkin
-	if(!((&proctab[currpid])->uid==(&proctab[pid])->uid ||(&proctab[currpid])->uid==ROOT_USER)){
-		restore(mask);
-		return SYSERR;	
 	}
 
 	if (--prcount <= 1) {		/* Last user process completes	*/

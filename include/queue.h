@@ -4,9 +4,16 @@
 
 /* Default # of queue entries: 1 per process plus 2 for ready list plus	*/
 /*			2 for sleep list plus 2 per semaphore		*/
+
+#ifndef NLOCKS
+#define NLOCKS 50
+#endif
+
 #ifndef NQENT
-//#define NQENT	(NPROC + 4 + NSEM + NSEM)
-#define NQENT	(NPROC + 6 + NSEM + NSEM)
+
+/* Lab 3 modification: Add headers and footers for the lock queues */
+
+#define NQENT	(NPROC + 4 + NSEM*2 + NLOCKS*2) 
 #endif
 
 #define	EMPTY	(-1)		/* Null value for qnext or qprev index	*/
@@ -34,4 +41,4 @@ extern	struct qentry	queuetab[];
 
 /* Inline to check queue id assumes interrupts are disabled */
 
-#define	isbadqid(x)	(((int32)(x) < NPROC) || (int32)(x) >= NQENT-1)
+#define	isbadqid(x)	(((int32)(x) < 0) || (int32)(x) >= NQENT-1)

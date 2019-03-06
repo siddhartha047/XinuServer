@@ -9,19 +9,18 @@
 #include <semaphore.h>
 #include <memory.h>
 #include <bufpool.h>
-#include <hpet.h>
 #include <clock.h>
 #include <ports.h>
 #include <uart.h>
 #include <tty.h>
 #include <device.h>
 #include <interrupt.h>
-#include <apic.h>
 #include <file.h>
 #include <rfilesys.h>
 #include <rdisksys.h>
 #include <lfilesys.h>
 #include <ether.h>
+#include <gpio.h>
 #include <net.h>
 #include <ip.h>
 #include <arp.h>
@@ -41,3 +40,4 @@
 #include <multiboot.h>
 #include <stdio.h>
 #include <string.h>
+#include <lock.h>

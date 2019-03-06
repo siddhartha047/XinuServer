@@ -1,4 +1,4 @@
-/* initialize.c - nulluser, sysinit */
+/* initialize.c - nulluser, sysinit, sizmem */
 
 /* Handle system initialization and become the null process */
 
@@ -11,9 +11,9 @@ extern	void	*_end;		/* End of Xinu code			*/
 /* Function prototypes */
 
 extern	void main(void);	/* Main is the first process created	*/
+extern	void xdone(void);	/* System "shutdown" procedure		*/
 static	void sysinit(); 	/* Internal system initialization	*/
 extern	void meminit(void);	/* Initializes the free memory list	*/
-local	process startup(void);	/* Process to finish startup tasks	*/
 
 /* Declarations of major kernel variables */
 
@@ -25,87 +25,6 @@ struct	memblk	memlist;	/* List of free memory blocks		*/
 
 int	prcount;		/* Total number of live processes	*/
 pid32	currpid;		/* ID of currently executing process	*/
-
-pri16 SR_PRIORITY; // Priority of Shortest Remiaing group
-pri16 TS_PRIORITY; // Priority of Time sharing group
-
-pri16 SR_INITIAL_PRIORITY;
-pri16 TS_INITIAL_PRIORITY;
-
-
-
-/* Control sequence to reset the console colors and cusor positiion	*/
-
-#define	CONSOLE_RESET	" \033[0m\033[2J\033[;H"
-
-
-struct tsd_ent tsd_tab[DTABSIZE] = {
-{200, 0, 50},
-{200, 0, 50},
-{200, 0, 50},
-{200, 0, 50},
-{200, 0, 50},
-{200, 0, 50},
-{200, 0, 50},
-{200, 0, 50},
-{200, 0, 50},
-{200, 0, 50}, // 10
-
-{160, 0, 51},
-{160, 1, 51},
-{160, 2, 51},
-{160, 3, 51},
-{160, 4, 51},
-{160, 5, 51},
-{160, 6, 51},
-{160, 7, 51},
-{160, 8, 51},
-{160, 9, 51}, // 20
-
-{120, 10, 52},
-{120, 11, 52},
-{120, 12, 52},
-{120, 13, 52},
-{120, 14, 52},
-{120, 15, 52},
-{120, 16, 52},
-{120, 17, 52},
-{120, 18, 52},
-{120, 19, 52}, // 30
-
-{80, 20, 53},
-{80, 21, 53},
-{80, 22, 53},
-{80, 23, 53},
-{80, 24, 53},
-{80, 25, 54},
-{80, 26, 54},
-{80, 27, 54},
-{80, 28, 54},
-{80, 29, 54}, // 40
-
-{40, 30, 55},
-{40, 31, 55},
-{40, 32, 55},
-{40, 33, 55},
-{40, 34, 55},
-{40, 35, 56},
-{40, 36, 57},
-{40, 37, 58},
-{40, 38, 58},
-{40, 39, 58}, // 50
-
-{40, 40, 58},
-{40, 41, 58},
-{40, 42, 58},
-{40, 43, 58},
-{40, 44, 58},
-{40, 45, 58},
-{40, 46, 58},
-{40, 47, 58},
-{40, 48, 58},
-{20, 49, 59}
-};
 
 /*------------------------------------------------------------------------
  * nulluser - initialize the system and become the null process
@@ -127,9 +46,11 @@ void	nulluser()
 	uint32	free_mem;		/* Total amount of free memory	*/
 	
 	/* Initialize the system */
-
+		
 	sysinit();
 
+	kprintf("\n\r%s\n\n\r", VERSION);
+	
 	/* Output Xinu memory layout */
 	free_mem = 0;
 	for (memptr = memlist.mnext; memptr != NULL;
@@ -138,7 +59,7 @@ void	nulluser()
 	}
 	kprintf("%10d bytes of free memory.  Free list:\n", free_mem);
 	for (memptr=memlist.mnext; memptr!=NULL;memptr = memptr->mnext) {
-	    kprintf("           [0x%08X to 0x%08X]\n",
+	    kprintf("           [0x%08X to 0x%08X]\r\n",
 		(uint32)memptr, ((uint32)memptr) + memptr->mlength - 1);
 	}
 
@@ -155,70 +76,20 @@ void	nulluser()
 
 	enable();
 
-	/* Initialize the network stack and start processes */
+	/* Create a process to execute function main() */
 
-	net_init();
-
-	/* Create a process to finish startup and start main */
-
-	// resume(create((void *)startup, INITSTK, INITPRIO,
-	// 				"Startup process", 0, NULL));
-	resume(create((void *)startup, INITSTK, default_SCH, INITPRIO,
-					"Startup process", 0, NULL));
+	resume (
+	   create((void *)main, INITSTK, INITPRIO, "Main process", 0,
+           NULL));
 
 	/* Become the Null process (i.e., guarantee that the CPU has	*/
 	/*  something to run when no other process is ready to execute)	*/
 
 	while (TRUE) {
-
-		/* Halt until there is an external interrupt */
-
-		asm volatile ("hlt");
+		;		/* Do nothing */
 	}
 
 }
-
-
-/*------------------------------------------------------------------------
- *
- * startup  -  Finish startup takss that cannot be run from the Null
- *		  process and then create and resumethe main process
- *
- *------------------------------------------------------------------------
- */
-local process	startup(void)
-{
-	uint32	ipaddr;			/* Computer's IP address	*/
-	char	str[128];		/* String used to format output	*/
-
-
-	/* Use DHCP to obtain an IP address and format it */
-
-	ipaddr = getlocalip();
-	if ((int32)ipaddr == SYSERR) {
-		kprintf("Cannot obtain an IP address\n");
-	} else {
-		/* Print the IP in dotted decimal and hex */
-		ipaddr = NetData.ipucast;
-		sprintf(str, "%d.%d.%d.%d",
-			(ipaddr>>24)&0xff, (ipaddr>>16)&0xff,
-			(ipaddr>>8)&0xff,        ipaddr&0xff);
-	
-		kprintf("Obtained IP address  %s   (0x%08x)\n", str,
-								ipaddr);
-	}
-	/* Create a process to execute function main() */
-
-	// resume(create((void *)main, INITSTK, INITPRIO,
-	// 				"Main process", 0, NULL));
-
-	resume(create((void *)main, INITSTK, default_SCH, INITPRIO,
-					"Main process", 0, NULL));
-	/* Startup process exits at this point */
-
-	return OK;
-}
-
 
 /*------------------------------------------------------------------------
  *
@@ -236,11 +107,6 @@ static	void	sysinit()
 
 	platinit();
 
-	/* Reset the console */
-
-	kprintf(CONSOLE_RESET);
-	kprintf("\n%s\n\n", VERSION);
-
 	/* Initialize the interrupt vectors */
 
 	initevec();
@@ -254,15 +120,6 @@ static	void	sysinit()
 	/* Count the Null process as the first process in the system */
 
 	prcount = 1;
-
-	//sid: initialize with 10
-	SR_PRIORITY=INITIAL_PRIORITY; // Priority of Shortest Remiaing group
-	TS_PRIORITY=INITIAL_PRIORITY; // Priority of Time sharing group
-	
-	SR_INITIAL_PRIORITY=INITIAL_PRIORITY;
-	TS_INITIAL_PRIORITY=INITIAL_PRIORITY;
-
-
 
 	/* Scheduling is not currently blocked */
 
@@ -283,11 +140,6 @@ static	void	sysinit()
 	prptr = &proctab[NULLPROC];
 	prptr->prstate = PR_CURR;
 	prptr->prprio = 0;
-
-	prptr->group=default_SCH;	
-	prptr->pr_quantum=QUANTUM;
-	prptr->uid=ROOT_USER;
-
 	strncpy(prptr->prname, "prnull", 7);
 	prptr->prstkbase = getstk(NULLSTK);
 	prptr->prstklen = NULLSTK;
@@ -303,15 +155,18 @@ static	void	sysinit()
 		semptr->squeue = newqueue();
 	}
 
+	//sid: initialize locks
+	
+	linit();
+
+
 	/* Initialize buffer pools */
 
 	bufinit();
 
 	/* Create a ready list for processes */
 
-	//readylist = newqueue();
-	SRreadylist = newqueue();
-	TSreadylist = newqueue();
+	readylist = newqueue();
 
 	/* Initialize the real time clock */
 

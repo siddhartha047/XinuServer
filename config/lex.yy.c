@@ -770,7 +770,7 @@ case 3:
 YY_RULE_SETUP
 #line 13 "config.l"
 { if (! skipping)
-                if (++brkcount >= 2)
+                if (++brkcount == 2)
                 { return 0; /* EOF */ }
                 else
                 { return DEFBRK; }            }

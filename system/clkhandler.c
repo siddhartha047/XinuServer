@@ -6,20 +6,13 @@
  * clkhandler - high level clock interrupt handler
  *------------------------------------------------------------------------
  */
-void	clkhandler(
-		int32	arg	/* Interrupt handler argument	*/
-		)
+void	clkhandler()
 {
-
-	if(!(hpet->gis & HPET_GIS_T0)) {
-		return;
-	}
-
-	hpet->gis |= HPET_GIS_T0;
+	static	uint32	count1000 = 1000;	/* Count to 1000 ms	*/
 
 	/* Decrement the ms counter, and see if a second has passed */
 
-	if((++count1000) >= 1000) {
+	if((--count1000) <= 0) {
 
 		/* One second has passed, so increment seconds count */
 
@@ -27,7 +20,7 @@ void	clkhandler(
 
 		/* Reset the local ms counter for the next second */
 
-		count1000 = 0;
+		count1000 = 1000;
 	}
 
 	/* Handle sleeping processes if any exist */
@@ -46,7 +39,7 @@ void	clkhandler(
 	/*   remaining time reaches zero			     */
 
 	if((--preempt) <= 0) {
-		//preempt = QUANTUM; //sid: commented this line :)
+		preempt = QUANTUM;
 		resched();
 	}
 }

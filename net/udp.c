@@ -398,7 +398,9 @@ status	udp_send (
 	pkt->net_udplen = (uint16)(UDP_HDR_LEN+len); /* UDP length	*/
 	pkt->net_udpcksum = 0x0000;	/* Ignore UDP checksum		*/
 	udataptr = (char *) pkt->net_udpdata;
-	memcpy(udataptr, buff, len);
+	for (; len>0; len--) {
+		*udataptr++ = *buff++;
+	}
 
 	/* Call ipsend to send the datagram */
 
@@ -481,7 +483,9 @@ status	udp_sendto (
 	pkt->net_udplen = (uint16)(UDP_HDR_LEN+len); /* UDP length	*/
 	pkt->net_udpcksum = 0x0000;	/* Ignore UDP checksum		*/
 	udataptr = (char *) pkt->net_udpdata;
-	memcpy(udataptr, buff, len);
+	for (; len>0; len--) {
+		*udataptr++ = *buff++;
+	}
 
 	/* Call ipsend to send the datagram */
 

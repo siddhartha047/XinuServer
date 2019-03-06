@@ -15,17 +15,11 @@ devcall	ethread	(
 	struct	ethcblk *ethptr;	/* Ethertab entry pointer	*/
 	struct	eth_q_rx_desc *rdescptr;/* Pointer to the descriptor	*/
 	struct	netpacket *pktptr;	/* Pointer to packet		*/
-	int32	seglen = 0;		/* Length of current segment	*/
-	int32	framelen = 0;		/* Length of the incoming frame	*/
-	int32	copylen = 0;		/* Length of data to be copied	*/
-	char	*cptr;			/* Address of where to copy data*/
-	bool8	first, last;		/* First, last segment flag	*/
+	uint32	framelen = 0;		/* Length of the incoming frame	*/
 	bool8	valid_addr;
 	int32	i;
 
 	ethptr = &ethertab[devptr->dvminor];
-
-	pktptr = (struct netpacket *)buf;
 
 	while(1) {
 
@@ -37,77 +31,47 @@ devcall	ethread	(
 
 		rdescptr = (struct eth_q_rx_desc *)ethptr->rxRing +
 							ethptr->rxHead;
+		pktptr = (struct netpacket*)rdescptr->buffer1;
 
-		/* Check if this is the first and/or last segment */
+		/* See if destination address is our unicast address */
 
-		first = (rdescptr->status & ETH_QUARK_RDST_FS) != 0;
-		last  = (rdescptr->status & ETH_QUARK_RDST_LS) != 0;
+		if(!memcmp(pktptr->net_ethdst, ethptr->devAddress, 6)) {
+			valid_addr = TRUE;
 
-		if(first) { /* This is the first segment */
+		/* See if destination address is the broadcast address */
 
-			/* Initalize the copy pointer and all counters */
+		} else if(!memcmp(pktptr->net_ethdst,
+                                    NetData.ethbcast,6)) {
+            		valid_addr = TRUE;
 
-			cptr = buf;
-			seglen = framelen = copylen = 0;
-		}
+		/* For multicast addresses, see if we should accept */
 
-		/* Extract the segment length from descriotor */
-
-		seglen = (rdescptr->status >> 16) & 0x3FFF;
-
-		if(last) { /* Last segment */
-
-			/* The segment length is the total, length	*/
-			/* Calculate current segment length		*/
-
-			seglen -= framelen;
-		}
-
-		/* Update the total length */
-
-		framelen += seglen;
-
-		/* Compute the amount we need to copy */
-
-		copylen = seglen;
-		if(framelen > len) {
-			copylen -= (framelen - len);
-		}
-
-		/* Copy the data if we can */
-
-		if(copylen > 0) {
-			memcpy(cptr, (void *)rdescptr->buffer1,
-							(uint32)copylen);
-			cptr += copylen;
-		}
-
-		if(last) { /* Last segment, see if we can accept it */
-			
-			/* See if destination address is our unicast  */
-
-			if(!memcmp(pktptr->net_ethdst,
-						ethptr->devAddress, 6)) {
-				valid_addr = TRUE;
-
-			/* See if destination address is broadcast */
-
-			} else if(!memcmp(pktptr->net_ethdst,
-					    NetData.ethbcast,6)) {
-				valid_addr = TRUE;
-
-			/* Multicast, See if we should accept it */
-
-			} else {
-				valid_addr = FALSE;
-				for(i = 0; i < (ethptr->ed_mcc); i++) {
-					if(memcmp(pktptr->net_ethdst,
-					   ethptr->ed_mca[i], 6) == 0){
-						valid_addr = TRUE;
-						break;
-					}
+    		} else {
+			valid_addr = FALSE;
+			for(i = 0; i < (ethptr->ed_mcc); i++) {
+				if(memcmp(pktptr->net_ethdst,
+					ethptr->ed_mca[i], 6) == 0){
+					valid_addr = TRUE;
+					break;
 				}
+		        }
+		}
+
+		if(valid_addr == TRUE){ /* Accept this packet */
+
+			/* Get the length of the frame */
+
+			framelen = (rdescptr->status >> 16) & 0x00003FFF;
+
+			/* Only return len characters to caller */
+
+			if(framelen > len) {
+				framelen = len;
 			}
+
+			/* Copy the packet into the caller's buffer */
+
+			memcpy(buf, (void*)rdescptr->buffer1, framelen);
 		}
 
         	/* Increment the head of the descriptor list */
@@ -119,7 +83,7 @@ devcall	ethread	(
 
 		/* Reset the descriptor to max possible frame len */
 
-		rdescptr->buf1size = ETH_BUF_SIZE;
+		rdescptr->buf1size = sizeof(struct netpacket);
 
 		/* If we reach the end of the ring, mark the descriptor	*/
 
@@ -138,6 +102,6 @@ devcall	ethread	(
 
 	/* Return the number of bytes returned from the packet */
 
-	return (framelen > len) ? len : framelen;
+	return framelen;
 
 }

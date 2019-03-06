@@ -6,27 +6,17 @@
  * ethhandler  -  Interrupt handler for Intel Quark Ethernet
  *------------------------------------------------------------------------
  */
-void	ethhandler (
-		int32	arg	/* Interrupt handler argument	*/
-		)
+interrupt	ethhandler(void)
 {
-	struct	dentry *devptr;		/* Device table entry pointer	*/
 	struct	ethcblk	*ethptr;	/* Ethertab entry pointer	*/
 	struct	eth_q_csreg *csrptr;	/* Pointer to Ethernet CRSs	*/
 	struct	eth_q_tx_desc *tdescptr;/* Pointer to tx descriptor	*/
 	struct	eth_q_rx_desc *rdescptr;/* Pointer to rx descriptor	*/
-	volatile uint32	sr;		/* Copy of status register	*/
-	int32	count;			/* Variable used to count pkts	*/
-	int32	curr_ringsize;		/* Current ring size		*/
+	uint32	count;			/* Variable used to count pkts	*/
 
-	devptr = (struct dentry *)arg;
-	ethptr = &ethertab[devptr->dvminor];
+	ethptr = &ethertab[devtab[ETHER0].dvminor];
 
 	csrptr = (struct eth_q_csreg *)ethptr->csr;
-
-	/* Copy the status register into a local variable */
-
-	sr = csrptr->sr;
 
 	/* If there is no interrupt pending, return */
 
@@ -34,37 +24,24 @@ void	ethhandler (
 		return;
 	}
 
-	/* Acknowledge the interrupt */
-
-	csrptr->sr = sr;
-
 	/* Check status register to figure out the source of interrupt */
 
-	if (sr & ETH_QUARK_SR_TI) { /* Transmit interrupt */
+	if (csrptr->sr & ETH_QUARK_SR_TI) { /* Transmit interrupt */
+
+		/* Acknowledge the transmit interrupt */
+
+		csrptr->sr = ETH_QUARK_SR_TI;
 
 		/* Pointer to the head of transmit desc ring */
 
 		tdescptr = (struct eth_q_tx_desc *)ethptr->txRing +
 							ethptr->txHead;
 
-		/* Compute the current ring size */
-
-		count = semcount(ethptr->osem);
-
-		if(count < 0) {
-			curr_ringsize = ethptr->txRingSize;
-		}
-		else {
-			curr_ringsize = ethptr->txRingSize - count;
-		}
-
-		/* Start the packet count at zero */
-
-		count = 0;
+		count = 0;	/* Start packet count at zero */
 
 		/* Repeat until we process all the descriptor slots */
 
-		while(curr_ringsize > 0) {
+		while(ethptr->txHead != ethptr->txTail) {
 
 			/* If the descriptor is owned by DMA, stop here */
 
@@ -73,12 +50,7 @@ void	ethhandler (
 			}
 
 			/* Descriptor was processed; increment count	*/
-
 			count++;
-
-			/* Decrement the current ring size */
-
-			curr_ringsize--;
 
 			/* Go to the next descriptor */
 
@@ -97,10 +69,14 @@ void	ethhandler (
 		/* 'count' packets were processed by DMA, and slots are	*/
 		/* now free; signal the semaphore accordingly		*/
 
+		csrptr->sr = ETH_QUARK_SR_NIS;
 		signaln(ethptr->osem, count);
+		return;
+	} else if(csrptr->sr & ETH_QUARK_SR_RI) { /* Receive interrupt	*/
 
-	}
-	if(sr & ETH_QUARK_SR_RI) { /* Receive interrupt	*/
+		/* Acknowledge the interrupt */
+
+		csrptr->sr = ETH_QUARK_SR_RI;
 
 		/* Get the pointer to the tail of the receive desc list */
 
@@ -142,6 +118,10 @@ void	ethhandler (
 
 		signaln(ethptr->isem, count);
 	}
+
+	/* Acknowledge the normal interrupt summary */
+
+	csrptr->sr = ETH_QUARK_SR_NIS;
 
 	return;
 }

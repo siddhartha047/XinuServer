@@ -17,10 +17,10 @@ const	struct	cmdent	cmdtab[] = {
 	{"echo",	FALSE,	xsh_echo},
 	{"exit",	TRUE,	xsh_exit},
 	{"help",	FALSE,	xsh_help},
+	{"ipaddr",	FALSE,	xsh_ipaddr},
 	{"kill",	TRUE,	xsh_kill},
 	{"memdump",	FALSE,	xsh_memdump},
 	{"memstat",	FALSE,	xsh_memstat},
-	{"netinfo",	FALSE,	xsh_netinfo},
 	{"ping",	FALSE,	xsh_ping},
 	{"ps",		FALSE,	xsh_ps},
 	{"sleep",	FALSE,	xsh_sleep},
@@ -28,8 +28,8 @@ const	struct	cmdent	cmdtab[] = {
 	{"udpecho",	FALSE,	xsh_udpecho},
 	{"udpeserver",	FALSE,	xsh_udpeserver},
 	{"uptime",	FALSE,	xsh_uptime},
-	{"?",		FALSE,	xsh_help},
-	{"hello",	FALSE,	xsh_hello}
+	{"?",		FALSE,	xsh_help}
+
 };
 
 uint32	ncmd = sizeof(cmdtab) / sizeof(struct cmdent);
@@ -278,14 +278,9 @@ process	shell (
 
 		/* Spawn child thread for non-built-in commands */
 
-		// child = create(cmdtab[j].cfunc,
-		// 	SHELL_CMDSTK, SHELL_CMDPRIO,
-		// 	cmdtab[j].cname, 2, ntok, &tmparg);
-
 		child = create(cmdtab[j].cfunc,
-			SHELL_CMDSTK, default_SCH, SHELL_CMDPRIO,
+			SHELL_CMDSTK, SHELL_CMDPRIO,
 			cmdtab[j].cname, 2, ntok, &tmparg);
-
 
 		/* If creation or argument copy fails, report error */
 

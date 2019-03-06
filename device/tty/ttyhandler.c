@@ -6,10 +6,7 @@
  *  ttyhandler  -  Handle an interrupt for a tty (serial) device
  *------------------------------------------------------------------------
  */
-void ttyhandler(
-		int32	arg	/* Interrupt handler argument	*/
-		)
-{
+void ttyhandler(void) {
 	struct	dentry	*devptr;	/* Address of device control blk*/
 	struct	ttycblk	*typtr;		/* Pointer to ttytab entry	*/	
 	struct	uart_csreg *csrptr;	/* Address of UART's CSR	*/
@@ -18,7 +15,7 @@ void ttyhandler(
 
 	/* Get CSR address of the device (assume console for now) */
 
-	devptr = (struct dentry *) arg;
+	devptr = (struct dentry *) &devtab[CONSOLE];
 	csrptr = (struct uart_csreg *) devptr->dvcsr;
 
 	/* Obtain a pointer to the tty control block */
@@ -55,7 +52,7 @@ void ttyhandler(
 
 		resched_cntl(DEFER_START);
 
-		/* While chars avail. in UART buffer, call ttyhandle_in	*/
+		/* While chars avail. in UART buffer, call ttyinter_in	*/
 
 		while ( (csrptr->lsr & UART_LSR_DR) != 0) {
 			ttyhandle_in(typtr, csrptr);

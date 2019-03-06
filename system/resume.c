@@ -11,7 +11,7 @@ pri16	resume(
 	)
 {
 	intmask	mask;			/* Saved interrupt mask		*/
-	struct	procent *prptr;		/* Ptr to process's table entry	*/
+	struct	procent *prptr;		/* Ptr to process' table entry	*/
 	pri16	prio;			/* Priority to return		*/
 
 	mask = disable();
@@ -24,13 +24,6 @@ pri16	resume(
 		restore(mask);
 		return (pri16)SYSERR;
 	}
-
-	//sid:
-	if(!((&proctab[currpid])->uid==(&proctab[pid])->uid ||(&proctab[currpid])->uid==ROOT_USER)){
-		restore(mask);
-		return SYSERR;	
-	}
-
 	prio = prptr->prprio;		/* Record priority to return	*/
 	ready(pid);
 	restore(mask);
