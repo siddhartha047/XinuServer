@@ -43,8 +43,7 @@ syscall releaseall (int32 numlocks, ...) {
 			restore(mask);
 		 	return SYSERR;	
 		}
-
-		XDEBUG_KPRINTF("Trying Release %d:-> rcount: %d, wcount: %d, rwait: %d, wwait: %d\n",ldes,lockptr->rcount,lockptr->wcount,lockptr->rwait,lockptr->wwait);
+		
 		XDEBUG_KPRINTF("Trying Release lock %d-> rcount: %d, wcount: %d, rwait: %d, wwait: %d\n",ldes,lockptr->rcount,lockptr->wcount,lockptr->rwait,lockptr->wwait);
 		XDEBUG_KPRINTF("Trying Release Lock Status: ");
 		for(int i=0;i<10;i++){
@@ -97,7 +96,7 @@ syscall releaseall (int32 numlocks, ...) {
 
 		prptr->locks[ldes]=0;
 
-		XDEBUG_KPRINTF("Release %d:-> rcount: %d, wcount: %d, rwait: %d, wwait: %d\n",ldes,lockptr->rcount,lockptr->wcount,lockptr->rwait,lockptr->wwait);
+		
 		XDEBUG_KPRINTF("Release lock %d-> rcount: %d, wcount: %d, rwait: %d, wwait: %d\n",ldes,lockptr->rcount,lockptr->wcount,lockptr->rwait,lockptr->wwait);
 		XDEBUG_KPRINTF("Release Lock Status: ");
 		for(int i=0;i<10;i++){

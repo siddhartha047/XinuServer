@@ -78,9 +78,8 @@ void mytest1(){
 	int prB=create( B, 2000, 20, "B", 4, L1,L2, 2, 0 );
 	int prC=create( C, 2000, 30, "C", 4, L1,L2, 3, 0 );
 
+	resume(prB);		
 	resume(prA);
-	sleep(1);
-	resume(prB);
 	sleep(1);
 	resume(prC);
 	
@@ -123,7 +122,7 @@ void A( int L1, int L2, int num, int prio)
 	restore(mask);
 	
 	kprintf("A L1 tasks starts\n");	
-	sleep(1);
+
 	kprintf("A L1 tasks Done\n");
 
 	mask=disable();
@@ -181,6 +180,7 @@ void B( int L1, int L2, int num, int prio)
 	kprintf(" B%d: got Lock ..%d\n\r", num, L2);
 	restore(mask);
 	
+	sleep(1);
 	cpubound('B');
 		
 	mask=disable();
