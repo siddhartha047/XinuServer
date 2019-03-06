@@ -46,6 +46,8 @@
 
 /* Definition of the process table (multiple of 32 bits) */
 
+#define NOT_WAITING -1
+
 struct procent {		/* Entry in the process table		*/
 	uint16	prstate;	/* Process state: PR_CURR, etc.		*/
 	pri16	prprio;		/* Process priority			*/
@@ -60,6 +62,8 @@ struct procent {		/* Entry in the process table		*/
 	int16	prdesc[NDESC];	/* Device descriptors for process	*/
 	
 	int32   locks[NLOCKS];	
+	pri16   prinh;
+	int32 	lockid;
 
 };
 

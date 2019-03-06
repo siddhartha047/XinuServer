@@ -32,23 +32,29 @@ void test5(void);
 void test6(void);
 
 void mytest0(void);
+void mytest1(void);
 void myreader( int, int, int );
 void mywriter( int, int, int );
 
-int main(int argc, char** argv) {
-	kprintf("\n\nCS503 Lab2 \n\r");
-	kprintf("\n\nRunning test 0\n\r");		
-	test0();	
-	kprintf("\n\nRunning test 1\n\r");
-	test1();
-	kprintf("\n\nRunning test 2\n\r");
-	test2();	
-	kprintf("\n\nRunning test 3\n\r");
-	test3();
-	kprintf("\n\nRunning test 4\n\r");
-	test4();
+void A( int L1, int L2, int num, int prio);
+void B( int L1, int L2, int num, int prio);
+void C( int L1, int L2, int num, int prio);
 
-	mytest0();
+int main(int argc, char** argv) {
+	// kprintf("\n\nCS503 Lab2 \n\r");
+	// kprintf("\n\nRunning test 0\n\r");		
+	// test0();	
+	// kprintf("\n\nRunning test 1\n\r");
+	// test1();
+	// kprintf("\n\nRunning test 2\n\r");
+	// test2();	
+	// kprintf("\n\nRunning test 3\n\r");
+	// test3();
+	// kprintf("\n\nRunning test 4\n\r");
+	// test4();
+
+	// mytest0();	
+	mytest1(); //
 
 	// kprintf("\n\nRunning test 5\n\r");
 	// test5();
@@ -56,6 +62,183 @@ int main(int argc, char** argv) {
 	// test6();
 	return 0;
 }
+
+void mytest1(){
+	
+	//case 1: reader can achieve writer may not
+	int32 mask;
+	mask=disable();
+	XDEBUG_KPRINTF("My Case 1: simple priority inversion\n");
+	restore(mask);
+
+	int L1=lcreate();
+	int L2=lcreate();
+
+	int prA=create( A, 2000, 10, "A", 4, L1,L2, 1, 0 );
+	int prB=create( B, 2000, 20, "B", 4, L1,L2, 2, 0 );
+	int prC=create( C, 2000, 30, "C", 4, L1,L2, 3, 0 );
+
+	resume(prA);
+	sleep(1);
+	resume(prB);
+	sleep(1);
+	resume(prC);
+	
+	sleep(10);
+	kprintf("priorities before: A->%d, B->%d, C->%d\n", (&proctab[prA])->prprio,(&proctab[prB])->prprio,(&proctab[prC])->prprio);
+	sleep(20);
+	kprintf("priorities after: A->%d, B->%d, C->%d\n", (&proctab[prA])->prprio,(&proctab[prB])->prprio,(&proctab[prC])->prprio);
+
+}
+
+void cpubound(char ch){
+	for(int i=0;i<10;i++){
+		kprintf("(%c Tasks %d->",ch,i);
+		for(int k=0;k<100;k++){			
+			for(int j=0;j<1000000;j++);				
+		}
+		kprintf("<-%c Tasks %d)\n",ch,i);		
+	}		
+}
+
+
+void A( int L1, int L2, int num, int prio)
+{
+	intmask mask;
+
+	mask=disable();
+	kprintf(" A%d: trying Lock ..%d\n\r", num, L1);
+	restore(mask);
+	
+	int a;	
+	a = lock( L1, WRITE, prio );
+	if( a != OK )
+	{
+	  kprintf(" A%d: lock failed %d ..\n\r", num, a ); 
+	  return;
+	}
+	
+	mask=disable();
+	kprintf(" A%d: got Lock ..%d\n\r", num, L1);
+	restore(mask);
+	
+	kprintf("A L1 tasks starts\n");	
+	sleep(1);
+	kprintf("A L1 tasks Done\n");
+
+	mask=disable();
+	kprintf(" A%d: trying Lock ..%d\n\r", num, L2);
+	restore(mask);
+		
+	a = lock( L2, WRITE, prio );
+	if( a != OK )
+	{
+	  kprintf(" A%d: lock failed %d ..\n\r", num, a ); 
+	  return;
+	}
+	
+	mask=disable();
+	kprintf(" A%d: got Lock ..%d\n\r", num, L2);
+	restore(mask);
+	
+	cpubound('A');
+
+
+	mask=disable();
+	kprintf(" A%d: Releasing ..\n\r", num );
+	restore(mask);
+
+	a = releaseall( 1,L1,L2 );
+	if( a != OK ){
+		kprintf(" A%d: Lock release failed %d ..\n\r", num, a ); 
+	}
+	else{
+		mask=disable();
+		kprintf(" A%d: Lock release done ..\n\r", num ); 		
+		restore(mask);		
+	}
+
+	return;
+}
+
+void B( int L1, int L2, int num, int prio)
+{
+	intmask mask;
+
+	mask=disable();
+	kprintf(" B%d: trying Lock ..%d\n\r", num, L2);
+	restore(mask);
+	
+	int a;	
+	a = lock( L2, WRITE, prio );
+	if( a != OK )
+	{
+	  kprintf(" B%d: lock failed %d ..\n\r", num, a ); 
+	  return;
+	}
+	
+	mask=disable();
+	kprintf(" B%d: got Lock ..%d\n\r", num, L2);
+	restore(mask);
+	
+	cpubound('B');
+		
+	mask=disable();
+	kprintf(" B%d: Releasing ..\n\r", num);
+	restore(mask);
+
+	a = releaseall( 1,L2 );
+	if( a != OK ){
+		kprintf(" B%d: Lock release failed %d ..\n\r", num, a ); 
+	}
+	else{
+		mask=disable();
+		kprintf(" B%d: Lock release done ..\n\r", num ); 		
+		restore(mask);		
+	}
+
+	return;
+}
+
+void C( int L1, int L2, int num, int prio)
+{
+	intmask mask;
+
+	mask=disable();
+	kprintf(" C%d: trying Lock ..%d\n\r", num, L1);
+	restore(mask);
+	
+	int a;	
+	a = lock( L1, WRITE, prio );
+	if( a != OK )
+	{
+	  kprintf(" C%d: lock failed %d ..\n\r", num, a ); 
+	  return;
+	}
+	
+	mask=disable();
+	kprintf(" C%d: got Lock ..%d\n\r", num, L1);
+	restore(mask);
+
+	cpubound('C');
+		
+	mask=disable();
+	kprintf(" C%d: Releasing ..\n\r", num);
+	restore(mask);
+
+	a = releaseall( 1,L1 );
+	if( a != OK ){
+		kprintf(" C%d: Lock release failed %d ..\n\r", num, a ); 
+	}
+	else{
+		mask=disable();
+		kprintf(" C%d: Lock release done ..\n\r", num ); 		
+		restore(mask);		
+	}
+	return;
+}
+
+
 
 
 void mytest0(){

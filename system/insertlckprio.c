@@ -35,6 +35,13 @@ status	insertlckprio(
 		curr = queuetab[curr].qnext;
 	}
 
+	struct	procent *prptr;
+	prptr=&proctab[pid];
+
+	prptr->prstate = PR_WAIT;
+	prptr->lockid= ldes;	
+	lockptr->wprocess[pid]=LPR_WAIT;	
+
 	/* Insert process between curr node and previous node */
 
 	prev = queuetab[curr].qprev;	/* Get index of previous node	*/

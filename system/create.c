@@ -44,6 +44,7 @@ pid32	create(
 	for(i=0;i<NLOCKS;i++){
 		prptr->locks[i]=0;
 	}
+	prptr->lockid=NOT_WAITING;
 
 	/* Initialize process table entry for new process */
 	prptr->prstate = PR_SUSP;	/* Initial state is suspended	*/

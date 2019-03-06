@@ -38,7 +38,16 @@ syscall lock(int32 ldes, int32 type, int32 lpriority) {
 	lockptr->lmode[currpid]=type;
 
 	//sid: locking logics goes here
-	//XDEBUG_KPRINTF("Trying lock %d-> rcount: %d, wcount: %d, rwait: %d, wwait: %d\n",ldes,lockptr->rcount,lockptr->wcount,lockptr->rwait,lockptr->wwait);
+	XDEBUG_KPRINTF("Trying lock %d-> rcount: %d, wcount: %d, rwait: %d, wwait: %d\n",ldes,lockptr->rcount,lockptr->wcount,lockptr->rwait,lockptr->wwait);
+	XDEBUG_KPRINTF("Trying Lock Status: ");
+	for(int i=0;i<10;i++){
+		XDEBUG_KPRINTF("(%d, %d)->",lockptr->wprocess[i],lockptr->lmode[i]);
+	}	
+	XDEBUG_KPRINTF("\nTrying Process %d Status: ",currpid);
+	for(int i=0;i<10;i++){
+		XDEBUG_KPRINTF("%d->",prptr->locks[i]);
+	}
+	XDEBUG_KPRINTF(": prio->%d prinh->%d lockid->%d\n",prptr->prprio,prptr->prinh,prptr->lockid);
 
 	if((lockptr->rcount+lockptr->wcount)==0){
 		//no one holding the lock		
@@ -55,8 +64,7 @@ syscall lock(int32 ldes, int32 type, int32 lpriority) {
 		//no writers waiting and lock request READ type 		
 		
 		if(type==WRITE){			
-			lockptr->wwait++;			
-			prptr->prstate = PR_WAIT;
+			lockptr->wwait++;											
 			insertlckprio(ldes, currpid, lockptr->lqueue, lpriority, type);						
 			resched();
 			//got the lock now
@@ -72,19 +80,20 @@ syscall lock(int32 ldes, int32 type, int32 lpriority) {
 		else if(type==READ && lpriority>=getMaxWriterPriority(lockptr->lqueue, ldes)){
 			//gets the lock	
 			lockptr->rcount++;			
-			//take all reader process before first writer			
+			//take all reader process before first write if there are any
 			resched_cntl(DEFER_START);
 			while(lockptr->lmode[lockptr->lqueue]!=WRITE){								
-				ready(dequeue(lockptr->lqueue));
+				lockptr->rwait--;
+				int pidtemp=dequeue(lockptr->lqueue);
+				lockptr->wprocess[pidtemp]=LPR_FREE;
+				ready(pidtemp);				
 			}			
 			resched_cntl(DEFER_STOP);
 
 		}
 		else{
 			//a high priority writer is waiting reader goes to sleep
-			lockptr->rwait++;
-			lockptr->lmode[currpid]=type;
-			prptr->prstate = PR_WAIT;
+			lockptr->rwait++;									
 			insertlckprio(ldes, currpid, lockptr->lqueue, lpriority, type);			
 			resched();
 			//got the lock now
@@ -95,15 +104,9 @@ syscall lock(int32 ldes, int32 type, int32 lpriority) {
 	}
 	else if(lockptr->wcount>0){
 		//write lock holding so put in waiting state
-		if(type==READ){
-			lockptr->rwait++;
-		}
-		else{
-			lockptr->wwait++;
-		}
-
-		lockptr->lmode[currpid]=type;
-		prptr->prstate = PR_WAIT;
+		if(type==READ)lockptr->rwait++;	
+		else lockptr->wwait++;		
+				
 		insertlckprio(ldes, currpid, lockptr->lqueue, lpriority, type);		
 		resched();
 		//got the lock now
@@ -114,14 +117,25 @@ syscall lock(int32 ldes, int32 type, int32 lpriority) {
 	//after awake from resched
 
 	if(lockptr->lstate == L_FREE || locktimestamp!=lockptr->timestamp){
+		prptr->locks[ldes]=0;
 		restore(mask);
 		return DELETED;		
 	}
 
 	prptr->locks[ldes]=1;
+	prptr->lockid=NOT_WAITING;
 	//after awaking hold the lock;	
 
-	//XDEBUG_KPRINTF("Got lock %d-> rcount: %d, wcount: %d, rwait: %d, wwait: %d\n",ldes,lockptr->rcount,lockptr->wcount,lockptr->rwait,lockptr->wwait);
+	XDEBUG_KPRINTF("Got lock %d-> rcount: %d, wcount: %d, rwait: %d, wwait: %d\n",ldes,lockptr->rcount,lockptr->wcount,lockptr->rwait,lockptr->wwait);
+	XDEBUG_KPRINTF("Got Lock Status: ");
+	for(int i=0;i<10;i++){
+		XDEBUG_KPRINTF("(%d, %d)->",lockptr->wprocess[i],lockptr->lmode[i]);
+	}	
+	XDEBUG_KPRINTF("\nGot Process %d Status: ",currpid);
+	for(int i=0;i<10;i++){
+		XDEBUG_KPRINTF("%d->",prptr->locks[i]);
+	}
+	XDEBUG_KPRINTF(": prio->%d prinh->%d lockid->%d\n",prptr->prprio,prptr->prinh,prptr->lockid);
 
 	restore(mask);
 

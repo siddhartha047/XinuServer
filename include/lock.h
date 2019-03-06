@@ -17,6 +17,9 @@
 #define	L_FREE	0		/* Lock table entry is available	*/
 #define	L_USED	1		/* Lock table entry is in use	*/
 
+#define LPR_WAIT 1
+#define LPR_FREE 0
+
 
 struct	lockent {
 	//struct members
@@ -32,6 +35,9 @@ struct	lockent {
 		int 	timestamp; //track lock delete or creation time
 				
 		byte	lmode[NPROC];	//mode of waiting process READ/WRITE
+		byte 	wprocess[NPROC];
+
+		int 	maxprio;
 };
 
 extern	struct	lockent locktab[];

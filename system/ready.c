@@ -22,6 +22,7 @@ status	ready(
 
 	prptr = &proctab[pid];
 	prptr->prstate = PR_READY;
+	prptr->lockid = NOT_WAITING;
 	insert(pid, readylist, prptr->prprio);
 	resched();
 

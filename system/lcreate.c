@@ -32,6 +32,11 @@ int lcreate() {
 
 	locktab[lockNo].timestamp=clktime;
 
+	for(int i=0;i<NPROC;i++){
+		locktab[lockNo].lmode[i]=-1;
+		locktab[lockNo].wprocess[i]=LPR_FREE;
+	}
+
 	restore(mask);	
 
   	return lockNo;
