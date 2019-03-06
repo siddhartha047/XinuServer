@@ -39,6 +39,7 @@ void mywriter( int, int, int );
 void A( int L1, int L2, int num, int prio);
 void B( int L1, int L2, int num, int prio);
 void C( int L1, int L2, int num, int prio);
+void D( int L1, int L2, int num, int prio);
 
 int main(int argc, char** argv) {
 	// kprintf("\n\nCS503 Lab2 \n\r");
@@ -75,10 +76,12 @@ void mytest1(){
 	int L2=lcreate();
 
 	int prA=create( A, 2000, 10, "A", 4, L1,L2, 1, 0 );
-	int prB=create( B, 2000, 20, "B", 4, L1,L2, 2, 0 );
+	int prD=create( D, 2000, 25, "D", 4, L1,L2, 4, 0 );
+	int prB=create( B, 2000, 20, "B", 4, L1,L2, 2, 0 );	
 	int prC=create( C, 2000, 30, "C", 4, L1,L2, 3, 0 );
 
-	resume(prB);		
+	resume(prB);
+	resume(prD);
 	resume(prA);
 	sleep(1);
 	resume(prC);
@@ -121,8 +124,7 @@ void A( int L1, int L2, int num, int prio)
 	kprintf(" A%d: got Lock ..%d\n\r", num, L1);
 	restore(mask);
 	
-	kprintf("A L1 tasks starts\n");	
-
+	kprintf("A L1 tasks starts\n");		
 	kprintf("A L1 tasks Done\n");
 
 	mask=disable();
@@ -140,6 +142,8 @@ void A( int L1, int L2, int num, int prio)
 	kprintf(" A%d: got Lock ..%d\n\r", num, L2);
 	restore(mask);
 	
+
+
 	cpubound('A');
 
 
@@ -147,13 +151,52 @@ void A( int L1, int L2, int num, int prio)
 	kprintf(" A%d: Releasing ..\n\r", num );
 	restore(mask);
 
-	a = releaseall( 1,L1,L2 );
+	a = releaseall( 2,L1,L2 );
 	if( a != OK ){
 		kprintf(" A%d: Lock release failed %d ..\n\r", num, a ); 
 	}
 	else{
 		mask=disable();
 		kprintf(" A%d: Lock release done ..\n\r", num ); 		
+		restore(mask);		
+	}
+
+	return;
+}
+
+void D( int L1, int L2, int num, int prio)
+{
+	intmask mask;
+
+	mask=disable();
+	kprintf(" D%d: trying Lock ..%d\n\r", num, L2);
+	restore(mask);
+	
+	int a;	
+	a = lock( L2, WRITE, prio );
+	if( a != OK )
+	{
+	  kprintf(" D%d: lock failed %d ..\n\r", num, a ); 
+	  return;
+	}
+	
+	mask=disable();
+	kprintf(" D%d: got Lock ..%d\n\r", num, L2);
+	restore(mask);
+	
+	cpubound('D');
+
+	mask=disable();
+	kprintf(" D%d: Releasing ..\n\r", num );
+	restore(mask);
+
+	a = releaseall(1,L2);
+	if( a != OK ){
+		kprintf(" D%d: Lock release failed %d ..\n\r", num, a ); 
+	}
+	else{
+		mask=disable();
+		kprintf(" D%d: Lock release done ..\n\r", num ); 		
 		restore(mask);		
 	}
 

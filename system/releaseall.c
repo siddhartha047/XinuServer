@@ -22,8 +22,7 @@ syscall releaseall (int32 numlocks, ...) {
 
 	a = (uint32 *)(&numlocks + 1);	/* Start of args		*/
 	for(int i=0;i<numlocks;i++)	{
-		int ldes=*a++;
-		//XDEBUG_KPRINTF("%d-> ",ldes);
+		int ldes=*a++;		
 		
 		if (isbadlock(ldes)) {
 			resched_cntl(DEFER_STOP);
