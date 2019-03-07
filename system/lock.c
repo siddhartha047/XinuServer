@@ -29,25 +29,38 @@ syscall lock(int32 ldes, int32 type, int32 lpriority) {
 	if (lockptr->lstate == L_FREE) {
 		restore(mask);
 		return SYSERR;
-	}
+	}	
 
 	prptr = &proctab[currpid];
+
+	//if already locked by same process
+	if(prptr->locks[ldes]==1){
+		restore(mask);
+		return SYSERR;
+	}
 	
 
 	int locktimestamp=lockptr->timestamp;
 	lockptr->lmode[currpid]=type;
 
 	//sid: locking logics goes here
-	XDEBUG_KPRINTF("Trying lock %d-> rcount: %d, wcount: %d, rwait: %d, wwait: %d\n",ldes,lockptr->rcount,lockptr->wcount,lockptr->rwait,lockptr->wwait);
-	XDEBUG_KPRINTF("Trying Lock Status: ");
-	for(int i=0;i<10;i++){
-		XDEBUG_KPRINTF("(%d, %d)->",lockptr->wprocess[i],lockptr->lmode[i]);
-	}	
-	XDEBUG_KPRINTF("\nTrying Process %d Status: ",currpid);
-	for(int i=0;i<10;i++){
-		XDEBUG_KPRINTF("%d->",prptr->locks[i]);
-	}
-	XDEBUG_KPRINTF(": prio->%d prinh->%d lockid->%d\n",prptr->prprio,prptr->prinh,prptr->lockid);
+	// XDEBUG_KPRINTF("Trying lock %d-> rcount: %d, wcount: %d, rwait: %d, wwait: %d maxprio: %d\n",ldes,lockptr->rcount,lockptr->wcount,lockptr->rwait,lockptr->wwait,lockptr->maxprio);
+	// XDEBUG_KPRINTF("Trying Lock Wait Status: ");
+	// for(int i=0;i<10;i++){
+	// 	if(lockptr->wprocess[i]==LPR_WAIT){
+	// 		XDEBUG_KPRINTF("(%d, %d, %d, %d)->",lockptr->wprocess[i],lockptr->lmode[i],(&proctab[i])->prprio,(&proctab[i])->prinh);	
+	// 	}		
+	// }
+
+	// XDEBUG_KPRINTF("\nTrying Lock Hold Status: ");
+	// for(int i=0;i<10;i++){
+	// 	if((&proctab[i])->locks[ldes]==1){
+	// 		XDEBUG_KPRINTF("(%d, %d, %d)->",lockptr->lmode[i],(&proctab[i])->prprio,(&proctab[i])->prinh);	
+	// 	}	
+	// }	
+
+	// XDEBUG_KPRINTF("\nTrying Current %d : prio->%d prinh->%d lockid->%d\n",currpid, prptr->prprio,prptr->prinh,prptr->lockid);
+	//
 
 	if((lockptr->rcount+lockptr->wcount)==0){
 		//no one holding the lock		
@@ -56,7 +69,10 @@ syscall lock(int32 ldes, int32 type, int32 lpriority) {
 		}
 		else{
 			lockptr->wcount++;
-		}		
+		}
+
+		lockptr->maxprio=getprioinh(currpid);
+
 	}
 	else if(lockptr->rcount>0){
 		//readers holding lock
@@ -74,18 +90,24 @@ syscall lock(int32 ldes, int32 type, int32 lpriority) {
 		//if no writer waiting just reader 
 		else if(type==READ && lockptr->wwait==0){
 			//gets the lock
-			lockptr->rcount++;					
+			lockptr->rcount++;
+			lockptr->maxprio=max2(lockptr->maxprio,getprioinh(currpid)); //update overall maxprio								
 		}		
 		//a higher priority writer is waiting
 		else if(type==READ && lpriority>=getMaxWriterPriority(lockptr->lqueue, ldes)){
 			//gets the lock	
-			lockptr->rcount++;			
+			lockptr->rcount++;	
+			lockptr->maxprio=max2(lockptr->maxprio,getprioinh(currpid)); //update overall maxprio					
+		
 			//take all reader process before first write if there are any
 			resched_cntl(DEFER_START);
 			while(lockptr->lmode[lockptr->lqueue]!=WRITE){								
 				lockptr->rwait--;
 				int pidtemp=dequeue(lockptr->lqueue);
 				lockptr->wprocess[pidtemp]=LPR_FREE;
+				
+				lockptr->maxprio=max2(lockptr->maxprio,getprioinh(pidtemp)); //update based on overall maxprio					
+
 				ready(pidtemp);				
 			}			
 			resched_cntl(DEFER_STOP);
@@ -113,6 +135,9 @@ syscall lock(int32 ldes, int32 type, int32 lpriority) {
 		if(type==READ)lockptr->rcount++;		
 		else lockptr->wcount++;		
 	}
+	else{
+		kprintf("This shouldn't happen\n");
+	}
 
 	//after awake from resched
 
@@ -124,18 +149,26 @@ syscall lock(int32 ldes, int32 type, int32 lpriority) {
 
 	prptr->locks[ldes]=1;
 	prptr->lockid=NOT_WAITING;
+
 	//after awaking hold the lock;	
 
-	XDEBUG_KPRINTF("Got lock %d-> rcount: %d, wcount: %d, rwait: %d, wwait: %d\n",ldes,lockptr->rcount,lockptr->wcount,lockptr->rwait,lockptr->wwait);
-	XDEBUG_KPRINTF("Got Lock Status: ");
-	for(int i=0;i<10;i++){
-		XDEBUG_KPRINTF("(%d, %d)->",lockptr->wprocess[i],lockptr->lmode[i]);
-	}	
-	XDEBUG_KPRINTF("\nGot Process %d Status: ",currpid);
-	for(int i=0;i<10;i++){
-		XDEBUG_KPRINTF("%d->",prptr->locks[i]);
-	}
-	XDEBUG_KPRINTF(": prio->%d prinh->%d lockid->%d\n",prptr->prprio,prptr->prinh,prptr->lockid);
+	//sid: locking logics goes here
+	// XDEBUG_KPRINTF("Got lock %d-> rcount: %d, wcount: %d, rwait: %d, wwait: %d maxprio: %d\n",ldes,lockptr->rcount,lockptr->wcount,lockptr->rwait,lockptr->wwait,lockptr->maxprio);
+	// XDEBUG_KPRINTF("Got Lock Wait Status: ");
+	// for(int i=0;i<10;i++){
+	// 	if(lockptr->wprocess[i]==LPR_WAIT){
+	// 		XDEBUG_KPRINTF("(%d, %d, %d, %d)->",lockptr->wprocess[i],lockptr->lmode[i],(&proctab[i])->prprio,(&proctab[i])->prinh);	
+	// 	}		
+	// }
+
+	// XDEBUG_KPRINTF("\nGot Lock Hold Status: ");
+	// for(int i=0;i<10;i++){
+	// 	if((&proctab[i])->locks[ldes]==1){
+	// 		XDEBUG_KPRINTF("(%d, %d, %d)->",lockptr->lmode[i],(&proctab[i])->prprio,(&proctab[i])->prinh);	
+	// 	}	
+	// }	
+
+	// XDEBUG_KPRINTF("\nTrying Current %d : prio->%d prinh->%d lockid->%d\n",currpid, prptr->prprio,prptr->prinh,prptr->lockid);
 
 	restore(mask);
 

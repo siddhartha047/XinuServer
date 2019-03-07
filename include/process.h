@@ -38,6 +38,7 @@
 			  ((pid32)(x) >= NPROC) || \
 			  (proctab[(x)].prstate == PR_FREE))
 
+#define max2(x,y) ((x) > (y) ? (x) : (y))
 /* Number of device descriptors a process can have open */
 
 #define NDESC		5	/* must be odd to make procent 4N bytes	*/

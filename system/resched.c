@@ -13,7 +13,7 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
   
 	//Lab 2 - normal priority or inherited priority?
 
-        struct procent *ptold;	/* Ptr to table entry for old process	*/
+    struct procent *ptold;	/* Ptr to table entry for old process	*/
 	struct procent *ptnew;	/* Ptr to table entry for new process	*/
 
 	/* If rescheduling is deferred, record attempt and return */
@@ -28,14 +28,18 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 	ptold = &proctab[currpid];
 
 	if (ptold->prstate == PR_CURR) {  /* Process remains eligible */
-		if (ptold->prprio > firstkey(readylist)) {
+		// if (ptold->prprio > firstkey(readylist)) {
+		// 	return;
+		// }
+		if (getprioinh(currpid) > firstkey(readylist)) {
 			return;
 		}
 
 		/* Old process will no longer remain current */
 
 		ptold->prstate = PR_READY;
-		insert(currpid, readylist, ptold->prprio);
+		//insert(currpid, readylist, ptold->prprio);
+		insert(currpid, readylist, getprioinh(currpid));
 	}
 
 	/* Force context switch to highest priority ready process */

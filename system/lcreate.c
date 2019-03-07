@@ -29,7 +29,7 @@ int lcreate() {
 	
 	locktab[lockNo].rwait=0; //how many readers waiting
 	locktab[lockNo].wwait=0; //how many writers waiting
-	lockNo[lockNo].maxprio=0;
+	locktab[lockNo].maxprio=0;
 
 	locktab[lockNo].timestamp=clktime;
 

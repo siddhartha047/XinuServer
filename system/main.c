@@ -40,6 +40,7 @@ void A( int L1, int L2, int num, int prio);
 void B( int L1, int L2, int num, int prio);
 void C( int L1, int L2, int num, int prio);
 void D( int L1, int L2, int num, int prio);
+void E( int L1, int L2, int num, int prio);
 
 int main(int argc, char** argv) {
 	// kprintf("\n\nCS503 Lab2 \n\r");
@@ -55,10 +56,10 @@ int main(int argc, char** argv) {
 	// test4();
 
 	// mytest0();	
-	mytest1(); //
+	// mytest1(); //
 
-	// kprintf("\n\nRunning test 5\n\r");
-	// test5();
+	kprintf("\n\nRunning test 5\n\r");
+	test5();
 	// kprintf("\n\nRunning test 6\n\r");
 	// test6();
 	return 0;
@@ -75,21 +76,23 @@ void mytest1(){
 	int L1=lcreate();
 	int L2=lcreate();
 
-	int prA=create( A, 2000, 10, "A", 4, L1,L2, 1, 0 );
-	int prD=create( D, 2000, 25, "D", 4, L1,L2, 4, 0 );
+	int prA=create( A, 2000, 10, "A", 4, L1,L2, 1, 1 );
+	int prD=create( D, 2000, 15, "D", 4, L1,L2, 4, 0 );
 	int prB=create( B, 2000, 20, "B", 4, L1,L2, 2, 0 );	
 	int prC=create( C, 2000, 30, "C", 4, L1,L2, 3, 0 );
+	int prE=create( E, 2000, 25, "E", 4, L1,L2, 5, 0 );
 
 	resume(prB);
 	resume(prD);
 	resume(prA);
 	sleep(1);
 	resume(prC);
-	
-	sleep(10);
-	kprintf("priorities before: A->%d, B->%d, C->%d\n", (&proctab[prA])->prprio,(&proctab[prB])->prprio,(&proctab[prC])->prprio);
+	resume(prE);
+		
 	sleep(20);
-	kprintf("priorities after: A->%d, B->%d, C->%d\n", (&proctab[prA])->prprio,(&proctab[prB])->prprio,(&proctab[prC])->prprio);
+	kprintf("priorities finally: A->%d,%d, B->%d,%d C->%d,%d\n", (&proctab[prA])->prprio,
+		(&proctab[prA])->prinh,(&proctab[prB])->prprio,(&proctab[prB])->prinh,
+		(&proctab[prC])->prprio,(&proctab[prC])->prinh);
 
 }
 
@@ -103,6 +106,23 @@ void cpubound(char ch){
 	}		
 }
 
+
+void E( int L1, int L2, int num, int prio)
+{
+	intmask mask;
+
+	mask=disable();
+	kprintf(" E%d: running ..\n\r", num);
+	restore(mask);
+	
+	cpubound('E');		
+	
+	mask=disable();
+	kprintf(" E%d: done..\n\r", num );
+	restore(mask);
+
+	return;
+}
 
 void A( int L1, int L2, int num, int prio)
 {

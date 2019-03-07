@@ -3,6 +3,9 @@
 
 /* Lab 2: Complete this function */
 
+int getMaxInheritedPriority(qid16 q);
+
+
 syscall releaseall (int32 numlocks, ...) {
 
 	//your implementation goes here
@@ -43,16 +46,21 @@ syscall releaseall (int32 numlocks, ...) {
 		 	return SYSERR;	
 		}
 		
-		XDEBUG_KPRINTF("Trying Release lock %d-> rcount: %d, wcount: %d, rwait: %d, wwait: %d\n",ldes,lockptr->rcount,lockptr->wcount,lockptr->rwait,lockptr->wwait);
-		XDEBUG_KPRINTF("Trying Release Lock Status: ");
-		for(int i=0;i<10;i++){
-			XDEBUG_KPRINTF("(%d, %d)->",lockptr->wprocess[i],lockptr->lmode[i]);
-		}	
-		XDEBUG_KPRINTF("\nTrying Release Process %d Status: ",currpid);
-		for(int i=0;i<10;i++){
-			XDEBUG_KPRINTF("%d->",prptr->locks[i]);
-		}
-		XDEBUG_KPRINTF(": prio->%d prinh->%d lockid->%d\n",prptr->prprio,prptr->prinh,prptr->lockid);
+		// XDEBUG_KPRINTF("Trying Release lock %d-> rcount: %d, wcount: %d, rwait: %d, wwait: %d maxprio: %d\n",ldes,lockptr->rcount,lockptr->wcount,lockptr->rwait,lockptr->wwait,lockptr->maxprio);
+		// XDEBUG_KPRINTF("Trying Release Lock Wait Status: ");
+		// for(int i=0;i<10;i++){
+		// 	if(lockptr->wprocess[i]==LPR_WAIT){
+		// 		XDEBUG_KPRINTF("(%d, %d, %d, %d)->",lockptr->wprocess[i],lockptr->lmode[i],(&proctab[i])->prprio,(&proctab[i])->prinh);	
+		// 	}		
+		// }
+		// XDEBUG_KPRINTF("\n Trying Release Lock Hold Status: ");
+		// for(int i=0;i<10;i++){
+		// 	if((&proctab[i])->locks[ldes]==1){
+		// 		XDEBUG_KPRINTF("(%d, %d, %d)->",lockptr->lmode[i],(&proctab[i])->prprio,(&proctab[i])->prinh);	
+		// 	}	
+		// }	
+		
+		// XDEBUG_KPRINTF("\nTrying Current %d : prio->%d prinh->%d lockid->%d\n",currpid, prptr->prprio,prptr->prinh,prptr->lockid);
 
 
 		if(lockptr->lmode[currpid]==READ){
@@ -66,10 +74,14 @@ syscall releaseall (int32 numlocks, ...) {
 
 			if(lockptr->lmode[firstid(lockptr->lqueue)]==READ && lockptr->wwait>0){				
 				//remove all reader before first writer
+				lockptr->maxprio=getMaxInheritedPriority(lockptr->lqueue);
+				
 				while(lockptr->lmode[firstid(lockptr->lqueue)]!=WRITE){
 					lockptr->rwait--;
 					int pidtemp=dequeue(lockptr->lqueue);
 					lockptr->wprocess[pidtemp]=LPR_FREE;
+
+					(&proctab[pidtemp])->prinh=max2(getprioinh(pidtemp),lockptr->maxprio);
 					ready(pidtemp);
 				}
 
@@ -78,34 +90,47 @@ syscall releaseall (int32 numlocks, ...) {
 				//remove all reader
 				while(!isempty(lockptr->lqueue)){
 					lockptr->rwait--;
+					lockptr->maxprio=getMaxInheritedPriority(lockptr->lqueue);
 					int pidtemp=dequeue(lockptr->lqueue);
 					lockptr->wprocess[pidtemp]=LPR_FREE;
+
+					(&proctab[pidtemp])->prinh=max2(getprioinh(pidtemp),lockptr->maxprio);
 					ready(pidtemp);
 				}				
 			}
 			else{				
 				//remove the writer
 				lockptr->wwait--;
+
+				lockptr->maxprio=getMaxInheritedPriority(lockptr->lqueue);
 				int pidtemp=dequeue(lockptr->lqueue);
 				lockptr->wprocess[pidtemp]=LPR_FREE;
+				(&proctab[pidtemp])->prinh=max2(getprioinh(pidtemp),lockptr->maxprio);
 				ready(pidtemp);
 			}
 
 		}
 
 		prptr->locks[ldes]=0;
+		prptr->prinh=0;
 
 		
-		XDEBUG_KPRINTF("Release lock %d-> rcount: %d, wcount: %d, rwait: %d, wwait: %d\n",ldes,lockptr->rcount,lockptr->wcount,lockptr->rwait,lockptr->wwait);
-		XDEBUG_KPRINTF("Release Lock Status: ");
-		for(int i=0;i<10;i++){
-			XDEBUG_KPRINTF("(%d, %d)->",lockptr->wprocess[i],lockptr->lmode[i]);
-		}	
-		XDEBUG_KPRINTF("\nRelease Process %d Status: ",currpid);
-		for(int i=0;i<10;i++){
-			XDEBUG_KPRINTF("%d->",prptr->locks[i]);
-		}
-		XDEBUG_KPRINTF(": prio->%d prinh->%d lockid->%d\n",prptr->prprio,prptr->prinh,prptr->lockid);
+		// XDEBUG_KPRINTF("Release lock %d-> rcount: %d, wcount: %d, rwait: %d, wwait: %d maxprio: %d\n",ldes,lockptr->rcount,lockptr->wcount,lockptr->rwait,lockptr->wwait,lockptr->maxprio);
+		// XDEBUG_KPRINTF("Release Lock Wait Status: ");
+		// for(int i=0;i<10;i++){
+		// 	if(lockptr->wprocess[i]==LPR_WAIT){
+		// 		XDEBUG_KPRINTF("(%d, %d, %d, %d)->",lockptr->wprocess[i],lockptr->lmode[i],(&proctab[i])->prprio,(&proctab[i])->prinh);	
+		// 	}		
+		// }
+
+		// XDEBUG_KPRINTF("\n Release Lock Hold Status: ");
+		// for(int i=0;i<10;i++){
+		// 	if((&proctab[i])->locks[ldes]==1){
+		// 		XDEBUG_KPRINTF("(%d, %d, %d)->",lockptr->lmode[i],(&proctab[i])->prprio,(&proctab[i])->prinh);	
+		// 	}	
+		// }	
+
+		// XDEBUG_KPRINTF("\nTrying Current %d : prio->%d prinh->%d lockid->%d\n",currpid, prptr->prprio,prptr->prinh,prptr->lockid);
 
 	}	
 
@@ -114,4 +139,30 @@ syscall releaseall (int32 numlocks, ...) {
 	restore(mask);
 
 	return OK;
+}
+
+
+
+int getMaxInheritedPriority(qid16 q){
+	if (isempty(q)) {
+		XDEBUG_KPRINTF("q shouldn't be empty\n");
+		return EMPTY;
+	}	
+
+	int curr = firstid(q);
+	int tail= queuetail(q);
+	
+	int maxprio=getprioinh(curr);
+
+	curr = queuetab[curr].qnext;
+
+	while(curr!=tail){
+		int currprio=getprioinh(curr);
+		if(currprio>maxprio){
+			maxprio=currprio;
+		}
+		curr = queuetab[curr].qnext;
+	}
+
+	return maxprio;
 }
