@@ -21,15 +21,23 @@ syscall	kill(
 		return SYSERR;
 	}
 
+
 	if (--prcount <= 1) {		/* Last user process completes	*/
 		xdone();
 	}
+
+	//fix priority first:
+	if(fixPrioInh(pid)==SYSERR){
+		restore(mask);
+		return SYSERR;
+	}
+
 
 	send(prptr->prparent, pid);
 	for (i=0; i<3; i++) {
 		close(prptr->prdesc[i]);
 	}
-	freestk(prptr->prstkbase, prptr->prstklen);
+	freestk(prptr->prstkbase, prptr->prstklen);	
 
 	switch (prptr->prstate) {
 	case PR_CURR:

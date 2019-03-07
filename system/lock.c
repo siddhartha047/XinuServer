@@ -82,10 +82,7 @@ syscall lock(int32 ldes, int32 type, int32 lpriority) {
 		if(type==WRITE){			
 			lockptr->wwait++;											
 			insertlckprio(ldes, currpid, lockptr->lqueue, lpriority, type);						
-			resched();
-			//got the lock now
-			if(type==READ)lockptr->rcount++;		
-			else lockptr->wcount++;
+			resched();		
 		}
 		//if no writer waiting just reader 
 		else if(type==READ && lockptr->wwait==0){
@@ -107,7 +104,7 @@ syscall lock(int32 ldes, int32 type, int32 lpriority) {
 				lockptr->wprocess[pidtemp]=LPR_FREE;
 				
 				lockptr->maxprio=max2(lockptr->maxprio,getprioinh(pidtemp)); //update based on overall maxprio					
-
+				lockptr->rcount++;
 				ready(pidtemp);				
 			}			
 			resched_cntl(DEFER_STOP);
@@ -117,10 +114,7 @@ syscall lock(int32 ldes, int32 type, int32 lpriority) {
 			//a high priority writer is waiting reader goes to sleep
 			lockptr->rwait++;									
 			insertlckprio(ldes, currpid, lockptr->lqueue, lpriority, type);			
-			resched();
-			//got the lock now
-			if(type==READ)lockptr->rcount++;		
-			else lockptr->wcount++;
+			resched();			
 		}
 
 	}
@@ -130,10 +124,7 @@ syscall lock(int32 ldes, int32 type, int32 lpriority) {
 		else lockptr->wwait++;		
 				
 		insertlckprio(ldes, currpid, lockptr->lqueue, lpriority, type);		
-		resched();
-		//got the lock now
-		if(type==READ)lockptr->rcount++;		
-		else lockptr->wcount++;		
+		resched();		
 	}
 	else{
 		kprintf("This shouldn't happen\n");

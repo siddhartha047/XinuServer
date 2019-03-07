@@ -3,9 +3,6 @@
 
 /* Lab 2: Complete this function */
 
-int getMaxInheritedPriority(qid16 q);
-
-
 syscall releaseall (int32 numlocks, ...) {
 
 	//your implementation goes here
@@ -82,6 +79,7 @@ syscall releaseall (int32 numlocks, ...) {
 					lockptr->wprocess[pidtemp]=LPR_FREE;
 
 					(&proctab[pidtemp])->prinh=max2(getprioinh(pidtemp),lockptr->maxprio);
+					lockptr->rcount++;							
 					ready(pidtemp);
 				}
 
@@ -95,6 +93,7 @@ syscall releaseall (int32 numlocks, ...) {
 					lockptr->wprocess[pidtemp]=LPR_FREE;
 
 					(&proctab[pidtemp])->prinh=max2(getprioinh(pidtemp),lockptr->maxprio);
+					lockptr->rcount++;							
 					ready(pidtemp);
 				}				
 			}
@@ -105,7 +104,8 @@ syscall releaseall (int32 numlocks, ...) {
 				lockptr->maxprio=getMaxInheritedPriority(lockptr->lqueue);
 				int pidtemp=dequeue(lockptr->lqueue);
 				lockptr->wprocess[pidtemp]=LPR_FREE;
-				(&proctab[pidtemp])->prinh=max2(getprioinh(pidtemp),lockptr->maxprio);
+				(&proctab[pidtemp])->prinh=max2(getprioinh(pidtemp),lockptr->maxprio);				
+				lockptr->wcount++;
 				ready(pidtemp);
 			}
 
@@ -139,30 +139,4 @@ syscall releaseall (int32 numlocks, ...) {
 	restore(mask);
 
 	return OK;
-}
-
-
-
-int getMaxInheritedPriority(qid16 q){
-	if (isempty(q)) {
-		XDEBUG_KPRINTF("q shouldn't be empty\n");
-		return EMPTY;
-	}	
-
-	int curr = firstid(q);
-	int tail= queuetail(q);
-	
-	int maxprio=getprioinh(curr);
-
-	curr = queuetab[curr].qnext;
-
-	while(curr!=tail){
-		int currprio=getprioinh(curr);
-		if(currprio>maxprio){
-			maxprio=currprio;
-		}
-		curr = queuetab[curr].qnext;
-	}
-
-	return maxprio;
 }

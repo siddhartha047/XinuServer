@@ -33,6 +33,7 @@ void test6(void);
 
 void mytest0(void);
 void mytest1(void);
+void mytest2(void);
 void myreader( int, int, int );
 void mywriter( int, int, int );
 
@@ -43,7 +44,7 @@ void D( int L1, int L2, int num, int prio);
 void E( int L1, int L2, int num, int prio);
 
 int main(int argc, char** argv) {
-	// kprintf("\n\nCS503 Lab2 \n\r");
+	kprintf("\n\nCS503 Lab2 \n\r");
 	// kprintf("\n\nRunning test 0\n\r");		
 	// test0();	
 	// kprintf("\n\nRunning test 1\n\r");
@@ -66,6 +67,40 @@ int main(int argc, char** argv) {
 	mytest2();
 
 	return 0;
+}
+
+void mytest2(){
+
+	int32 mask;
+	mask=disable();
+	XDEBUG_KPRINTF("My Case 2: handling kill\n");
+	restore(mask);
+
+	int L1=lcreate();
+	int L2=lcreate();
+
+	int prA=create( A, 2000, 10, "A", 4, L1,L2, 1, 1 );
+	int prD=create( D, 2000, 15, "D", 4, L1,L2, 4, 0 );
+	int prB=create( B, 2000, 20, "B", 4, L1,L2, 2, 0 );	
+	int prC=create( C, 2000, 30, "C", 4, L1,L2, 3, 0 );
+	int prE=create( E, 2000, 25, "E", 4, L1,L2, 5, 0 );
+
+	resume(prB);
+	resume(prD);
+	resume(prA);
+	sleep(1);
+	chprio(currpid,60);
+	resume(prC);
+	sleepms(10);
+	kill(prC);
+	chprio(currpid,20);
+	resume(prE);
+		
+	sleep(20);
+	kprintf("priorities finally: A->%d,%d, B->%d,%d C->%d,%d\n", (&proctab[prA])->prprio,
+		(&proctab[prA])->prinh,(&proctab[prB])->prprio,(&proctab[prB])->prinh,
+		(&proctab[prC])->prprio,(&proctab[prC])->prinh);
+
 }
 
 void mytest1(){

@@ -210,12 +210,14 @@ extern	void	eth_ntoh(struct netpacket *);
 
 extern	void	netstart(void);
 
-/* in file kill.c */
+extern int getMaxInheritedPriority(qid16);
 
+extern void priorityUpdate(int32);
+extern  status  fixPrioInh(pid32);
+/* in file kill.c */
 extern	syscall	kill(pid32);
 
 /* in file lexan.c */
-
 extern	int32	lexan(char *, int32, char *, int32 *, int32 [], int32 []);
 
 /* in file lfibclear.c */
@@ -656,6 +658,7 @@ extern	syscall lock(int32, int32, int32);
 extern	status	insertlckprio(int32, pid32, qid16, int32, byte);
 
 extern	syscall	releaseall(int32, ...);
+extern  syscall lockall (int32, int32, int32, ...);
 
 /* NETWORK BYTE ORDER CONVERSION NOT NEEDED ON A BIG-ENDIAN COMPUTER */
 #define	htons(x)   ( ( 0xff & ((x)>>8) ) | ( (0xff & (x)) << 8 ) )

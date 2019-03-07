@@ -23,6 +23,9 @@ pri16	chprio(
 	prptr = &proctab[pid];
 	oldprio = prptr->prprio;
 	prptr->prprio = newprio;
+
+	priorityUpdate(pid);
+	
 	restore(mask);
 	return oldprio;
 }
