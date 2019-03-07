@@ -56,12 +56,15 @@ int main(int argc, char** argv) {
 	// test4();
 
 	// mytest0();	
-	// mytest1(); //
+	
+	// kprintf("\n\nRunning test 5\n\r");
+	// test5();
+	// mytest1(); 
 
-	kprintf("\n\nRunning test 5\n\r");
-	test5();
 	// kprintf("\n\nRunning test 6\n\r");
 	// test6();
+	mytest2();
+
 	return 0;
 }
 
