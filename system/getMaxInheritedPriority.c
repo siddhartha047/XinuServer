@@ -5,8 +5,8 @@
 
 int getMaxInheritedPriority(qid16 q){
 	if (isempty(q)) {
-		XDEBUG_KPRINTF("q shouldn't be empty\n");
-		return EMPTY;
+		//XDEBUG_KPRINTF("q shouldn't be empty\n");		
+		return 0;
 	}	
 
 	int curr = firstid(q);

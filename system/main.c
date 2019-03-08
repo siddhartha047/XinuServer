@@ -47,28 +47,30 @@ void lockalltest1( int L1, int L2, int num, int prio);
 void lockalltest2( int L1, int L2, int num, int prio);
 
 int main(int argc, char** argv) {
-	kprintf("\n\nCS503 Lab2 \n\r");
-	kprintf("\n\nRunning test 0\n\r");		
-	test0();	
-	kprintf("\n\nRunning test 1\n\r");
-	test1();
-	kprintf("\n\nRunning test 2\n\r");
-	test2();	
-	kprintf("\n\nRunning test 3\n\r");
-	test3();
-	kprintf("\n\nRunning test 4\n\r");
-	test4();
-	kprintf("\n\nRunning test 5\n\r");
-	test5();
-	kprintf("\n\nRunning test 6\n\r");
-	test6();	
+	// kprintf("\n\nCS503 Lab2 \n\r");
+	// kprintf("\n\nRunning test 0\n\r");		
+	// test0();	
+	// kprintf("\n\nRunning test 1\n\r");
+	// test1();
+	// kprintf("\n\nRunning test 2\n\r");
+	// test2();	
+	// kprintf("\n\nRunning test 3\n\r");
+	// test3();
+	// kprintf("\n\nRunning test 4\n\r");
+	// test4();
+	// kprintf("\n\nRunning test 5\n\r");
+	// test5();
+	// kprintf("\n\nRunning test 6\n\r");
+	// test6();	
 
-	sleep(10);
+	// sleep(10);
 
-	mytest0();	
+	// mytest0();	
+	
 	mytest1(); 
-	mytest2();
-	mytest3();
+	
+	//mytest2();
+	//mytest3();
 
 	return 0;
 }
@@ -229,8 +231,11 @@ void mytest1(){
 	resume(prD);
 	resume(prA);
 	sleep(1);
-	resume(prC);
+	chprio(getpid(),40);
 	resume(prE);
+	sleepms(10);
+	resume(prC);
+	chprio(getpid(),20);
 		
 	sleep(20);
 	kprintf("priorities finally: A->%d,%d, B->%d,%d C->%d,%d\n", (&proctab[prA])->prprio,

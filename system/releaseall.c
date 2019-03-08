@@ -70,8 +70,8 @@ syscall releaseall (int32 numlocks, ...) {
 		if((lockptr->rwait+lockptr->wwait)>0){
 
 			if(lockptr->lmode[firstid(lockptr->lqueue)]==READ && lockptr->wwait>0){				
-				//remove all reader before first writer
-				lockptr->maxprio=getMaxInheritedPriority(lockptr->lqueue);
+				//remove all reader before first writer				
+				resched_cntl(DEFER_START);
 				
 				while(lockptr->lmode[firstid(lockptr->lqueue)]!=WRITE){
 					lockptr->rwait--;
@@ -83,13 +83,15 @@ syscall releaseall (int32 numlocks, ...) {
 					lockptr->rcount++;							
 					ready(pidtemp);
 				}
+				lockptr->maxprio=getMaxInheritedPriority(lockptr->lqueue);
+				resched_cntl(DEFER_STOP);
 
 			}
 			else if(lockptr->lmode[firstid(lockptr->lqueue)]==READ && lockptr->wwait==0){
 				//remove all reader
+				resched_cntl(DEFER_START);
 				while(!isempty(lockptr->lqueue)){
-					lockptr->rwait--;
-					lockptr->maxprio=getMaxInheritedPriority(lockptr->lqueue);
+					lockptr->rwait--;					
 					int pidtemp=dequeue(lockptr->lqueue);
 					lockptr->wprocess[pidtemp]=LPR_FREE;
 					(&proctab[pidtemp])->prinh=max2(getprioinh(pidtemp),lockptr->maxprio);
@@ -97,18 +99,20 @@ syscall releaseall (int32 numlocks, ...) {
 					lockptr->rcount++;							
 					ready(pidtemp);
 				}				
+				lockptr->maxprio=getMaxInheritedPriority(lockptr->lqueue);
+				resched_cntl(DEFER_STOP);
 			}
 			else{				
 				//remove the writer
-				lockptr->wwait--;
-
-				lockptr->maxprio=getMaxInheritedPriority(lockptr->lqueue);
+				lockptr->wwait--;				
 				int pidtemp=dequeue(lockptr->lqueue);
 				lockptr->wprocess[pidtemp]=LPR_FREE;
 				(&proctab[pidtemp])->prinh=max2(getprioinh(pidtemp),lockptr->maxprio);		
 				(&proctab[pidtemp])->locks[ldes]=1;		
 				lockptr->wcount++;
+				lockptr->maxprio=getMaxInheritedPriority(lockptr->lqueue);
 				ready(pidtemp);
+
 			}
 
 		}
