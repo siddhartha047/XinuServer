@@ -219,7 +219,7 @@ void mytest1(){
 	int L1=lcreate();
 	int L2=lcreate();
 
-	int prA=create( A, 2000, 10, "A", 4, L1,L2, 1, 1 );
+	int prA=create( A, 2000, 10, "A", 4, L1,L2, 1, 0 );
 	int prD=create( D, 2000, 15, "D", 4, L1,L2, 4, 0 );
 	int prB=create( B, 2000, 20, "B", 4, L1,L2, 2, 0 );	
 	int prC=create( C, 2000, 30, "C", 4, L1,L2, 3, 0 );

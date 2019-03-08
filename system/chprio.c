@@ -24,7 +24,9 @@ pri16	chprio(
 	oldprio = prptr->prprio;
 	prptr->prprio = newprio;
 
+	resched_cntl(DEFER_START);
 	priorityUpdate(pid);
+	resched_cntl(DEFER_STOP);
 	
 	restore(mask);
 	return oldprio;

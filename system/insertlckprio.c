@@ -60,6 +60,8 @@ status	insertlckprio(
 	// }
 	// XDEBUG_KPRINTF("\n");
 
+	resched_cntl(DEFER_START);
+
 	if(getprioinh(pid)>lockptr->maxprio){
 		//update inherited priority of everyone
 		//XDEBUG_KPRINTF("Priority inversion necessary->%d\n",ldes);
@@ -71,6 +73,8 @@ status	insertlckprio(
 			}			
 		}	
 	}
+
+	resched_cntl(DEFER_STOP);
 	
 	// XDEBUG_KPRINTF("After Priorities: ");
 	// for(int i=0;i<10;i++){
@@ -85,6 +89,12 @@ status	insertlckprio(
 void RecursiveUpdate(pid32 pid){
 	struct	procent *prptr;
 	prptr=&proctab[pid];
+
+	if(prptr->prstate==PR_READY && prptr->lockid==NOT_WAITING){		
+		ready(getitem(pid));
+		return;
+	}
+
 	if(prptr->lockid==NOT_WAITING){
 		return;
 	}

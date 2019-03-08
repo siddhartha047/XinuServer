@@ -79,6 +79,7 @@ syscall releaseall (int32 numlocks, ...) {
 					lockptr->wprocess[pidtemp]=LPR_FREE;
 
 					(&proctab[pidtemp])->prinh=max2(getprioinh(pidtemp),lockptr->maxprio);
+					(&proctab[pidtemp])->locks[ldes]=1;
 					lockptr->rcount++;							
 					ready(pidtemp);
 				}
@@ -91,8 +92,8 @@ syscall releaseall (int32 numlocks, ...) {
 					lockptr->maxprio=getMaxInheritedPriority(lockptr->lqueue);
 					int pidtemp=dequeue(lockptr->lqueue);
 					lockptr->wprocess[pidtemp]=LPR_FREE;
-
 					(&proctab[pidtemp])->prinh=max2(getprioinh(pidtemp),lockptr->maxprio);
+					(&proctab[pidtemp])->locks[ldes]=1;
 					lockptr->rcount++;							
 					ready(pidtemp);
 				}				
@@ -104,7 +105,8 @@ syscall releaseall (int32 numlocks, ...) {
 				lockptr->maxprio=getMaxInheritedPriority(lockptr->lqueue);
 				int pidtemp=dequeue(lockptr->lqueue);
 				lockptr->wprocess[pidtemp]=LPR_FREE;
-				(&proctab[pidtemp])->prinh=max2(getprioinh(pidtemp),lockptr->maxprio);				
+				(&proctab[pidtemp])->prinh=max2(getprioinh(pidtemp),lockptr->maxprio);		
+				(&proctab[pidtemp])->locks[ldes]=1;		
 				lockptr->wcount++;
 				ready(pidtemp);
 			}
@@ -112,7 +114,15 @@ syscall releaseall (int32 numlocks, ...) {
 		}
 
 		prptr->locks[ldes]=0;
-		prptr->prinh=0;
+		
+		prptr->prinh=0;//max of proc
+		for(int l=0;l<NLOCKS;l++){
+			if(prptr->locks[l]==1){
+				if((&locktab[l])->maxprio>prptr->prinh){
+					prptr->prinh=(&locktab[l])->maxprio;
+				}
+			}
+		}
 
 		
 		// XDEBUG_KPRINTF("Release lock %d-> rcount: %d, wcount: %d, rwait: %d, wwait: %d maxprio: %d\n",ldes,lockptr->rcount,lockptr->wcount,lockptr->rwait,lockptr->wwait,lockptr->maxprio);

@@ -1,12 +1,17 @@
 #include<xinu.h>
 
 
-void priorityUpdate(int32 pid){
+void priorityUpdate(int32 pid){	
 
 	struct	lockent *lockptr;
 	//if not waiting return
 	struct	procent *prptr;
 	prptr=&proctab[pid];
+
+	if(prptr->prstate==PR_READY && prptr->lockid==NOT_WAITING){		
+		ready(getitem(pid));
+		return;
+	}
 
 	if(prptr->lockid==NOT_WAITING){
 		return;
