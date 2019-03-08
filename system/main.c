@@ -34,6 +34,7 @@ void test6(void);
 void mytest0(void);
 void mytest1(void);
 void mytest2(void);
+void mytest3(void);
 void myreader( int, int, int );
 void mywriter( int, int, int );
 
@@ -42,31 +43,133 @@ void B( int L1, int L2, int num, int prio);
 void C( int L1, int L2, int num, int prio);
 void D( int L1, int L2, int num, int prio);
 void E( int L1, int L2, int num, int prio);
+void lockalltest1( int L1, int L2, int num, int prio);
+void lockalltest2( int L1, int L2, int num, int prio);
 
 int main(int argc, char** argv) {
 	kprintf("\n\nCS503 Lab2 \n\r");
-	// kprintf("\n\nRunning test 0\n\r");		
-	// test0();	
-	// kprintf("\n\nRunning test 1\n\r");
-	// test1();
-	// kprintf("\n\nRunning test 2\n\r");
-	// test2();	
-	// kprintf("\n\nRunning test 3\n\r");
-	// test3();
-	// kprintf("\n\nRunning test 4\n\r");
-	// test4();
+	kprintf("\n\nRunning test 0\n\r");		
+	test0();	
+	kprintf("\n\nRunning test 1\n\r");
+	test1();
+	kprintf("\n\nRunning test 2\n\r");
+	test2();	
+	kprintf("\n\nRunning test 3\n\r");
+	test3();
+	kprintf("\n\nRunning test 4\n\r");
+	test4();
+	kprintf("\n\nRunning test 5\n\r");
+	test5();
+	kprintf("\n\nRunning test 6\n\r");
+	test6();	
 
 	// mytest0();	
-	
-	// kprintf("\n\nRunning test 5\n\r");
-	// test5();
 	// mytest1(); 
-
-	// kprintf("\n\nRunning test 6\n\r");
-	// test6();
-	mytest2();
+	// mytest2();
+	// mytest3();
 
 	return 0;
+}
+
+
+
+void mytest3(){
+
+	int32 mask;
+	mask=disable();
+	XDEBUG_KPRINTF("My Case 3: handling lockall\n");
+	restore(mask);
+
+
+	int L1=lcreate();
+	int L2=lcreate();
+
+	int prA=create( lockalltest1, 2000, 15, "Test1", 4, L1,L2, 1, 0 );
+	int prB=create( lockalltest2, 2000, 10, "Test2", 4, L1,L2, 2, 0 );
+
+	resume(prA);
+	resume(prB);
+
+	sleep(10);
+
+	kill(prA);
+	kill(prB);
+}
+
+void lockalltest1( int L1, int L2, int num, int prio){
+	intmask mask;
+
+	mask=disable();
+	kprintf(" lockall: %d: trying Lock ..%d\n\r", num, L1);
+	restore(mask);
+	
+	int a;	
+	a = lock( L1, WRITE, prio );
+	if( a != OK )
+	{
+	  kprintf(" lockall %d: lock failed %d ..\n\r", num, a ); 
+	  return;
+	}
+	
+	mask=disable();
+	kprintf(" lockall %d: got Lock ..%d\n\r", num, L1);
+	restore(mask);
+
+	sleep(3);
+		
+	mask=disable();
+	kprintf(" lockall %d: Releasing ..\n\r", num);
+	restore(mask);
+
+	a = releaseall( 1,L1 );
+	if( a != OK ){
+		kprintf(" lockall %d: Lock release failed %d ..\n\r", num, a ); 
+	}
+	else{
+		mask=disable();
+		kprintf(" lockall %d: Lock release done ..\n\r", num ); 		
+		restore(mask);		
+	}
+	return;
+}
+
+void lockalltest2( int L1, int L2, int num, int prio){
+	intmask mask;
+
+	int L3=lcreate();
+	mask=disable();
+	kprintf(" lockall2: %d: trying all Locks ..%d %d %d \n\r", num, L1,L2,L3);
+	restore(mask);	
+	
+	int a=lockall(WRITE,0, 3, L3,L1,L2);
+
+	if( a != OK )
+	{
+	  kprintf(" lockall2 %d: lock failed %d ..\n\r", num, a ); 
+	  return;
+	}
+	
+	mask=disable();
+	kprintf(" lockall2: %d: got all Locks ..%d  %d %d\n\r", num, L1,L2,L3);
+	restore(mask);	
+	
+	sleep(3);
+		
+	mask=disable();
+	kprintf(" lockall %d: Releasing ..\n\r", num);
+	restore(mask);
+
+	a = releaseall( 1,L1,L2,L3);
+	
+	if( a != OK ){
+		kprintf(" lockall %d: Lock release failed %d ..\n\r", num, a ); 
+	}
+	else{
+		mask=disable();
+		kprintf(" lockall %d: Lock release done ..\n\r", num ); 		
+		restore(mask);		
+	}
+	return;
 }
 
 void mytest2(){
@@ -338,8 +441,6 @@ void C( int L1, int L2, int num, int prio)
 	}
 	return;
 }
-
-
 
 
 void mytest0(){

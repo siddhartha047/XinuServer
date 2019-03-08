@@ -31,11 +31,11 @@ status	fixPrioInh(
 	resched_cntl(DEFER_STOP);
 
 
-	XDEBUG_KPRINTF("Killing: %d\r\nBefore fixing inh: ",pid);
-	for(int i=3;i<10;i++){
-		XDEBUG_KPRINTF("(%d, %d, %d)->",i,(&proctab[i])->prprio,(&proctab[i])->prinh);
-	}
-	XDEBUG_KPRINTF("\n");
+	// XDEBUG_KPRINTF("Killing: %d\r\nBefore fixing inh: ",pid);
+	// for(int i=3;i<10;i++){
+	// 	XDEBUG_KPRINTF("(%d, %d, %d)->",i,(&proctab[i])->prprio,(&proctab[i])->prinh);
+	// }
+	// XDEBUG_KPRINTF("\n");
 	
 
 
@@ -62,11 +62,11 @@ status	fixPrioInh(
 	}	
 
 	
-	XDEBUG_KPRINTF("After fixing inh :");
-	for(int i=3;i<10;i++){
-		XDEBUG_KPRINTF("(%d, %d, %d)->",i,(&proctab[i])->prprio,(&proctab[i])->prinh);
-	}
-	XDEBUG_KPRINTF("\n");
+	// XDEBUG_KPRINTF("After fixing inh :");
+	// for(int i=3;i<10;i++){
+	// 	XDEBUG_KPRINTF("(%d, %d, %d)->",i,(&proctab[i])->prprio,(&proctab[i])->prinh);
+	// }
+	// XDEBUG_KPRINTF("\n");
 	
 	
 	return OK;

@@ -54,15 +54,15 @@ status	insertlckprio(
 	queuetab[prev].qnext = pid;
 	queuetab[curr].qprev = pid;
 
-	XDEBUG_KPRINTF("Before Priorities: ");
-	for(int i=0;i<10;i++){
-		XDEBUG_KPRINTF("(%d, %d)->",(&proctab[i])->prprio,(&proctab[i])->prinh);
-	}
-	XDEBUG_KPRINTF("\n");
+	// XDEBUG_KPRINTF("Before Priorities: ");
+	// for(int i=0;i<10;i++){
+	// 	XDEBUG_KPRINTF("(%d, %d)->",(&proctab[i])->prprio,(&proctab[i])->prinh);
+	// }
+	// XDEBUG_KPRINTF("\n");
 
 	if(getprioinh(pid)>lockptr->maxprio){
 		//update inherited priority of everyone
-		XDEBUG_KPRINTF("Priority inversion necessary->%d\n",ldes);
+		//XDEBUG_KPRINTF("Priority inversion necessary->%d\n",ldes);
 		lockptr->maxprio=getprioinh(pid);		
 		for(int i=0;i<NPROC;i++){					
 			if((&proctab[i])->locks[ldes]==1){ //process i is holding the lock				
@@ -72,11 +72,11 @@ status	insertlckprio(
 		}	
 	}
 	
-	XDEBUG_KPRINTF("After Priorities: ");
-	for(int i=0;i<10;i++){
-		XDEBUG_KPRINTF("(%d, %d)->",(&proctab[i])->prprio,(&proctab[i])->prinh);
-	}
-	XDEBUG_KPRINTF("\n");
+	// XDEBUG_KPRINTF("After Priorities: ");
+	// for(int i=0;i<10;i++){
+	// 	XDEBUG_KPRINTF("(%d, %d)->",(&proctab[i])->prprio,(&proctab[i])->prinh);
+	// }
+	// XDEBUG_KPRINTF("\n");
 
 
 	return OK;
@@ -96,7 +96,7 @@ void RecursiveUpdate(pid32 pid){
 
 	if(getprioinh(pid)>lockptr->maxprio){
 		//update inherited priority of everyone
-		XDEBUG_KPRINTF("Priority inversion necessary->%d\n",lockid);
+		//XDEBUG_KPRINTF("Priority inversion necessary->%d\n",lockid);
 		lockptr->maxprio=getprioinh(pid);		
 		for(int i=0;i<NPROC;i++){					
 			if((&proctab[i])->locks[lockid]==1){ //process i is holding the lock				
