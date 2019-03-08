@@ -71,7 +71,7 @@ syscall lock(int32 ldes, int32 type, int32 lpriority) {
 			lockptr->wcount++;
 		}
 
-		lockptr->maxprio=getprioinh(currpid);
+		//lockptr->maxprio=getprioinh(currpid);
 
 	}
 	else if(lockptr->rcount>0){
@@ -88,13 +88,13 @@ syscall lock(int32 ldes, int32 type, int32 lpriority) {
 		else if(type==READ && lockptr->wwait==0){
 			//gets the lock
 			lockptr->rcount++;
-			lockptr->maxprio=max2(lockptr->maxprio,getprioinh(currpid)); //update overall maxprio								
+			//lockptr->maxprio=max2(lockptr->maxprio,getprioinh(currpid)); //update overall maxprio								
 		}		
 		//a higher priority writer is waiting
 		else if(type==READ && lpriority>=getMaxWriterPriority(lockptr->lqueue, ldes)){
 			//gets the lock	
 			lockptr->rcount++;	
-			lockptr->maxprio=max2(lockptr->maxprio,getprioinh(currpid)); //update overall maxprio					
+			//lockptr->maxprio=max2(lockptr->maxprio,getprioinh(currpid)); //update overall maxprio					
 		
 			//take all reader process before first write if there are any
 			resched_cntl(DEFER_START);
@@ -103,7 +103,7 @@ syscall lock(int32 ldes, int32 type, int32 lpriority) {
 				int pidtemp=dequeue(lockptr->lqueue);
 				lockptr->wprocess[pidtemp]=LPR_FREE;
 				
-				lockptr->maxprio=max2(lockptr->maxprio,getprioinh(pidtemp)); //update based on overall maxprio					
+				//lockptr->maxprio=max2(lockptr->maxprio,getprioinh(pidtemp)); //update based on overall maxprio					
 				lockptr->rcount++;
 				ready(pidtemp);				
 			}			

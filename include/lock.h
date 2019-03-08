@@ -17,7 +17,7 @@
 #define	L_FREE	0		/* Lock table entry is available	*/
 #define	L_USED	1		/* Lock table entry is in use	*/
 
-#define LPR_WAIT 1
+#define LPR_WAIT 1		
 #define LPR_FREE 0
 
 

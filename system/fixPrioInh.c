@@ -37,7 +37,7 @@ status	fixPrioInh(
 	// }
 	// XDEBUG_KPRINTF("\n");
 	
-	resched_cntl("DEFER_START");
+	resched_cntl(DEFER_START);
 
 	//if dying in while waiting
 	if(prptr->lockid!=NOT_WAITING){
@@ -61,7 +61,7 @@ status	fixPrioInh(
 		
 	}	
 
-	resched_cntl("DEFER_STOP");
+	resched_cntl(DEFER_STOP);
 	
 	// XDEBUG_KPRINTF("After fixing inh :");
 	// for(int i=3;i<10;i++){
