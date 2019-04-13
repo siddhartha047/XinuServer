@@ -7,6 +7,8 @@ void set_cr0(unsigned long n);
 void set_cr3(unsigned long n);
 unsigned long read_cr3(void);
 unsigned long read_cr2(void);
+void enable_paging(void);
+void set_page_directory(unsigned long n);
 
 
 unsigned long read_cr0(void){

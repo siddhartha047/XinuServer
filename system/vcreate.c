@@ -40,10 +40,9 @@ pid32	vcreate(
 		return SYSERR;
 	}
 
-  // Lab3 TODO. set up page directory, allocate bs etc.
 
-	prcount++;
 	prptr = &proctab[pid];
+	prcount++;	
 
 	/* Initialize process table entry for new process */
 	prptr->prstate = PR_SUSP;	/* Initial state is suspended	*/
@@ -101,6 +100,21 @@ pid32	vcreate(
 	*--saddr = 0;			/* %edi */
 	*pushsp = (unsigned long) (prptr->prstkptr = (char *)saddr);
 	
+	// Lab3 TODO. set up page directory, allocate bs etc.
+	//@sid::
+	pd_t *pd_entry=get_page_directory();
+	if(pd_entry==NULL){
+		prcount--;
+		kill(pid);
+		XDEBUG_KPRINTF("Couldn't allocate pd\n");
+		restore(mask);
+		return SYSERR;
+	}
+
+	prptr->prpd=pd_entry;
+	prptr->prhsize=hsize;
+	prptr->prtype=PR_VCREATE;
+
 	restore(mask);
 	return pid;
 }

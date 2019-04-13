@@ -125,8 +125,14 @@ extern void pagefault(void);
 extern void page_fault_handler(void);
 
 //sid: in file page_register.c
+extern unsigned long read_cr0(void);
+extern void set_cr0(unsigned long n);
+extern void set_cr3(unsigned long n);
+extern unsigned long read_cr3(void);
+extern unsigned long read_cr2(void);
 extern void enable_paging(void);
-extern void set_page_directory(unsigned long pd);
+extern void set_page_directory(unsigned long n);
+
 
 
 #endif // __PAGING_H_

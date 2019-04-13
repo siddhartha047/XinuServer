@@ -64,8 +64,13 @@ struct procent {		/* Entry in the process table		*/
 
 	/* Lab3 TODO: add more structures as required for vheap etc. */	
 	pd_t 	*prpd; //sid: page directory
+	uint32	prhsize;
+	uint32  prtype;
   
 };
+
+#define PR_NORMAL 0
+#define PR_VCREATE 1
 
 /* Marker for the top of a process stack (used to help detect overflow)	*/
 #define	STACKMAGIC	0x0A0AAAA9

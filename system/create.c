@@ -63,6 +63,8 @@ pid32	create(
 
 	//sid: page directory settings
 	prptr->prpd=global_pd;
+	prptr->prhsize=-1;
+	prptr->prtype=PR_NORMAL;
 
 	/* Initialize stack as if the process was called		*/
 

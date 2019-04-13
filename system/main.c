@@ -24,8 +24,9 @@ process	main(void)
   /* DO NOT REMOVE OR COMMENT THIS CALL */
   psinit();
 
-  //page_policy_test();
-  test0();
+  //test0();
+  page_policy_test();
+  
 
   XTEST_KPRINTF("Main process ending\n");
 
