@@ -66,7 +66,7 @@ struct procent {		/* Entry in the process table		*/
 	pd_t 	*prpd; //sid: page directory
 	uint32	prhsize;
 	uint32  prtype;
-  
+  	struct memblk prvmem;
 };
 
 #define PR_NORMAL 0
@@ -81,6 +81,9 @@ extern	pid32	currpid;	/* Currently executing process		*/
 
 #define XTEST 1 
 #define XDEBUG 1 	/* set this to 0 when submitting */
+
+#define min2(a,b) (a<b)? a:b
+#define max2(a,b) (a>b)? a:b
 
 //Sid: Added for the assignment
 /* For grading */

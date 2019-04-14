@@ -109,11 +109,47 @@ pid32	vcreate(
 		XDEBUG_KPRINTF("Couldn't allocate pd\n");
 		restore(mask);
 		return SYSERR;
-	}
+	}	
 
 	prptr->prpd=pd_entry;
 	prptr->prhsize=hsize;
 	prptr->prtype=PR_VCREATE;
+
+	//alocating backing store 
+	bsd_t bsid;
+	uint32 size;
+	uint32 vsize=hsize;
+	uint32 offset=0;
+
+	while(vsize>0){
+		size=min2(vsize, MAX_PAGES_PER_BS);
+		vsize=vsize-size;
+		bsid=allocate_bs(size);
+
+		if(bsid==SYSERR){
+			remove_bs_map(pid);
+			kill(pid);
+			XDEBUG_KPRINTF("Not enough space too allocate backing store\n");
+			restore(mask);
+			return SYSERR;
+		}
+
+		int32 status=add_bs_map(pid,VPN0+offset,size,bsid);
+
+		if(status==SYSERR){
+			remove_bs_map(pid);
+			kill(pid);
+			XDEBUG_KPRINTF("Couldn't map bsid\n");
+			restore(mask);
+			return SYSERR;	
+		}
+
+		offset=offset+size;
+
+	}
+
+	prptr->prvmem.mnext=(struct memblk*)vpn_to_address(VPN0);
+	prptr->prvmem.mlength=hsize*NBPG;
 
 	restore(mask);
 	return pid;

@@ -41,6 +41,8 @@ typedef struct {
 #define NBPG		4096	/* number of bytes per page	*/
 #define FRAME0		1024	/* zero-th frame		*/
 
+#define VPN0		4096
+
 #define DEVICE_VPN 589824  //Starting virtual page number
 #define DEVICE_PTN 576     //Device Page Index
 
@@ -78,6 +80,8 @@ extern int32	currpolicy;
 //sid: macros for different address transformation
 #define frameno_to_address(frameNo) (uint32)(((uint32)frameNo+FRAME0)*NBPG)
 #define address_to_vpn(address) (uint32)((uint32)address/NBPG)
+#define vpn_to_address(vpn) (uint32)((uint32)vpn*NBPG)
+
 //structure for frame
 typedef struct frame
 {
@@ -134,5 +138,20 @@ extern void enable_paging(void);
 extern void set_page_directory(unsigned long n);
 
 
+//sid: for bs mapping
+typedef struct{
+	pid32 pid; //process id
+	uint32 vpn; //starting page number
+	uint32 npages;
+	bsd_t bsid;
+	int32 allocated;
+}backing_store_map;
+
+extern backing_store_map backing_store_map_tab[];
+
+//sid: in file mmu_backing_store.c
+extern void initialize_backing_store(void);
+extern int32 add_bs_map(pid32 pid, uint32 vpn, uint32 npages, bsd_t bsid);
+extern int32 remove_bs_map(pid32 pid);
 
 #endif // __PAGING_H_

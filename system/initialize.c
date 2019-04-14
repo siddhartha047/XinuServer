@@ -34,6 +34,7 @@ frame_t *frame_head;
 inverted_page_t inverted_page_tab[NFRAMES];
 pd_t *global_pd; //global page directory
 
+backing_store_map backing_store_map_tab[MAX_BS_ENTRIES];
 /* Active system status */
 
 int	prcount;		/* Total number of live processes	*/
@@ -219,6 +220,9 @@ static void initialize_paging()
 	XDEBUG_KPRINTF("Start frame initialization\n");
 	initialize_frame();
 	
+	XDEBUG_KPRINTF("Initilizing backing store\n");
+	initialize_backing_store();
+
 	//sid: set page table for identity mapping and device memory	
 	XDEBUG_KPRINTF("Setup Global Page Table initialization\n");
 	initialize_global_page_table(); 
@@ -229,7 +233,7 @@ static void initialize_paging()
 	if(global_pd==NULL){
 		XDEBUG_KPRINTF("Shouldn't happen: failed to create global page directory");
 		return;	
-	}
+	}	
 
 	(&proctab[NULLPROC])->prpd=global_pd;
 
@@ -241,7 +245,6 @@ static void initialize_paging()
 	
 	XDEBUG_KPRINTF("Enable paging\n");
 	enable_paging();
-
 
 
 	return;
