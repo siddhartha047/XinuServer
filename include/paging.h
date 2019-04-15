@@ -47,6 +47,7 @@ typedef struct {
 #define DEVICE_PTN 576     //Device Page Index
 
 #ifndef NFRAMES
+//#define NFRAMES		3072	/* number of frames		*/
 #define NFRAMES		3072	/* number of frames		*/
 #endif
 

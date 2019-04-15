@@ -30,7 +30,7 @@ char  	*vgetmem(
 
 	nbytes=(uint32)roundmb(nbytes);
 
-	prev=&(prptr->prmemlist);
+	prev=&prptr->prmemlist;
 	curr=prev->mnext;
 
 	//taken from getmem
