@@ -6,6 +6,9 @@
  *  kill  -  Kill a process and remove it from the system
  *------------------------------------------------------------------------
  */
+
+int32 restoreframes(pid32 pid);
+
 syscall	kill(
 	  pid32		pid		/* ID of process to kill	*/
 	)
@@ -32,6 +35,19 @@ syscall	kill(
 	}
 
   // Lab3 TODO. Free frames as a process gets killed.
+	//restore frames and stuff
+
+	XDEBUG_KPRINTF("Frame before kill->");
+	printFrameList(frame_head);
+
+	if(restoreframes(pid)==SYSERR){
+		XDEBUG_KPRINTF("restore frame failed\n");		
+	}
+
+	XDEBUG_KPRINTF("Frame after kill->");
+	printFrameList(frame_head);
+	//
+
 
 	freestk(prptr->prstkbase, prptr->prstklen);
 
@@ -59,5 +75,51 @@ syscall	kill(
 	}
 
 	restore(mask);
+	return OK;
+}
+
+
+int32 restoreframes(pid32 pid){
+	frame_t *frame_entry;
+	inverted_page_t *inverted_page_entry;
+
+	for(int i=0;i<NFRAMES;i++){
+		inverted_page_entry= &inverted_page_tab[i];
+		
+		if(inverted_page_entry->pid==pid){
+			if(remove_frame_fifo(i)==SYSERR){
+				XDEBUG_KPRINTF("Something went wrong while removing frame\n");
+				return SYSERR;
+			}
+			frame_entry=&frame_tab[i];
+			frame_entry->id=i;
+			frame_entry->state=FRAME_FREE;
+			frame_entry->type=FRAME_NONE;
+			frame_entry->dirty=0;
+			frame_entry->next=(frame_t *)NULL;
+
+			inverted_page_entry->refcount=0;
+			inverted_page_entry->pid=-1;
+			inverted_page_entry->vpn=0;
+		}
+	}
+
+	backing_store_map *bs_map_entry;
+
+	for(int i=0;i<MAX_BS_ENTRIES;i++){
+		bs_map_entry=&backing_store_map_tab[i];
+		if(bs_map_entry->pid==pid){
+			if(deallocate_bs(i)){
+				XDEBUG_KPRINTF("Kill deallocate bs failed\n");
+				return SYSERR;
+			}
+			bs_map_entry->pid=-1;
+			bs_map_entry->vpn=0;
+			bs_map_entry->npages=0;
+			bs_map_entry->bsid=-1;
+			bs_map_entry->allocated=0;
+		}
+	}
+
 	return OK;
 }

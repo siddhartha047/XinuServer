@@ -119,6 +119,8 @@ extern sid32 fault_sem;
 //sid: in file mmu_frame.c
 extern int32 initialize_frame(void);
 extern int32 get_one_frame(void);
+int32 remove_frame_fifo(int32 frameNo);
+void printFrameList(frame_t *frame_entry);
 
 
 #define GLOBAL_PAGE_NO 4

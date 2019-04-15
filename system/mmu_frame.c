@@ -5,6 +5,8 @@ int32 initialize_frame(void);
 int32 get_one_frame(void);
 int32 find_free_frame(void);
 void printFrameList(frame_t *frame_entry);
+int32 remove_frame_fifo(int32 frameNo);
+
 
 
 int32 initialize_frame(void){
@@ -109,4 +111,36 @@ void printFrameList(frame_t *frame_entry){
 		frame_entry=frame_entry->next;
 	}
 	XDEBUG_KPRINTF("\n");
+}
+
+
+int32 remove_frame_fifo(int32 frameNo){
+	intmask mask=disable();
+	frame_t *prev;
+	frame_t *curr;
+
+	curr=frame_head;
+	prev=NULL;
+
+	while(curr!=NULL){
+		if(curr->id==frameNo){
+			//if this is head
+			if(prev==NULL){
+				frame_head=curr->next;				
+			}
+			else{
+				prev->next=curr->next;				
+			}
+			curr->next=(frame_t *)NULL;
+			curr->state=FRAME_FREE;
+			curr->type=FRAME_NONE;
+			restore(mask);
+			return OK;
+		}
+		prev=curr;
+		curr=curr->next;		
+	}
+
+	restore(mask);
+	return SYSERR;
 }
