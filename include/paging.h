@@ -81,6 +81,8 @@ extern int32	currpolicy;
 #define frameno_to_address(frameNo) (uint32)(((uint32)frameNo+FRAME0)*NBPG)
 #define address_to_vpn(address) (uint32)((uint32)address/NBPG)
 #define vpn_to_address(vpn) (uint32)((uint32)vpn*NBPG)
+#define address_to_frameno(address) (uint32)((uint32)address/NBPG-FRAME0)
+#define frameno_to_vpn(frameNo) (uint32)((uint32)frameNo+FRAME0)
 
 //structure for frame
 typedef struct frame
@@ -102,8 +104,17 @@ typedef struct
 	int32 refcount; //how many times this frame has been reffered
 }inverted_page_t;
 
+typedef struct
+{
+	uint32 pg_offset : 12;
+	uint32 pt_offset : 10;
+	uint32 pd_offset : 10;
+}vd_t;
+
 extern inverted_page_t inverted_page_tab[];
 
+
+extern sid32 fault_sem;
 
 //sid: in file mmu_frame.c
 extern int32 initialize_frame(void);
@@ -120,6 +131,7 @@ extern pd_t *global_pd; //global page directory
 //sid: in file mmu_page.c
 extern int32 initialize_global_page_table(void);
 extern pd_t* get_page_directory(void);
+extern pt_t *get_one_page(void);
 
 
 //sid: in assembly file pagefault.s
@@ -153,5 +165,9 @@ extern backing_store_map backing_store_map_tab[];
 extern void initialize_backing_store(void);
 extern int32 add_bs_map(pid32 pid, uint32 vpn, uint32 npages, bsd_t bsid);
 extern int32 remove_bs_map(pid32 pid);
+extern backing_store_map* get_bs_map(pid32 pid, uint32 vpn);
+
+
+extern int32 fault_counts;
 
 #endif // __PAGING_H_

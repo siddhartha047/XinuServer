@@ -33,6 +33,8 @@ frame_t frame_tab[NFRAMES];
 frame_t *frame_head;
 inverted_page_t inverted_page_tab[NFRAMES];
 pd_t *global_pd; //global page directory
+int32 fault_counts=0;
+sid32 fault_sem;
 
 backing_store_map backing_store_map_tab[MAX_BS_ENTRIES];
 /* Active system status */
@@ -213,6 +215,9 @@ static	void	sysinit()
 
 static void initialize_paging()
 {
+	fault_counts=0;
+	fault_sem = semcreate(1);
+
 	/* LAB3 TODO */
 	srpolicy(FIFO); //sid: set as fifo at the early stage
 

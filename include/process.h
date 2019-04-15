@@ -66,7 +66,8 @@ struct procent {		/* Entry in the process table		*/
 	pd_t 	*prpd; //sid: page directory
 	uint32	prhsize;
 	uint32  prtype;
-  	struct memblk prvmem;
+	int32	prmemlistinit;	
+  	struct memblk prmemlist;
 };
 
 #define PR_NORMAL 0

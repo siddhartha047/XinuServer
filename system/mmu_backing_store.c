@@ -19,7 +19,7 @@ int32 add_bs_map(pid32 pid, uint32 vpn, uint32 npages, bsd_t bsid){
 
 	backing_store_map *bs_map_entry;
 
-	if(bstab[bsid].isallocated==0||backing_store_map_tab[bsid].allocated==1){
+	if(bstab[bsid].isallocated==FALSE||backing_store_map_tab[bsid].allocated==1){
 		restore(mask);
 		return SYSERR;
 	}
@@ -62,4 +62,28 @@ int32 remove_bs_map(pid32 pid){
 	restore(mask);
 
 	return OK;
+}
+
+
+backing_store_map* get_bs_map(pid32 pid, uint32 vpn){
+	intmask mask=disable();
+	backing_store_map* bs_map_entry;
+	struct bs_entry *bs_map;
+
+	for(int i=0;i<MAX_BS_ENTRIES;i++){
+		bs_map=&bstab[i];
+		bs_map_entry=&backing_store_map_tab[i];
+
+		if( !((bs_map->isallocated==0) || 
+			(bs_map_entry->allocated==0)||
+			(bs_map_entry->pid!=pid)||
+			(vpn<bs_map_entry->vpn)||
+			(vpn>=(bs_map_entry->vpn+bs_map_entry->npages)))){
+			restore(mask);
+			return bs_map_entry;
+		}		
+	}	
+
+	restore(mask);
+	return (backing_store_map *)NULL;
 }

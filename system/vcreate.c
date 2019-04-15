@@ -114,6 +114,7 @@ pid32	vcreate(
 	prptr->prpd=pd_entry;
 	prptr->prhsize=hsize;
 	prptr->prtype=PR_VCREATE;
+	prptr->prmemlistinit=1;
 
 	//alocating backing store 
 	bsd_t bsid;
@@ -148,8 +149,8 @@ pid32	vcreate(
 
 	}
 
-	prptr->prvmem.mnext=(struct memblk*)vpn_to_address(VPN0);
-	prptr->prvmem.mlength=hsize*NBPG;
+	prptr->prmemlist.mnext=(struct memblk*)vpn_to_address(VPN0);
+	prptr->prmemlist.mlength=hsize*NBPG;
 
 	restore(mask);
 	return pid;

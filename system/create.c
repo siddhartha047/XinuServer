@@ -65,6 +65,7 @@ pid32	create(
 	prptr->prpd=global_pd;
 	prptr->prhsize=-1;
 	prptr->prtype=PR_NORMAL;
+	prptr->prmemlistinit=0;
 
 	/* Initialize stack as if the process was called		*/
 
