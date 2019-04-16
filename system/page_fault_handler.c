@@ -60,6 +60,8 @@ void page_fault_handler(void){
 	int32 frameNo=address_to_frameno(pt_entry);
 	inverted_page_tab[frameNo].refcount++;
 
+	//XDEBUG_KPRINTF("Fault: Page table frame %d refcount %d\n",frameNo,inverted_page_tab[frameNo].refcount);
+
 	int32 newframeNo=get_one_frame();
 	if(newframeNo==SYSERR){
 		XDEBUG_KPRINTF("Not enough free frame\n");		

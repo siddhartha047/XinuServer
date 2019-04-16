@@ -48,7 +48,7 @@ typedef struct {
 
 #ifndef NFRAMES
 //#define NFRAMES		3072	/* number of frames		*/
-#define NFRAMES		3072	/* number of frames		*/
+#define NFRAMES		40	/* number of frames		*/
 #endif
 
 #define MAP_SHARED 1
@@ -120,8 +120,9 @@ extern sid32 fault_sem;
 //sid: in file mmu_frame.c
 extern int32 initialize_frame(void);
 extern int32 get_one_frame(void);
-int32 remove_frame_fifo(int32 frameNo);
-void printFrameList(frame_t *frame_entry);
+extern int32 swap_frame_back(int32 frameNo);
+extern int32 find_free_frame(void);
+
 
 
 #define GLOBAL_PAGE_NO 4
@@ -144,6 +145,7 @@ extern void pagefault(void);
 extern void page_fault_handler(void);
 
 //sid: in file page_register.c
+extern unsigned long tmp;
 extern unsigned long read_cr0(void);
 extern void set_cr0(unsigned long n);
 extern void set_cr3(unsigned long n);
@@ -172,5 +174,15 @@ extern backing_store_map* get_bs_map(pid32 pid, uint32 vpn);
 
 
 extern int32 fault_counts;
+
+
+//in file mmu_fifo_policy.c
+extern int32 get_frame_fifo(void);
+extern void addToFrameList(frame_t *frame_entry);
+extern int32 remove_frame_fifo(int32 frameNo);
+extern void printFrameList(frame_t *frame_entry);
+
+//in file mmu_gca_policy.c
+extern int32 get_frame_gca(void);
 
 #endif // __PAGING_H_

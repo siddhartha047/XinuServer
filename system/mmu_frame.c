@@ -1,13 +1,6 @@
 #include<xinu.h>
 
 //frame  management will be done here
-int32 initialize_frame(void);
-int32 get_one_frame(void);
-int32 find_free_frame(void);
-void printFrameList(frame_t *frame_entry);
-int32 remove_frame_fifo(int32 frameNo);
-
-
 
 int32 initialize_frame(void){
 
@@ -62,20 +55,7 @@ int32 get_one_frame(void){
 	inverted_page_entry->refcount=0;
 
 	//for maintaining FIFO policy
-	if(frame_head==NULL){
-		frame_head=frame_entry;
-	}
-	else{
-		frame_t *temp_frame_entry;
-		temp_frame_entry=frame_head;
-
-		while(temp_frame_entry->next!=NULL){
-			temp_frame_entry=temp_frame_entry->next;
-		}
-
-		temp_frame_entry->next=frame_entry;
-
-	}
+	addToFrameList(frame_entry);
 
 	printFrameList(frame_head);
 
@@ -97,51 +77,133 @@ int32 find_free_frame(void){
 		}
 	}
 
-	XDEBUG_KPRINTF("Shouldn't reach here now\n");		
+	XDEBUG_KPRINTF("doing page replacement\n");		
 	//page replacement will be done here later one
+	if(currpolicy == FIFO){
+		frameNo=get_frame_fifo();
+	}
+	else if(currpolicy==GCA){
+		frameNo=get_frame_gca();
+	}
+	else{
+		panic("invalid policy\n");
+	}	
+
+
+	if(frameNo==SYSERR){
+		restore(mask);
+		return SYSERR;
+	}
+
+	int32 status=swap_frame_back(frameNo);
 	
+	if(status==SYSERR){
+		restore(mask);
+		return SYSERR;	
+	}
 
 	restore(mask);
-	return SYSERR;
-}
-
-void printFrameList(frame_t *frame_entry){
-	XDEBUG_KPRINTF("FIFO :");
-	while(frame_entry!=NULL){
-		XDEBUG_KPRINTF("->%d",frame_entry->id);
-		frame_entry=frame_entry->next;
-	}
-	XDEBUG_KPRINTF("\n");
+	return frameNo;
 }
 
 
-int32 remove_frame_fifo(int32 frameNo){
+
+int32 swap_frame_back(int32 frameNo){
+
 	intmask mask=disable();
-	frame_t *prev;
-	frame_t *curr;
 
-	curr=frame_head;
-	prev=NULL;
+	struct procent *prptr;
+	inverted_page_t *inverted_page_entry;
+	pd_t *pdptr;
+	pt_t *ptptr;
 
-	while(curr!=NULL){
-		if(curr->id==frameNo){
-			//if this is head
-			if(prev==NULL){
-				frame_head=curr->next;				
-			}
-			else{
-				prev->next=curr->next;				
-			}
-			curr->next=(frame_t *)NULL;
-			curr->state=FRAME_FREE;
-			curr->type=FRAME_NONE;
-			restore(mask);
-			return OK;
-		}
-		prev=curr;
-		curr=curr->next;		
+	inverted_page_entry=&inverted_page_tab[frameNo];
+
+	int32 vpn=inverted_page_entry->vpn;
+	int32 pid=inverted_page_entry->pid;
+	
+	int32 vaddress=vpn_to_address(vpn);
+	vd_t *vaddressptr=(vd_t *)(&vaddress);
+	
+	uint32 pd_offset=vaddressptr->pd_offset;
+	uint32 pt_offset=vaddressptr->pt_offset;
+
+	prptr=&proctab[pid];
+	pdptr=prptr->prpd;
+
+	ptptr=(pt_t *)vpn_to_address(pdptr[pd_offset].pd_base);
+	ptptr[pt_offset].pt_pres=0;
+
+	if(pid==currpid){
+		tmp=vpn;
+		asm("pushl %eax");
+		asm("invlpg tmp");
+		asm("popl %eax");
 	}
 
+	int32 ptframeNo;	
+	inverted_page_t *ptinverted_page_entry;
+
+	ptframeNo=pdptr[pd_offset].pd_base-FRAME0;
+	ptinverted_page_entry=&inverted_page_tab[ptframeNo];
+
+	ptinverted_page_entry->refcount--;
+
+	//if frame done then remove
+
+	//XDEBUG_KPRINTF("Fault: Page frame %d refcount %d\n",frameNo,ptinverted_page_entry->refcount);
+
+	if(ptinverted_page_entry->refcount==0){
+
+		panic("Something is wrong\n");
+
+		pdptr[pd_offset].pd_pres=0;
+
+		hook_ptable_delete(ptframeNo);
+		remove_frame_fifo(ptframeNo);
+	}
+
+	//dirty then write back
+	if(ptptr[pt_offset].pt_dirty==1|| frame_tab[frameNo].dirty==1){
+
+
+		backing_store_map *bs_map_entry;
+		bs_map_entry=get_bs_map(pid,vpn);
+
+		if(bs_map_entry==NULL){
+			XDEBUG_KPRINTF("swapping gon wrong at finding map\n");
+			kill(pid);
+			restore(mask);
+			return SYSERR;
+		}
+
+		uint32 offset=vpn-bs_map_entry->vpn;
+		bsd_t bsid=bs_map_entry->bsid;
+
+		//opeing
+		if(open_bs(bsid)==SYSERR){
+			kill(pid);
+			restore(mask);
+			return SYSERR;
+		}
+
+		//writing
+		if(write_bs((char *)frameno_to_address(frameNo),bsid,offset)==SYSERR){
+			kill(pid);
+			restore(mask);
+			return SYSERR;	
+		}
+		
+		//closing
+		if(close_bs(bsid)==SYSERR){
+			kill(pid);
+			restore(mask);
+			return SYSERR;		
+		}
+
+	}
+	//hook out
+	hook_pswap_out(pid,vpn,frameNo);
 	restore(mask);
-	return SYSERR;
+	return OK;
 }
