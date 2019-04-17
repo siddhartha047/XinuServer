@@ -104,6 +104,7 @@ void page_policy_test(void) {
     }
   }
 
+  kprintf("Page faults:-> %d\n",get_faults());
   kprintf("\n\nTest Passed.\n\n");
 
   return;
@@ -283,15 +284,56 @@ void mytest2(void){
     XDEBUG_KPRINTF("Test passed\n");
 }
 
+void mytest3(void){
+    uint32 npages = PAGE_ALLOCATION - 1;
+    npages=npages/DIVISION;
+    uint32 nbytes = npages * PAGESIZE;
+
+    kprintf("Running Customize Page Replacement Policy Test, with NFRAMES = %d\n", NFRAMES);
+
+    char* mems[DIVISION];
+
+    XDEBUG_KPRINTF("Getting all memory by parts\n");
+
+    for(int i=0;i<DIVISION;i++){
+        
+        XDEBUG_KPRINTF("Get mem %d\n",i);
+
+        char *mem = vgetmem(nbytes);  
+        if (mem == (char*) SYSERR) {
+          panic("vmeme allocation failed\n");
+          return;
+        }
+
+        mems[i]=mem;
+
+    }
+
+
+    XDEBUG_KPRINTF("Freeing All of them\n");
+
+    for(int i=0;i<DIVISION;i++){
+        if(vfreemem(mems[i], nbytes) == SYSERR) {
+          panic("Policy Test: vfreemem()\n");
+        }
+    }
+
+    XDEBUG_KPRINTF("Test passed\n");
+}
+
+
 
 static void do_policy_test_custom(void) {
-    XDEBUG_KPRINTF("Test 1: Vcreate has vgetmem and getmem\n");
-    mytest1();    
+    // XDEBUG_KPRINTF("Test 1: Vcreate has vgetmem and getmem\n");
+    // mytest1();    
     
-    sleep(2);
+    // sleep(2);
 
-    XDEBUG_KPRINTF("Test 2: Vcreate calls multiple vgetmem\n");
-    mytest2();
+    // XDEBUG_KPRINTF("Test 2: Vcreate calls multiple vgetmem\n");
+    // mytest2();
+
+    XDEBUG_KPRINTF("Test 3: Vcreate calls multiple vgetmem\n");
+    mytest3();
 }
 
 

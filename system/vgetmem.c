@@ -23,9 +23,11 @@ char  	*vgetmem(
 	//sid: move this to vcreate later one
 	if(prptr->prmemlistinit==1){
 		prptr->prmemlistinit=0;
+		XDEBUG_KPRINTF("A first time page fault here vgetmem----->\n");
 		struct memblk *vmemblk=(struct memblk*)vpn_to_address(VPN0);
 		vmemblk->mlength=(prptr->prhsize*NBPG);
 		vmemblk->mnext=NULL;	
+		XDEBUG_KPRINTF("<-----A page fault here fir time vgetmem\n");
 	}
 
 	nbytes=(uint32)roundmb(nbytes);

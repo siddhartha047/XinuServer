@@ -7,7 +7,6 @@
  *---------------------------------------------------------------------------
  */
 uint32 get_faults() {
-	/* LAB3 TODO */
-
-  return fault_counts;	
+	/* LAB3 TODO */  	
+  	return fault_counts;	
 }
