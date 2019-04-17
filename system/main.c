@@ -1,6 +1,7 @@
 #include <xinu.h>
 
 extern void page_policy_test(void);
+extern void page_policy_test_custom(void);
 
 void test0(void);
 void cpubound(char ch);
@@ -8,7 +9,8 @@ void A(char ch);
 
 process	main(void)
 {
-  srpolicy(FIFO);
+  //srpolicy(FIFO);
+  srpolicy(GCA);
 
   /* Start the network */
   /* DO NOT REMOVE OR COMMENT BELOW */

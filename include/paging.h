@@ -185,4 +185,7 @@ extern void printFrameList(frame_t *frame_entry);
 //in file mmu_gca_policy.c
 extern int32 get_frame_gca(void);
 
+extern int32 lframeNo; //this is for global clock
+#define SWEEP_TIMES 3
+
 #endif // __PAGING_H_

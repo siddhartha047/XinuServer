@@ -35,6 +35,7 @@ inverted_page_t inverted_page_tab[NFRAMES];
 pd_t *global_pd; //global page directory
 int32 fault_counts=0;
 sid32 fault_sem;
+int32 lframeNo=-1;
 
 backing_store_map backing_store_map_tab[MAX_BS_ENTRIES];
 /* Active system status */
