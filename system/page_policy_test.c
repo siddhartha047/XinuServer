@@ -10,7 +10,7 @@
 /* Set to 1 to test page replacement
  * Set to 0 to check page fault handling is correct
  */
-#define PAGE_REPLACEMENT 1
+#define PAGE_REPLACEMENT 0
 
 // Return a deterministic value per addr for testing.
 uint32 get_test_value(uint32 *addr) {
@@ -307,15 +307,53 @@ void mytest3(void){
 
         mems[i]=mem;
 
+        if(!USE_HEAP_TO_TRACK)printXMemlist(currpid);
+
     }
 
 
-    XDEBUG_KPRINTF("Freeing All of them\n");
+    XDEBUG_KPRINTF("Writing on all parts\n");
 
     for(int i=0;i<DIVISION;i++){
+      // Write data
+      for (uint32 i = 0; i<npages; i++) {
+        uint32 *p = (uint32*)(mems[i] + (i * PAGESIZE));
+
+        // kprintf("Write Iteration [%3d] at 0x%08x\n", i, p);
+        for (uint32 j=0; j<PAGESIZE; j=j+4) {
+          uint32 v = get_test_value(p);
+          *p++ = v;
+        }
+
+        sleepms(20); // to make it slower
+      }
+    }
+
+    XDEBUG_KPRINTF("Verifying all parts\n");
+    
+    for(int i=0;i<DIVISION;i++)   {
+      // Check the data was truly written
+      for (uint32 i = 0; i<npages; i++) {
+        uint32 *p = (uint32*)(mems[i] + (i * PAGESIZE));
+        //kprintf("Check Iteration [%3d] at 0x%08x\n", i, p);
+        for (uint32 j=0; j<PAGESIZE; j=j+4) {
+          uint32 v = get_test_value(p);
+          ASSERT(*p++ == v);
+        }
+
+        sleepms(20); // to make it slower
+      }
+
+    }
+    
+
+    for(int i=0;i<DIVISION;i++){
+        XDEBUG_KPRINTF("Freeing %d \n",i);    
         if(vfreemem(mems[i], nbytes) == SYSERR) {
           panic("Policy Test: vfreemem()\n");
         }
+
+        if(!USE_HEAP_TO_TRACK)printXMemlist(currpid);
     }
 
     XDEBUG_KPRINTF("Test passed\n");

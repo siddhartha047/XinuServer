@@ -149,8 +149,19 @@ pid32	vcreate(
 
 	}
 
-	prptr->prmemlist.mnext=(struct memblk*)vpn_to_address(VPN0);
-	prptr->prmemlist.mlength=hsize*NBPG;
+	if(USE_HEAP_TO_TRACK){
+		//sid: this implementation, if I use vheap memory itself to track the list
+		prptr->prmemlist.mnext=(struct memblk*)vpn_to_address(VPN0);
+		prptr->prmemlist.mlength=hsize*NBPG;	
+	}
+	else{
+		//sid: this is to track vheap memory using memory from getmem
+		prptr->prxmemlist.mnext=(xmemlist_t *)getmem(sizeof(xmemlist_t));
+		prptr->prxmemlist.mlength=hsize*NBPG;
+	}
+	
+
+	
 
 	restore(mask);
 	return pid;

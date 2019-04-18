@@ -47,7 +47,18 @@ struct	memblk	{			/* See roundmb & truncmb	*/
 	};
 #endif
 
+
+#define USE_HEAP_TO_TRACK FALSE
+
+typedef struct	xmemlist	{			/* See roundmb & truncmb	*/
+	uint32  vheapaddr;
+	uint32	mlength;
+	struct	xmemlist *mnext;		/* Ptr to next free memory blk	*/
+			/* Size of blk (includes memblk)*/
+}xmemlist_t;
 /* Definition of the process table (multiple of 32 bits) */
+
+extern void printXMemlist(pid32 pid);
 
 struct procent {		/* Entry in the process table		*/
 	uint16	prstate;	/* Process state: PR_CURR, etc.		*/
@@ -67,7 +78,8 @@ struct procent {		/* Entry in the process table		*/
 	uint32	prhsize;
 	uint32  prtype;
 	int32	prmemlistinit;	
-  	struct memblk prmemlist;
+  	struct memblk prmemlist; //sid: this was for vheap
+  	struct xmemlist prxmemlist; //sid: this is for taking space from identity
 };
 
 #define PR_NORMAL 0
