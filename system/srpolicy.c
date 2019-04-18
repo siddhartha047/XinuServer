@@ -10,6 +10,8 @@ int32 currpolicy;
  */
 syscall srpolicy(int policy)
 {
+	currpolicy=FIFO; //deafult policy if no input given
+
 	switch (policy) {
 	case FIFO:
 		/* LAB3 TODO */

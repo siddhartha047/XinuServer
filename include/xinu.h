@@ -45,4 +45,5 @@
 #include <lab3.h>
 #include <qrdisk.h>
 #include <qdebug.h>
+#include <myprototypes.h> //sid: this is my define
 

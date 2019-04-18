@@ -220,8 +220,6 @@ static void initialize_paging()
 	fault_sem = semcreate(1);
 
 	/* LAB3 TODO */
-	srpolicy(FIFO); //sid: set as fifo at the early stage
-
 	//sid: initialize frame
 	XDEBUG_KPRINTF("Start frame initialization\n");
 	initialize_frame();
