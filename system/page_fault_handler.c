@@ -28,17 +28,14 @@ void page_fault_handler(void){
 
 	wait(fault_sem);
 	//check if valid
-	bs_map_entry=get_bs_map(currpid,vpn);
-	if(bs_map_entry==NULL){
-		XDEBUG_KPRINTF("Invalid address from pagefault\n");		
-		kill(currpid);
-		signal(fault_sem);
-		restore(mask);
-		return;
-	}
 
+	uint32 pd_offset=faultaddr->pd_offset;
+	uint32 pt_offset=faultaddr->pt_offset;
+	//uint32 pg_offset=faultaddr->pg_offset;
+
+	pd_entry+=pd_offset;
 	//poitns to correct page table
-	if(pd_entry[faultaddr->pd_offset].pd_pres==0){
+	if(pd_entry->pd_pres==0){
 		pt_entry=get_one_page();
 		if(pt_entry==NULL){
 			XDEBUG_KPRINTF("No page available\n");		
@@ -47,13 +44,20 @@ void page_fault_handler(void){
 			restore(mask);
 			return;
 		}
-		pd_entry[faultaddr->pd_offset].pd_pres=1;
-		pd_entry[faultaddr->pd_offset].pd_base=address_to_vpn(pt_entry);
+		pd_entry->pd_pres=1;
+		pd_entry->pd_base=address_to_vpn(pt_entry);
 	}
 	else{
-		pt_entry=(pt_t*)vpn_to_address(pd_entry[faultaddr->pd_offset].pd_base);
+		pt_entry=(pt_t*)vpn_to_address(pd_entry->pd_base);
 	}
 
+	if((bs_map_entry=get_bs_map(currpid,vpn))==NULL){
+		XDEBUG_KPRINTF("Invalid address from pagefault\n");		
+		kill(currpid);
+		signal(fault_sem);
+		restore(mask);
+		return;
+	}
 
 	//get page table infor
 	uint32 pg_offset= vpn-bs_map_entry->vpn;
@@ -63,6 +67,7 @@ void page_fault_handler(void){
 	//XDEBUG_KPRINTF("Fault: Page table frame %d refcount %d\n",frameNo,inverted_page_tab[frameNo].refcount);
 
 	int32 newframeNo=get_one_frame();
+	
 	if(newframeNo==SYSERR){
 		XDEBUG_KPRINTF("Not enough free frame\n");		
 		kill(currpid);
@@ -74,6 +79,7 @@ void page_fault_handler(void){
 	frame_tab[newframeNo].type=FRAME_PR;
 	inverted_page_tab[newframeNo].vpn=vpn;	
 	inverted_page_tab[newframeNo].pid=currpid;
+
 
 	if(open_bs(bs_map_entry->bsid)==SYSERR){
 		XDEBUG_KPRINTF("Opening backing store failed\n");		
@@ -101,8 +107,8 @@ void page_fault_handler(void){
 
 	signal(fault_sem);
 
-	pt_entry[faultaddr->pt_offset].pt_pres=1;
-	pt_entry[faultaddr->pt_offset].pt_base=frameno_to_vpn(newframeNo);
+	pt_entry[pt_offset].pt_pres=1;
+	pt_entry[pt_offset].pt_base=frameno_to_vpn(newframeNo);
 
 	hook_pfault(currpid, (void *)cr2, vpn, newframeNo);
 
