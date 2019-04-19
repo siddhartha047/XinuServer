@@ -54,7 +54,7 @@ int32 swap_frame_back(int32 frameNo){
 		pdptr[pd_offset].pd_pres=0;
 
 		hook_ptable_delete(ptframeNo);
-		remove_frame_fifo(ptframeNo);
+		removeFromFrameList(ptframeNo);
 	}
 
 	//dirty then write back

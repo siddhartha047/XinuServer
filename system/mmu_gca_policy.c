@@ -29,6 +29,7 @@ int32 get_frame_gca(void){
 			inverted_page_entry=&inverted_page_tab[frameNo];
 
 			pid=inverted_page_entry->pid;
+			vpn=inverted_page_entry->vpn;
 			prptr=&proctab[pid];
 
 			vaddress=vpn_to_address(vpn);
@@ -47,15 +48,15 @@ int32 get_frame_gca(void){
 			if(ptptr->pt_acc==0 && ptptr->pt_dirty==0){
 				//remove this one
 				lframeNo=frameNo;
-				remove_frame_fifo(frameNo);
+				removeFromFrameList(frameNo);
 				restore(mask);
 				return frameNo;
 			}
 			else if(ptptr->pt_acc==1 && ptptr->pt_dirty==0){
-				ptptr->pt_acc==0;
+				ptptr->pt_acc=0;
 			}
 			else if(ptptr->pt_acc==1 && ptptr->pt_dirty==1){
-				ptptr->pt_dirty==1;
+				ptptr->pt_dirty=1;
 				frame_entry->dirty=1;
 			}			
 

@@ -13,11 +13,11 @@ pd_t* get_page_directory(void);
 int32 initialize_global_page_table(void){
 	intmask mask=disable();
 	pt_t *pt_entry;	
+	pt_t *pt_device_entry;
 
 
 	for(int i=0;i<GLOBAL_PAGE_NO;i++){
-		pt_entry=get_one_page();
-		if(pt_entry==NULL){
+		if((pt_entry=get_one_page())==NULL){
 			XDEBUG_KPRINTF("Couldn't allocate global page\n");
 			restore(mask);
 			return SYSERR;
@@ -30,21 +30,19 @@ int32 initialize_global_page_table(void){
 
 		global_pt[i]=pt_entry;
 	}
-
-	pt_entry=get_one_page();
-
-	if(pt_entry==NULL){
+	
+	if((pt_device_entry=get_one_page())==NULL){
 		XDEBUG_KPRINTF("Couldn't allocate device page\n");
 		restore(mask);
 		return SYSERR;
 	}
 
 	for(int j=0;j<PAGETABSIZE;j++){
-		pt_entry[j].pt_pres=1;
-		pt_entry[j].pt_base=DEVICE_VPN+j;
+		pt_device_entry[j].pt_pres=1;
+		pt_device_entry[j].pt_base=DEVICE_VPN+j;
 	}
 
-	device_pt=pt_entry;
+	device_pt=pt_device_entry;
 	restore(mask);
 
 
@@ -70,17 +68,7 @@ pt_t *get_one_page(void){
 	pt_entry=(pt_t *)frameno_to_address(frameNo);
 	
 	for(int i=0;i<PAGETABSIZE;i++){
-		pt_entry[i].pt_pres	= 0;		/* page is present?		*/
-		pt_entry[i].pt_write = 1;		/* page is writable?		*/
-		pt_entry[i].pt_user	= 0;		/* is use level protection?	*/
-		pt_entry[i].pt_pwt	= 0;		/* write through for this page? */
-		pt_entry[i].pt_pcd	= 0;		/* cache disable for this page? */
-		pt_entry[i].pt_acc	= 0;		/* page was accessed?		*/
-		pt_entry[i].pt_dirty = 0;		/* page was written?		*/
-		pt_entry[i].pt_mbz	= 0;		/* must be zero			*/
-		pt_entry[i].pt_global= 0;		/* should be zero in 586	*/
-		pt_entry[i].pt_avail = 0;		/* for programmer's use		*/
-		pt_entry[i].pt_base	= 0;		/* location of page?		*/
+		pt_entry[i]=(pt_t){0,1,0,0,0,0,0,0,0,0,0};
 	}
 
 	hook_ptable_create(frameNo);
@@ -107,18 +95,9 @@ pd_t* get_page_directory(void){
 	pd_t *pd_entry;
 	pd_entry=(pd_t*)frameno_to_address(frameNo);
 
+	
 	for(int i=0;i<PAGEDIRSIZE;i++){
-		pd_entry[i].pd_pres = 0;		/* page table present?		*/
-		pd_entry[i].pd_write =1;		/* page is writable?		*/
-		pd_entry[i].pd_user	= 0;		/* is use level protection?	*/
-		pd_entry[i].pd_pwt	= 0;		/* write through cachine for pt? */
-		pd_entry[i].pd_pcd	= 0;		/* cache disable for this pt?	*/
-		pd_entry[i].pd_acc	= 0;		/* page table was accessed?	*/
-		pd_entry[i].pd_mbz	= 0;		/* must be zero			*/
-		pd_entry[i].pd_fmb	= 0;		/* four MB pages?		*/
-		pd_entry[i].pd_global= 0;		/* global (ignored)		*/
-		pd_entry[i].pd_avail = 0;		/* for programmer's use		*/
-		pd_entry[i].pd_base	= 0;
+		pd_entry[i]=(pd_t){0,1,0,0,0,0,0,0,0,0,0};
 	}
 
 	for(int i=0;i<GLOBAL_PAGE_NO;i++){
@@ -130,6 +109,7 @@ pd_t* get_page_directory(void){
 	pd_entry[DEVICE_PTN].pd_pres=1;
 	pd_entry[DEVICE_PTN].pd_write=1;
 	pd_entry[DEVICE_PTN].pd_base=address_to_vpn(device_pt);
+
 
 	restore(mask);
 	return pd_entry;

@@ -27,8 +27,8 @@ process	main(void)
   psinit();
 
   //test0();
-  //page_policy_test();
-  page_policy_test_custom();
+  page_policy_test();
+  //page_policy_test_custom();
   
 
   XTEST_KPRINTF("Main process ending\n");

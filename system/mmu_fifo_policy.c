@@ -12,7 +12,9 @@ int32 get_frame_fifo(void){
 	while(curr!=NULL){
 		if(curr->type==FRAME_PR){
 			frameNo=curr->id;
-			remove_frame_fifo(frameNo);
+			if(removeFromFrameList(frameNo)==SYSERR){
+				panic("Frame removing from list failed\n");
+			}
 			restore(mask);
 			return frameNo;
 		}
@@ -25,7 +27,7 @@ int32 get_frame_fifo(void){
 	return SYSERR;
 }
 
-int32 remove_frame_fifo(int32 frameNo){
+int32 removeFromFrameList(int32 frameNo){
 	intmask mask=disable();
 	frame_t *prev;
 	frame_t *curr;

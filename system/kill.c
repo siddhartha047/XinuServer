@@ -87,7 +87,7 @@ int32 restoreframes(pid32 pid){
 		inverted_page_entry= &inverted_page_tab[i];
 		
 		if(inverted_page_entry->pid==pid){
-			if(remove_frame_fifo(i)==SYSERR){
+			if(removeFromFrameList(i)==SYSERR){
 				XDEBUG_KPRINTF("Something went wrong while removing frame\n");
 				return SYSERR;
 			}

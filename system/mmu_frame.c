@@ -32,19 +32,19 @@ int32 initialize_frame(void){
 int32 get_one_frame(void){
 	intmask mask=disable();
 	
+	int32 frameNo;
 
-	int32 frameNo=find_free_frame();
-
-	if(frameNo==SYSERR){
+	if((frameNo=find_free_frame())==SYSERR){
 		XDEBUG_KPRINTF("Shouldn't happen\n");
 		restore(mask);
 		return SYSERR;
 	}
 
-	XDEBUG_KPRINTF("Frame found %d\n",frameNo);
+	//XDEBUG_KPRINTF("Frame found %d\n",frameNo);
 
 	frame_t *frame_entry;
 	frame_entry=&frame_tab[frameNo];
+	
 	frame_entry->state=FRAME_USED;
 	frame_entry->type=FRAME_NONE;
 	frame_entry->dirty=FRAME_NOT_DIRTY;
@@ -65,35 +65,34 @@ int32 get_one_frame(void){
 
 int32 find_free_frame(void){
 	intmask mask=disable();
-	frame_t *frame_entry;
 	int32 frameNo=-1;
 
 	for(int i=0;i<NFRAMES;i++){
-		frame_entry=&frame_tab[i];
-		if(frame_entry->state==FRAME_FREE){
+		if(frame_tab[i].state==FRAME_FREE){
 			frameNo=i;
 			restore(mask);
 			return frameNo;
 		}
 	}
 
-	XDEBUG_KPRINTF("doing page replacement\n");		
+	//XDEBUG_KPRINTF("doing page replacement\n");		
 	//page replacement will be done here later one
-	if(currpolicy == FIFO){
-		frameNo=get_frame_fifo();
+	if(currpolicy==GCA){
+		if((frameNo=get_frame_gca())==SYSERR){
+			restore(mask);
+			return SYSERR;
+		}
 	}
-	else if(currpolicy==GCA){
-		frameNo=get_frame_gca();
+	else if(currpolicy == FIFO){
+		if((frameNo=get_frame_fifo())==SYSERR){
+			restore(mask);
+			return SYSERR;
+		}
 	}
 	else{
 		panic("invalid policy\n");
 	}	
-
-
-	if(frameNo==SYSERR){
-		restore(mask);
-		return SYSERR;
-	}
+	
 
 	int32 status=swap_frame_back(frameNo);
 	

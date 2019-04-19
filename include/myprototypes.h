@@ -139,7 +139,7 @@ extern int32 fault_counts;
 //in file mmu_fifo_policy.c
 extern int32 get_frame_fifo(void);
 extern void addToFrameList(frame_t *frame_entry);
-extern int32 remove_frame_fifo(int32 frameNo);
+extern int32 removeFromFrameList(int32 frameNo);
 extern void printFrameList(frame_t *frame_entry);
 
 //--------------------------------//
