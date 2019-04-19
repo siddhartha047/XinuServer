@@ -290,7 +290,7 @@ void mytest2(void){
 }
 
 void mytest3(void){
-    uint32 npages = PAGE_ALLOCATION;
+    uint32 npages = PAGE_ALLOCATION-1;
     npages=npages/DIVISION;
     uint32 nbytes = npages * PAGESIZE;
 
@@ -367,16 +367,27 @@ void mytest3(void){
 
 
 static void do_policy_test_custom(void) {
-    // XDEBUG_KPRINTF("Test 1: Vcreate has vgetmem and getmem\n");
-    // mytest1();    
+    XDEBUG_KPRINTF("Test 1: Vcreate has vgetmem and getmem\n");
+    uint32 start=get_faults();
+    mytest1();
+    uint32 end=get_faults();    
+    XDEBUG_KPRINTF("Test 1 Faults: -> %d",end-start);
     
-    // sleep(2);
+    sleep(5);
 
-    // XDEBUG_KPRINTF("Test 2: Vcreate calls multiple vgetmem\n");
-    // mytest2();
+    XDEBUG_KPRINTF("Test 2: Vcreate calls multiple vgetmem\n");
+    start=get_faults();
+    mytest2();
+    end=get_faults();    
+    XDEBUG_KPRINTF("Test 2 Faults: -> %d",end-start);
+
+    sleep(5);
 
     XDEBUG_KPRINTF("Test 3: Vcreate calls multiple vgetmem\n");
+    start=get_faults();
     mytest3();
+    end=get_faults();    
+    XDEBUG_KPRINTF("Test 3 Faults: -> %d",end-start);
 }
 
 

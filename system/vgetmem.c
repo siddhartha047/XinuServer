@@ -163,7 +163,7 @@ void printXMemlist(pid32 pid){
 		struct memblk *curr, *prev;
 		prev=&prptr->prmemlist;
 		curr=prev->mnext;
-		XDEBUG_KPRINTF("Base %d : ",prev->mlength);
+		XDEBUG_KPRINTF("Heap Base %d : ",prev->mlength);
 		while(curr !=NULL){
 			XDEBUG_KPRINTF("(%d,%d)->",curr,curr->mlength);
 			curr=curr->mnext;
@@ -174,7 +174,7 @@ void printXMemlist(pid32 pid){
 		xmemlist_t *curr, *prev;
 		prev=&prptr->prxmemlist;
 		curr=prev->mnext;
-		XDEBUG_KPRINTF("Base %d : ",prev->mlength);
+		XDEBUG_KPRINTF("Xinu Base %d : ",prev->mlength);
 		while(curr !=NULL){
 			XDEBUG_KPRINTF("(%d,%d)->",curr->vheapaddr,curr->mlength);
 			curr=curr->mnext;

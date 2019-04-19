@@ -27,8 +27,12 @@ process	main(void)
   psinit();
 
   //test0();
-  page_policy_test();
-  //page_policy_test_custom();
+  // uint32 start=get_faults();
+  // page_policy_test();
+  // uint32 end=get_faults();    
+  // XDEBUG_KPRINTF("Page Faults: ->",end-start);
+  
+  page_policy_test_custom();
   
 
   XTEST_KPRINTF("Main process ending\n");
