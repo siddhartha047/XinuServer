@@ -72,7 +72,7 @@ syscall	vfreememUsingIdentity(
 
 	/* Ensure new block does not overlap previous or next blocks	*/
 
-	if (((prev->vheapaddr != &prptr->prxmemlist.vheapaddr) && (uint32) block->vheapaddr < top)
+	if (((prev->vheapaddr != prptr->prxmemlist.vheapaddr) && (uint32) block->vheapaddr < top)
 	    || ((next != NULL)	&& (uint32) block->vheapaddr+nbytes > (uint32)next->vheapaddr)) {
 		restore(mask);
 		return SYSERR;

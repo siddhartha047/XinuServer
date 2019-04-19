@@ -10,7 +10,7 @@
 /* Set to 1 to test page replacement
  * Set to 0 to check page fault handling is correct
  */
-#define PAGE_REPLACEMENT 0
+#define PAGE_REPLACEMENT 1
 
 // Return a deterministic value per addr for testing.
 uint32 get_test_value(uint32 *addr) {
@@ -126,6 +126,7 @@ void mytest1(void){
       panic("vmeme allocation failed\n");
       return;
     }
+    printXMemlist(currpid);
 
     char *mem2 = getmem(memnbytes);
     if (mem2 == (char*) SYSERR) {
@@ -195,6 +196,7 @@ void mytest1(void){
       #endif
           kprintf("Here NFRAMES = %d\n", NFRAMES);
     }
+    printXMemlist(currpid);
 }
 
 #define DIVISION 10
@@ -220,7 +222,7 @@ void mytest2(void){
         }
 
         mems[i]=mem;
-
+        printXMemlist(currpid);
     }
 
     XDEBUG_KPRINTF("Writing on all parts\n");
@@ -262,6 +264,7 @@ void mytest2(void){
         if(vfreemem(mems[i], nbytes) == SYSERR) {
           panic("Policy Test: vfreemem()\n");
         }
+        printXMemlist(currpid);
     }
 
     XDEBUG_KPRINTF("Getting again odd ones\n");
@@ -271,6 +274,7 @@ void mytest2(void){
           panic("vmeme allocation failed\n");
           return;
         }
+        printXMemlist(currpid);
     }    
 
     XDEBUG_KPRINTF("Freeing All of them\n");
@@ -279,13 +283,14 @@ void mytest2(void){
         if(vfreemem(mems[i], nbytes) == SYSERR) {
           panic("Policy Test: vfreemem()\n");
         }
+        printXMemlist(currpid);
     }
     
     XDEBUG_KPRINTF("Test passed\n");
 }
 
 void mytest3(void){
-    uint32 npages = PAGE_ALLOCATION - 1;
+    uint32 npages = PAGE_ALLOCATION;
     npages=npages/DIVISION;
     uint32 nbytes = npages * PAGESIZE;
 
@@ -307,7 +312,7 @@ void mytest3(void){
 
         mems[i]=mem;
 
-        if(!USE_HEAP_TO_TRACK)printXMemlist(currpid);
+        printXMemlist(currpid);
 
     }
 
@@ -353,7 +358,7 @@ void mytest3(void){
           panic("Policy Test: vfreemem()\n");
         }
 
-        if(!USE_HEAP_TO_TRACK)printXMemlist(currpid);
+        printXMemlist(currpid);
     }
 
     XDEBUG_KPRINTF("Test passed\n");

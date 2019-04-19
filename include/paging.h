@@ -43,8 +43,8 @@ typedef struct {
 
 
 #ifndef NFRAMES
-#define NFRAMES		3072	/* number of frames		*/
-//#define NFRAMES		40	/* number of frames		*/
+//#define NFRAMES		3072	/* number of frames		*/
+#define NFRAMES		40	/* number of frames		*/
 #endif
 
 #define MAP_SHARED 1

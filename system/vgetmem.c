@@ -154,18 +154,33 @@ char  	*vgetmemUsingHeap(
 }
 
 void printXMemlist(pid32 pid){
+
 	intmask mask=disable();
 	struct procent *prptr;
 	prptr=&proctab[pid];
-	xmemlist_t *curr, *prev;
-	prev=&prptr->prxmemlist;
-	curr=prev->mnext;
+		
+	if(USE_HEAP_TO_TRACK){
+		struct memblk *curr, *prev;
+		prev=&prptr->prmemlist;
+		curr=prev->mnext;
+		XDEBUG_KPRINTF("Base %d : ",prev->mlength);
+		while(curr !=NULL){
+			XDEBUG_KPRINTF("(%d,%d)->",curr,curr->mlength);
+			curr=curr->mnext;
+		}	
+		XDEBUG_KPRINTF("\n");	
+	}
+	else{
+		xmemlist_t *curr, *prev;
+		prev=&prptr->prxmemlist;
+		curr=prev->mnext;
+		XDEBUG_KPRINTF("Base %d : ",prev->mlength);
+		while(curr !=NULL){
+			XDEBUG_KPRINTF("(%d,%d)->",curr->vheapaddr,curr->mlength);
+			curr=curr->mnext;
+		}	
+		XDEBUG_KPRINTF("\n");	
+	}
 	
-	while(curr !=NULL){
-		XDEBUG_KPRINTF("(%d,%d)->",curr->vheapaddr,curr->mlength);
-		curr=curr->mnext;
-	}	
-	XDEBUG_KPRINTF("\n");
-
 	restore(mask);
 }
