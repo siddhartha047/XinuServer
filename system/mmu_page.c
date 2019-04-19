@@ -83,6 +83,8 @@ pd_t* get_page_directory(void){
 
 	int32 frameNo=get_one_frame();
 
+	inverted_page_tab[frameNo].pid=currpid;
+
 	if(frameNo==SYSERR){
 		restore(mask);
 		return (pd_t*)NULL;

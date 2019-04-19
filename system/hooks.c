@@ -48,6 +48,8 @@ void hook_pfault(int16 procid, void *addr, uint32 pagenum, uint32 framenum) {
   }
 
 #if POLICY_TESTING == 1
+  //sid: 
+  //frame_md.curframe=framenum;
   // Add to the end of the list (ADIL)
   int16 cf = frame_md.curframe;
   frame_md.alloc_page_proc[cf] = procid;
@@ -81,6 +83,10 @@ void hook_pswap_out(int16 procid, uint32 pagenum, uint32 framenum) {
 #if POLICY_TESTING == 1
   if (currpolicy == FIFO) {
     kprintf("Testing FIFO .. ");
+
+
+    //sid:
+    //frame_md.reclaimframe=framenum;
 
     int16 recf = frame_md.reclaimframe;
     uint32 correct_pid = frame_md.alloc_page_proc[recf];

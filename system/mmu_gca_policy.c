@@ -36,11 +36,11 @@ int32 get_frame_gca(void){
 			vaddptr=(vd_t *)&vaddress;
 			pd_offset=vaddptr->pd_offset;
 			pt_offset=vaddptr->pt_offset;
-			pg_offset=vaddptr->pg_offset;
+			//pg_offset=vaddptr->pg_offset;
 
 
 			pdptr=prptr->prpd;
-			ptptr=(pt_t *)vpn_to_address(pdptr[pg_offset].pd_base);
+			ptptr=(pt_t *)vpn_to_address(pdptr[pd_offset].pd_base);
 			ptptr=ptptr+pt_offset;
 
 			//updating clock bits

@@ -110,6 +110,7 @@ void page_fault_handler(void){
 	pt_entry[pt_offset].pt_pres=1;
 	pt_entry[pt_offset].pt_base=frameno_to_vpn(newframeNo);
 
+	frame_md.curframe=newframeNo;
 	hook_pfault(currpid, (void *)cr2, vpn, newframeNo);
 
 	restore(mask);

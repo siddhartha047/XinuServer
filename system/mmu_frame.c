@@ -52,6 +52,9 @@ int32 get_one_frame(void){
 
 	inverted_page_t *inverted_page_entry;
 	inverted_page_entry=&inverted_page_tab[frameNo];
+
+	inverted_page_tab[frameNo].pid=currpid;
+
 	inverted_page_entry->refcount=0;
 
 	//for maintaining FIFO policy

@@ -27,10 +27,10 @@ process	main(void)
   psinit();
 
   //test0();
-  // uint32 start=get_faults();
-  // page_policy_test();
-  // uint32 end=get_faults();    
-  // XDEBUG_KPRINTF("Page Faults: ->",end-start);
+  uint32 start=get_faults();
+  page_policy_test();
+  uint32 end=get_faults();    
+  XDEBUG_KPRINTF("Page Faults: ->",end-start);
   
   page_policy_test_custom();
   

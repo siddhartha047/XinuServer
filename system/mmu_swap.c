@@ -97,6 +97,7 @@ int32 swap_frame_back(int32 frameNo){
 
 	}
 	//hook out
+	frame_md.reclaimframe=frameNo;
 	hook_pswap_out(pid,vpn,frameNo);
 	restore(mask);
 	return OK;
