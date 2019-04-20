@@ -365,34 +365,34 @@ void mytest3(void){
 }
 
 
-
-static void do_policy_test_custom(void) {
+static void do_policy_test1(void){
     XDEBUG_KPRINTF("Test 1: Vcreate has vgetmem and getmem\n");
     uint32 start=get_faults();
     mytest1();
     uint32 end=get_faults();    
     XDEBUG_KPRINTF("Test 1 Faults: -> %d",end-start);
-    
-    sleep(5);
+   
+}
 
+static void do_policy_test2(void){
     XDEBUG_KPRINTF("Test 2: Vcreate calls multiple vgetmem\n");
-    start=get_faults();
+    int32 start=get_faults();
     mytest2();
-    end=get_faults();    
+    int32 end=get_faults();    
     XDEBUG_KPRINTF("Test 2 Faults: -> %d",end-start);
+   
+}
 
-    sleep(5);
-
+static void do_policy_test3(void){
     XDEBUG_KPRINTF("Test 3: Vcreate calls multiple vgetmem\n");
-    start=get_faults();
+    int32 start=get_faults();
     mytest3();
-    end=get_faults();    
+    int32 end=get_faults();    
     XDEBUG_KPRINTF("Test 3 Faults: -> %d",end-start);
 }
 
 
-
-void page_policy_test_custom(void) {
+void page_policy_test_methods(int testno){
   recvclr();
 
   #if PAGE_REPLACEMENT == 1
@@ -409,9 +409,23 @@ void page_policy_test_custom(void) {
     }
   #endif
 
-  pid32 p = vcreate(do_policy_test_custom, INITSTK, PAGE_ALLOCATION,
-                    INITPRIO, "page rep", 0, NULL);
-  resume(p);
+  pid32 p;
+
+  if(testno==1){
+    p = vcreate(do_policy_test1, INITSTK, PAGE_ALLOCATION,INITPRIO, "page rep", 0, NULL);
+    resume(p);
+  }
+  else if(testno==2){
+    p = vcreate(do_policy_test2, INITSTK, PAGE_ALLOCATION,INITPRIO, "page rep", 0, NULL);
+    resume(p);
+  }
+  else if(testno==3){
+    p = vcreate(do_policy_test3, INITSTK, PAGE_ALLOCATION,INITPRIO, "page rep", 0, NULL);
+    resume(p);
+  }
+  else{
+      panic("not defined yet");
+  }
 
   while (1) {
     if(proctab[p].prstate == PR_FREE) {
@@ -422,7 +436,16 @@ void page_policy_test_custom(void) {
     }
   }
 
-  kprintf("\n\nTest Passed.\n\n");
+  kprintf("\n\nTest %d Passed.\n\n",testno);
+
+}
+
+
+void page_policy_test_custom(void) {
+  
+  page_policy_test_methods(1);
+  page_policy_test_methods(2);
+  page_policy_test_methods(3);
 
   return;
 }

@@ -9,8 +9,8 @@ void A(char ch);
 
 process	main(void)
 {
-  srpolicy(FIFO);
-  //srpolicy(GCA);
+  //srpolicy(FIFO);
+  srpolicy(GCA);
 
   /* Start the network */
   /* DO NOT REMOVE OR COMMENT BELOW */
@@ -32,7 +32,7 @@ process	main(void)
   uint32 end=get_faults();    
   XDEBUG_KPRINTF("Page Faults: ->",end-start);
   
-  page_policy_test_custom();
+  //page_policy_test_custom();
   
 
   XTEST_KPRINTF("Main process ending\n");

@@ -49,7 +49,15 @@ syscall	vfreememUsingIdentity(
 
 	nbytes = (uint32) roundmb(nbytes);	/* Use memblk multiples	*/
 	block = (xmemlist_t *)getmem(sizeof(xmemlist_t));
-	block->vheapaddr=blkaddr;
+	
+	if((char *)block==(char *)SYSERR){
+		XDEBUG_KPRINTF("Not enough free memory to maintain linked list\n");
+		restore(mask);
+		return SYSERR;
+		//panic("Shouldn't happen\n");
+
+	}
+	block->vheapaddr=(uint32)blkaddr;
 	block->mlength=nbytes;
 
 
@@ -105,8 +113,8 @@ syscall	vfreememUsingIdentity(
 		nextfree=1;
 	}
 
-	if(blockfree==1)freemem(blocktemp,sizeof(xmemlist_t));
-	if(nextfree==1)freemem(next,sizeof(xmemlist_t));
+	if(blockfree==1)freemem((char *)blocktemp,sizeof(xmemlist_t));
+	if(nextfree==1)freemem((char *)next,sizeof(xmemlist_t));
 	restore(mask);
 
 	return OK;

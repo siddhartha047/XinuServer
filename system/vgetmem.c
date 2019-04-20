@@ -62,7 +62,7 @@ char  	*vgetmemUsingIdentiy(
 			prev->mnext = curr->mnext;
 			prptr->prxmemlist.mlength -= nbytes;
 			uint32 vaddress=curr->vheapaddr;
-			freemem(curr,sizeof(xmemlist_t));
+			freemem((char *)curr,sizeof(xmemlist_t));
 			restore(mask);
 			return (char *)(vaddress);
 
@@ -78,7 +78,7 @@ char  	*vgetmemUsingIdentiy(
 			leftover->mlength = curr->mlength - nbytes;
 			prptr->prxmemlist.mlength -= nbytes;			
 			uint32 vaddress=curr->vheapaddr;
-			freemem(curr,sizeof(xmemlist_t));			
+			freemem((char *)curr,sizeof(xmemlist_t));			
 			restore(mask);
 			return (char *)(vaddress);
 
@@ -149,6 +149,7 @@ char  	*vgetmemUsingHeap(
 			curr = curr->mnext;
 		}
 	}
+	
 	restore(mask);
 	return (char *)SYSERR;
 }

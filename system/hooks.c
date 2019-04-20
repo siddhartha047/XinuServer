@@ -62,6 +62,8 @@ void hook_pfault(int16 procid, void *addr, uint32 pagenum, uint32 framenum) {
 #endif
 }
 
+int32 lastfm=-1;
+
 /*---------------------------------------------------------------------------
  *  hook_pswap_out  -  Called when your implementation is replacing (swapping
  *  out) a frame.
@@ -104,7 +106,62 @@ void hook_pswap_out(int16 procid, uint32 pagenum, uint32 framenum) {
 
     // If you decide to complete GCA part, you can test here.
 
-    kprintf("Passed\n");
+    int32 i = (lastfm+1)%NFRAMES;
+
+    uint32 vd;
+    uint32 vpn;
+
+    vd_t *vdptr;
+    pd_t *pdptr;
+    pt_t *ptptr;
+
+    uint32 pd_offset;
+    uint32 pt_offset;
+    //uint32 pg_offset;
+
+
+    while(i != framenum){
+      vpn = inverted_page_tab[i].vpn;
+      vd = vpn_to_address(vpn);      
+      vdptr = (vd_t *)(&vd);
+
+      pd_offset=vdptr->pd_offset;
+      pt_offset=vdptr->pt_offset;
+      //pg_offset=vdptr->pg_offset;
+
+      pdptr = proctab[currpid].prpd;
+      pdptr+=pd_offset;
+      
+      ptptr = (pt_t*)vpn_to_address(pdptr->pd_base);
+      ptptr+=pt_offset;
+      
+      if(ptptr->pt_acc == 0 && ptptr->pt_dirty != 0){
+        panic("FAIL\n");
+      }
+
+      i=(i+1)%NFRAMES;
+    }
+    
+    vd = vpn_to_address(pagenum);
+    vdptr = (vd_t *)(&vd);
+    pdptr = proctab[currpid].prpd;
+
+    pd_offset=vdptr->pd_offset;
+    pt_offset=vdptr->pt_offset;
+    //pg_offset=vdptr->pg_offset;
+
+    pdptr+=pd_offset;
+    ptptr = (pt_t*)vpn_to_address(pdptr->pd_base);
+
+    ptptr+=pt_offset;
+
+    if(!(ptptr->pt_acc == 0 && ptptr->pt_dirty == 0)){
+      panic("FAIL\n");
+    }
+
+    lastfm = lframeNo;
+
+    kprintf("Passed GCA\n");
   }
 #endif
 

@@ -17,7 +17,7 @@ int32 get_frame_gca(void){
 	pt_t *ptptr;
 	uint32 pd_offset;
 	uint32 pt_offset;
-	uint32 pg_offset;
+	//uint32 pg_offset;
 	uint32 vaddress;
 
 	for(int i=0;i<=SWEEP_TIMES*NFRAMES;i++){
@@ -56,7 +56,7 @@ int32 get_frame_gca(void){
 				ptptr->pt_acc=0;
 			}
 			else if(ptptr->pt_acc==1 && ptptr->pt_dirty==1){
-				ptptr->pt_dirty=1;
+				ptptr->pt_dirty=0;
 				frame_entry->dirty=1;
 			}			
 
