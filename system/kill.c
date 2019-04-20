@@ -111,10 +111,12 @@ int32 restoreframes(pid32 pid){
 	for(int i=0;i<MAX_BS_ENTRIES;i++){
 		bs_map_entry=&backing_store_map_tab[i];
 		if(bs_map_entry->pid==pid){
-			if(deallocate_bs(i)){
+			if(deallocate_bs(i)==SYSERR){
 				XDEBUG_KPRINTF("Kill deallocate bs failed\n");
+				//signal(fault_sem);
+				//panic("kill deallocate failed\n");
 				errorflag=TRUE;
-				//return SYSERR;
+				return SYSERR;
 			}
 			bs_map_entry->pid=-1;
 			bs_map_entry->vpn=0;
