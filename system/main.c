@@ -13,8 +13,8 @@ void custom_test(char ch);
 
 process	main(void)
 {
-  //srpolicy(FIFO);
-  srpolicy(GCA);
+  srpolicy(FIFO);
+  //srpolicy(GCA);
 
   /* Start the network */
   /* DO NOT REMOVE OR COMMENT BELOW */
