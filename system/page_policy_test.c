@@ -412,15 +412,15 @@ void page_policy_test_methods(int testno){
   pid32 p;
 
   if(testno==1){
-    p = vcreate(do_policy_test1, INITSTK, PAGE_ALLOCATION,INITPRIO, "page rep", 0, NULL);
+    p = vcreate(do_policy_test1, INITSTK, PAGE_ALLOCATION,INITPRIO, "page rep test 1", 0, NULL);
     resume(p);
   }
   else if(testno==2){
-    p = vcreate(do_policy_test2, INITSTK, PAGE_ALLOCATION,INITPRIO, "page rep", 0, NULL);
+    p = vcreate(do_policy_test2, INITSTK, PAGE_ALLOCATION,INITPRIO, "page rep test 2", 0, NULL);
     resume(p);
   }
   else if(testno==3){
-    p = vcreate(do_policy_test3, INITSTK, PAGE_ALLOCATION,INITPRIO, "page rep", 0, NULL);
+    p = vcreate(do_policy_test3, INITSTK, PAGE_ALLOCATION,INITPRIO, "page rep test 3", 0, NULL);
     resume(p);
   }
   else{

@@ -56,7 +56,7 @@ void hook_pfault(int16 procid, void *addr, uint32 pagenum, uint32 framenum) {
   frame_md.alloc_page[cf] = pagenum;
   frame_md.curframe++;
   if (frame_md.curframe == NFRAMES) frame_md.curframe = 0;
-  kprintf("Procid: %d, Framenum: %d, Pagenum: %d\n", procid, framenum, pagenum);
+  kprintf("Proname: %s, Procid: %d, Framenum: %d, Pagenum: %d\n", proctab[procid].prname, procid, framenum, pagenum);
 #endif
 
 #endif

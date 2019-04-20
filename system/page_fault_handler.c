@@ -3,7 +3,9 @@
 //@sid- page fault handler
 
 void page_fault_handler(void){
-
+	intmask mask=disable();
+	wait(fault_sem);
+	
 	XDEBUG_KPRINTF("Page fault occured\n");
 
 	vd_t *faultaddr;
@@ -15,7 +17,7 @@ void page_fault_handler(void){
 	backing_store_map *bs_map_entry;
 
 
-	intmask mask=disable();
+	
 	fault_counts++;
 
 	prptr=&proctab[currpid];
@@ -26,7 +28,7 @@ void page_fault_handler(void){
 	vpn=address_to_vpn(cr2);	
 	faultaddr=(vd_t *)(&cr2);
 
-	wait(fault_sem);
+	
 	//check if valid
 
 	uint32 pd_offset=faultaddr->pd_offset;
@@ -105,13 +107,15 @@ void page_fault_handler(void){
 		return;	
 	}
 
-	signal(fault_sem);
+	
 
 	pt_entry[pt_offset].pt_pres=1;
 	pt_entry[pt_offset].pt_base=frameno_to_vpn(newframeNo);
 
 	frame_md.curframe=newframeNo;
 	hook_pfault(currpid, (void *)cr2, vpn, newframeNo);
+
+	signal(fault_sem);
 
 	restore(mask);
 

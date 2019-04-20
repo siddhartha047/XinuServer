@@ -122,6 +122,8 @@ pid32	vcreate(
 	uint32 vsize=hsize;
 	uint32 offset=0;
 
+	wait(fault_sem);
+
 	while(vsize>0){
 		size=min2(vsize, MAX_PAGES_PER_BS);
 		vsize=vsize-size;
@@ -148,6 +150,8 @@ pid32	vcreate(
 		offset=offset+size;
 
 	}
+
+	signal(fault_sem);
 
 	if(USE_HEAP_TO_TRACK){
 		//sid: this implementation, if I use vheap memory itself to track the list

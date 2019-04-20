@@ -6,6 +6,10 @@ extern void page_policy_test_custom(void);
 void test0(void);
 void cpubound(char ch);
 void A(char ch);
+void test1(void);
+void given_test(char ch);
+void custom_test(char ch);
+
 
 process	main(void)
 {
@@ -27,13 +31,13 @@ process	main(void)
   psinit();
 
   //test0();
-  uint32 start=get_faults();
-  page_policy_test();
-  uint32 end=get_faults();    
-  XDEBUG_KPRINTF("Page Faults: ->",end-start);
+  // uint32 start=get_faults();
+  // page_policy_test();
+  // uint32 end=get_faults();    
+  // XDEBUG_KPRINTF("Page Faults: ->",end-start);
+  // page_policy_test_custom();
   
-  //page_policy_test_custom();
-  
+  test1();
 
   XTEST_KPRINTF("Main process ending\n");
 
@@ -42,9 +46,44 @@ process	main(void)
 }
 
 void test0(void){
-  int prA=create( A, 2000, 50, "A", 1,'A' );
+  int prA=create( A, 2000, INITPRIO, "A", 1,'A' );
 
   resume(prA);
+}
+
+
+
+void test1(void){
+
+  resched_cntl(DEFER_START);  
+    int prA=create( A, 2000, INITPRIO, "A", 1,'A' );
+    int prTest=create(given_test, 2000, INITPRIO, "A", 1,'B' );
+    int prTestCustom=create(custom_test, 2000, INITPRIO, "C", 1,'A' );
+    resume(prA);
+    resume(prTest);
+    resume(prTestCustom);
+  resched_cntl(DEFER_STOP);
+
+}
+
+void given_test(char ch){
+  uint32 start=get_faults();
+  page_policy_test();
+  uint32 end=get_faults();    
+
+  XDEBUG_KPRINTF("Policy test Page Faults: -> %d\n",end-start);
+  XTEST_KPRINTF("Policy test ending\n",ch);
+
+}
+
+void custom_test(char ch){
+  uint32 start=get_faults();
+  page_policy_test_custom();
+  uint32 end=get_faults();    
+  
+  XDEBUG_KPRINTF("Policy test custom total Page Faults: -> %d\n",end-start);
+  XTEST_KPRINTF("Policy test custom ending\n",ch);
+
 }
 
 

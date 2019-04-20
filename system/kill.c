@@ -106,6 +106,7 @@ int32 restoreframes(pid32 pid){
 
 	backing_store_map *bs_map_entry;
 
+	wait(fault_sem);
 	int32 errorflag=FALSE;
 	for(int i=0;i<MAX_BS_ENTRIES;i++){
 		bs_map_entry=&backing_store_map_tab[i];
@@ -122,6 +123,9 @@ int32 restoreframes(pid32 pid){
 			bs_map_entry->allocated=0;
 		}
 	}
+
+	signal(fault_sem);
+
 
 	if(errorflag)return SYSERR;
 
