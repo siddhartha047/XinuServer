@@ -49,7 +49,8 @@ int32 swap_frame_back(int32 frameNo){
 
 	if(ptinverted_page_entry->refcount==0){
 
-		panic("Something is wrong\n");
+		//panic("Something is wrong\n");
+		XDEBUG_KPRINTF("Removing page table\n");
 
 		pdptr[pd_offset].pd_pres=0;
 

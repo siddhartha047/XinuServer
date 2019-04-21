@@ -104,7 +104,7 @@ void page_policy_test(void) {
     }
   }
 
-  kprintf("Page faults:-> %d\n",get_faults());
+  kprintf("Page policy test Page faults:-> %d\n",get_faults());
   kprintf("\n\nTest Passed.\n\n");
 
   return;
@@ -437,6 +437,8 @@ void page_policy_test_methods(int testno){
   }
 
   kprintf("\n\nTest %d Passed.\n\n",testno);
+
+  XDEBUG_KPRINTF("Method %d faults %d\n",testno,get_faults());
 
 }
 

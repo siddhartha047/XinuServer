@@ -100,7 +100,7 @@ void hook_pswap_out(int16 procid, uint32 pagenum, uint32 framenum) {
     frame_md.reclaimframe++;
     if (frame_md.reclaimframe == NFRAMES) frame_md.reclaimframe = 0;
 
-    kprintf("Passed\n");
+    kprintf("FIFO Passed\n");
   } 
   else {
     kprintf("Testing GCA .. ");

@@ -130,6 +130,24 @@ int32 restoreframes(pid32 pid){
 
 	signal(fault_sem);
 
+	if(USE_HEAP_TO_TRACK==FALSE){
+		xmemlist_t	*prev, *curr, *next;
+		struct procent *prptr;
+		
+		prptr=&proctab[pid];
+		
+		prev=&prptr->prxmemlist;
+		curr=prev->mnext;
+
+		while(curr!=NULL){
+			next=curr->mnext;
+			if(freemem((char*)curr,sizeof(xmemlist_t))==SYSERR){
+				panic("memory tracking nodes cleaning failed\n");
+			}
+			curr=next;
+		}
+
+	}
 
 	if(errorflag==SYSERR){
 		return SYSERR;

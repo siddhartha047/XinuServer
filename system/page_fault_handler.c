@@ -117,6 +117,8 @@ void page_fault_handler(void){
 
 	XDEBUG_KPRINTF("<--[Page fault handled (%s, %d)]\n",proctab[currpid].prname,currpid);
 	
+
+	
 	signal(fault_sem);
 
 	restore(mask);
