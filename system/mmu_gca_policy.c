@@ -3,7 +3,7 @@
 
 int32 get_frame_gca(void){
 
-	intmask mask=disable();
+	//intmask mask=disable();
 	frame_t *frame_entry;
 	inverted_page_t *inverted_page_entry;
 	struct procent *prptr;
@@ -49,7 +49,7 @@ int32 get_frame_gca(void){
 				//remove this one
 				lframeNo=frameNo;
 				removeFromFrameList(frameNo);
-				restore(mask);
+				//restore(mask);
 				return frameNo;
 			}
 			else if(ptptr->pt_acc==1 && ptptr->pt_dirty==0){
@@ -68,6 +68,6 @@ int32 get_frame_gca(void){
 	XDEBUG_KPRINTF("Shouldn't happen for gca\n");
 	panic("gca gone wrong\n");
 
-	restore(mask);
+	//restore(mask);
 	return SYSERR;
 }

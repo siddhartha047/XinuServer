@@ -11,7 +11,7 @@ pd_t* get_page_directory(void);
 
 //sid: 4 page and 1 device memory
 int32 initialize_global_page_table(void){
-	intmask mask=disable();
+	// intmask mask=disable();
 	pt_t *pt_entry;	
 	pt_t *pt_device_entry;
 
@@ -19,7 +19,7 @@ int32 initialize_global_page_table(void){
 	for(int i=0;i<GLOBAL_PAGE_NO;i++){
 		if((pt_entry=get_one_page())==NULL){
 			XDEBUG_KPRINTF("Couldn't allocate global page\n");
-			restore(mask);
+			// restore(mask);
 			return SYSERR;
 		}
 
@@ -33,7 +33,7 @@ int32 initialize_global_page_table(void){
 	
 	if((pt_device_entry=get_one_page())==NULL){
 		XDEBUG_KPRINTF("Couldn't allocate device page\n");
-		restore(mask);
+		// restore(mask);
 		return SYSERR;
 	}
 
@@ -43,20 +43,20 @@ int32 initialize_global_page_table(void){
 	}
 
 	device_pt=pt_device_entry;
-	restore(mask);
+	// restore(mask);
 
 
 	return OK;
 }
 
 pt_t *get_one_page(void){
-	intmask mask=disable();	
+	// intmask mask=disable();	
 	
 	int32 frameNo=get_one_frame();
 
 	if(frameNo==SYSERR){
 		XDEBUG_KPRINTF("Couldn't find a frame for the page\n");
-		restore(mask);
+		// restore(mask);
 		return (pt_t *)NULL;
 	}
 
@@ -74,19 +74,19 @@ pt_t *get_one_page(void){
 	hook_ptable_create(frameNo);
 
 
-	restore(mask);
+	// restore(mask);
 	return pt_entry;
 }
 
 pd_t* get_page_directory(void){
-	intmask mask=disable();
+	// intmask mask=disable();
 
 	int32 frameNo=get_one_frame();
 
 	inverted_page_tab[frameNo].pid=currpid;
 
 	if(frameNo==SYSERR){
-		restore(mask);
+		// restore(mask);
 		return (pd_t*)NULL;
 	}
 
@@ -113,7 +113,7 @@ pd_t* get_page_directory(void){
 	pd_entry[DEVICE_PTN].pd_base=address_to_vpn(device_pt);
 
 
-	restore(mask);
+	// restore(mask);
 	return pd_entry;
 }
 

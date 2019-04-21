@@ -4,8 +4,8 @@
 
 int32 initialize_frame(void){
 
-	intmask mask;
-	mask=disable();
+	// intmask mask;
+	// mask=disable();
 
 	frame_head=(frame_t *)NULL;
 	
@@ -24,19 +24,19 @@ int32 initialize_frame(void){
 		(&inverted_page_tab[i])->refcount=0;
 	}
 
-	restore(mask);
+	// restore(mask);
 
 	return OK;
 }
 
 int32 get_one_frame(void){
-	intmask mask=disable();
+	// intmask mask=disable();
 	
 	int32 frameNo;
 
 	if((frameNo=find_free_frame())==SYSERR){
 		XDEBUG_KPRINTF("Shouldn't happen\n");
-		restore(mask);
+		//restore(mask);
 		return SYSERR;
 	}
 
@@ -62,18 +62,18 @@ int32 get_one_frame(void){
 
 	printFrameList(frame_head);
 
-	restore(mask);
+	// restore(mask);
 	return frameNo;
 }
 
 int32 find_free_frame(void){
-	intmask mask=disable();
+	// intmask mask=disable();
 	int32 frameNo=-1;
 
 	for(int i=0;i<NFRAMES;i++){
 		if(frame_tab[i].state==FRAME_FREE){
 			frameNo=i;
-			restore(mask);
+			// restore(mask);
 			return frameNo;
 		}
 	}
@@ -82,13 +82,13 @@ int32 find_free_frame(void){
 	//page replacement will be done here later one
 	if(currpolicy==GCA){
 		if((frameNo=get_frame_gca())==SYSERR){
-			restore(mask);
+			// restore(mask);
 			return SYSERR;
 		}
 	}
 	else if(currpolicy == FIFO){
 		if((frameNo=get_frame_fifo())==SYSERR){
-			restore(mask);
+			// restore(mask);
 			return SYSERR;
 		}
 	}
@@ -100,11 +100,11 @@ int32 find_free_frame(void){
 	int32 status=swap_frame_back(frameNo);
 	
 	if(status==SYSERR){
-		restore(mask);
+		// restore(mask);
 		return SYSERR;	
 	}
 
-	restore(mask);
+	// restore(mask);
 	return frameNo;
 }
 

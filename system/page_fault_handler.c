@@ -4,19 +4,18 @@
 
 void page_fault_handler(void){
 	intmask mask=disable();
-	wait(fault_sem);
-	
-	XDEBUG_KPRINTF("Page fault occured\n");
+	unsigned long cr2=read_cr2();
+
+	XDEBUG_KPRINTF("[Page fault occured-> (%s, %d)]\n",proctab[currpid].prname,currpid);
 
 	vd_t *faultaddr;
 	pd_t *pd_entry;
 	pt_t *pt_entry;
 	struct procent *prptr;
-	unsigned long cr2;
 	uint32 vpn;
 	backing_store_map *bs_map_entry;
 
-
+	wait(fault_sem);
 	
 	fault_counts++;
 
@@ -24,7 +23,7 @@ void page_fault_handler(void){
 	pd_entry=prptr->prpd;
 
 	//get the faulty page address
-	cr2=read_cr2();
+	
 	vpn=address_to_vpn(cr2);	
 	faultaddr=(vd_t *)(&cr2);
 
@@ -52,6 +51,8 @@ void page_fault_handler(void){
 	else{
 		pt_entry=(pt_t*)vpn_to_address(pd_entry->pd_base);
 	}
+
+
 
 	if((bs_map_entry=get_bs_map(currpid,vpn))==NULL){
 		XDEBUG_KPRINTF("Invalid address from pagefault\n");		
@@ -106,7 +107,6 @@ void page_fault_handler(void){
 		restore(mask);
 		return;	
 	}
-
 	
 
 	pt_entry[pt_offset].pt_pres=1;
@@ -115,6 +115,8 @@ void page_fault_handler(void){
 	frame_md.curframe=newframeNo;
 	hook_pfault(currpid, (void *)cr2, vpn, newframeNo);
 
+	XDEBUG_KPRINTF("<--[Page fault handled (%s, %d)]\n",proctab[currpid].prname,currpid);
+	
 	signal(fault_sem);
 
 	restore(mask);

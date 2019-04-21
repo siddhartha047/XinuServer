@@ -107,6 +107,8 @@ int32 restoreframes(pid32 pid){
 	backing_store_map *bs_map_entry;
 
 	wait(fault_sem);
+	
+	//int32 errorflag=remove_bs_map(pid);
 	int32 errorflag=FALSE;
 	for(int i=0;i<MAX_BS_ENTRIES;i++){
 		bs_map_entry=&backing_store_map_tab[i];
@@ -114,7 +116,7 @@ int32 restoreframes(pid32 pid){
 			if(deallocate_bs(i)==SYSERR){
 				XDEBUG_KPRINTF("Kill deallocate bs failed\n");
 				//signal(fault_sem);
-				//panic("kill deallocate failed\n");
+				panic("kill deallocate failed\n");
 				errorflag=TRUE;
 				return SYSERR;
 			}
@@ -129,7 +131,9 @@ int32 restoreframes(pid32 pid){
 	signal(fault_sem);
 
 
-	if(errorflag)return SYSERR;
+	if(errorflag==SYSERR){
+		return SYSERR;
+	}
 
 	return OK;
 }

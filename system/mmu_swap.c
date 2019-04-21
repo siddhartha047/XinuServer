@@ -4,7 +4,7 @@
 
 int32 swap_frame_back(int32 frameNo){
 
-	intmask mask=disable();
+	// intmask mask=disable();
 
 	struct procent *prptr;
 	inverted_page_t *inverted_page_entry;
@@ -67,7 +67,7 @@ int32 swap_frame_back(int32 frameNo){
 		if(bs_map_entry==NULL){
 			XDEBUG_KPRINTF("swapping gon wrong at finding map\n");
 			kill(pid);
-			restore(mask);
+			// restore(mask);
 			return SYSERR;
 		}
 
@@ -77,21 +77,21 @@ int32 swap_frame_back(int32 frameNo){
 		//opeing
 		if(open_bs(bsid)==SYSERR){
 			kill(pid);
-			restore(mask);
+			// restore(mask);
 			return SYSERR;
 		}
 
 		//writing
 		if(write_bs((char *)frameno_to_address(frameNo),bsid,offset)==SYSERR){
 			kill(pid);
-			restore(mask);
+			// restore(mask);
 			return SYSERR;	
 		}
 		
 		//closing
 		if(close_bs(bsid)==SYSERR){
 			kill(pid);
-			restore(mask);
+			// restore(mask);
 			return SYSERR;		
 		}
 
@@ -99,6 +99,6 @@ int32 swap_frame_back(int32 frameNo){
 	//hook out
 	frame_md.reclaimframe=frameNo;
 	hook_pswap_out(pid,vpn,frameNo);
-	restore(mask);
+	// restore(mask);
 	return OK;
 }

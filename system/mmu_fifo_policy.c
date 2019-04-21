@@ -3,7 +3,7 @@
 
 int32 get_frame_fifo(void){
 
-	intmask mask=disable();
+	// intmask mask=disable();
 	int32 frameNo;
 
 	frame_t *curr;
@@ -15,7 +15,7 @@ int32 get_frame_fifo(void){
 			if(removeFromFrameList(frameNo)==SYSERR){
 				panic("Frame removing from list failed\n");
 			}
-			restore(mask);
+			// restore(mask);
 			return frameNo;
 		}
 		curr=curr->next;
@@ -23,12 +23,12 @@ int32 get_frame_fifo(void){
 
 	panic("I think you have minimum no of frame\n");
 
-	restore(mask);
+	// restore(mask);
 	return SYSERR;
 }
 
 int32 removeFromFrameList(int32 frameNo){
-	intmask mask=disable();
+	// intmask mask=disable();
 	frame_t *prev;
 	frame_t *curr;
 
@@ -47,14 +47,14 @@ int32 removeFromFrameList(int32 frameNo){
 			curr->next=(frame_t *)NULL;
 			curr->state=FRAME_FREE;
 			curr->type=FRAME_NONE;
-			restore(mask);
+			// restore(mask);
 			return OK;
 		}
 		prev=curr;
 		curr=curr->next;		
 	}
 
-	restore(mask);
+	// restore(mask);
 	return SYSERR;
 }
 

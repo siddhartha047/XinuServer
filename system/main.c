@@ -9,12 +9,12 @@ void A(char ch);
 void test1(void);
 void given_test(char ch);
 void custom_test(char ch);
-
+void test2(void);
 
 process	main(void)
 {
-  srpolicy(FIFO);
-  //srpolicy(GCA);
+  //srpolicy(FIFO);
+  srpolicy(GCA);
 
   /* Start the network */
   /* DO NOT REMOVE OR COMMENT BELOW */
@@ -31,13 +31,17 @@ process	main(void)
   psinit();
 
   //test0();
+  
   // uint32 start=get_faults();
   // page_policy_test();
   // uint32 end=get_faults();    
   // XDEBUG_KPRINTF("Page Faults: ->",end-start);
+  
   // page_policy_test_custom();
   
-  test1();
+   test1();
+
+  //test2();
 
   XTEST_KPRINTF("Main process ending\n");
 
@@ -65,6 +69,17 @@ void test1(void){
   resched_cntl(DEFER_STOP);
 
 }
+
+void test2(void){
+
+  resched_cntl(DEFER_START);  
+    int prTest=create(given_test, 2000, INITPRIO, "A", 1,'A' );
+    int prTestCustom=create(given_test, 2000, INITPRIO, "C", 1,'C' );
+    resume(prTest);
+    resume(prTestCustom);
+  resched_cntl(DEFER_STOP);
+}
+
 
 void given_test(char ch){
   uint32 start=get_faults();

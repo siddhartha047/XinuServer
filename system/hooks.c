@@ -101,7 +101,8 @@ void hook_pswap_out(int16 procid, uint32 pagenum, uint32 framenum) {
     if (frame_md.reclaimframe == NFRAMES) frame_md.reclaimframe = 0;
 
     kprintf("Passed\n");
-  } else {
+  } 
+  else {
     kprintf("Testing GCA .. ");
 
     // If you decide to complete GCA part, you can test here.
@@ -121,23 +122,26 @@ void hook_pswap_out(int16 procid, uint32 pagenum, uint32 framenum) {
 
 
     while(i != framenum){
-      vpn = inverted_page_tab[i].vpn;
-      vd = vpn_to_address(vpn);      
-      vdptr = (vd_t *)(&vd);
+      if(frame_tab[i].type==FRAME_PR){
+        vpn = inverted_page_tab[i].vpn;
+        vd = vpn_to_address(vpn);      
+        vdptr = (vd_t *)(&vd);
 
-      pd_offset=vdptr->pd_offset;
-      pt_offset=vdptr->pt_offset;
-      //pg_offset=vdptr->pg_offset;
+        pd_offset=vdptr->pd_offset;
+        pt_offset=vdptr->pt_offset;
+        //pg_offset=vdptr->pg_offset;
 
-      pdptr = proctab[currpid].prpd;
-      pdptr+=pd_offset;
-      
-      ptptr = (pt_t*)vpn_to_address(pdptr->pd_base);
-      ptptr+=pt_offset;
-      
-      if(ptptr->pt_acc == 0 && ptptr->pt_dirty != 0){
-        panic("FAIL\n");
+        pdptr = proctab[currpid].prpd;
+        pdptr+=pd_offset;
+        
+        ptptr = (pt_t*)vpn_to_address(pdptr->pd_base);
+        ptptr+=pt_offset;
+        
+        if(ptptr->pt_acc == 0 && ptptr->pt_dirty != 0){
+          panic("FAIL\n");
+        }
       }
+      
 
       i=(i+1)%NFRAMES;
     }
