@@ -79,9 +79,30 @@ void addToFrameList(frame_t *frame_entry){
 }
 
 void printFrameList(frame_t *frame_entry){
+	uint32 vpn;
+	vd_t *vaddptr;
+	uint32 vaddress;
+	uint32 pd_offset;
+	uint32 pt_offset;
+	pt_t *ptptr;
+	pd_t *pdptr;
+
 	XDEBUG_KPRINTF("FIFO :");
 	while(frame_entry!=NULL){
-		XDEBUG_KPRINTF("->%d",frame_entry->id);
+		vpn=inverted_page_tab[frame_entry->id].vpn;
+		vaddress=vpn_to_address(vpn);
+		vaddptr=(vd_t *)&vaddress;
+		pd_offset=vaddptr->pd_offset;
+		pt_offset=vaddptr->pt_offset;
+		//pg_offset=vaddptr->pg_offset;
+
+
+		pdptr=proctab[inverted_page_tab[frame_entry->id].pid].prpd;
+		ptptr=(pt_t *)vpn_to_address(pdptr[pd_offset].pd_base);
+		ptptr=ptptr+pt_offset;
+
+			
+		XDEBUG_KPRINTF("->(%d, %d, %d, %d)",frame_entry->id, frame_entry->dirty,ptptr->pt_acc,ptptr->pt_dirty);
 		frame_entry=frame_entry->next;
 	}
 	XDEBUG_KPRINTF("\n");

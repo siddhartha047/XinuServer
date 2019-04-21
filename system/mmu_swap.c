@@ -15,6 +15,8 @@ int32 swap_frame_back(int32 frameNo){
 
 	int32 vpn=inverted_page_entry->vpn;
 	int32 pid=inverted_page_entry->pid;
+
+
 	
 	int32 vaddress=vpn_to_address(vpn);
 	vd_t *vaddressptr=(vd_t *)(&vaddress);
@@ -27,6 +29,8 @@ int32 swap_frame_back(int32 frameNo){
 
 	ptptr=(pt_t *)vpn_to_address(pdptr[pd_offset].pd_base);
 	ptptr[pt_offset].pt_pres=0;
+
+	//XDEBUG_KPRINTF("Frame %d, Vpn %d base %d\n",frameNo,vpn,ptptr[pt_offset].pt_base);
 
 	if(pid==currpid){
 		tmp=vpn;
@@ -61,6 +65,7 @@ int32 swap_frame_back(int32 frameNo){
 	//dirty then write back
 	if(ptptr[pt_offset].pt_dirty==1|| frame_tab[frameNo].dirty==1){
 
+		XDEBUG_KPRINTF("Dirty Frame: %d \n",frameNo);
 
 		backing_store_map *bs_map_entry;
 		bs_map_entry=get_bs_map(pid,vpn);
@@ -97,6 +102,13 @@ int32 swap_frame_back(int32 frameNo){
 		}
 
 	}
+	ptptr[pt_offset].pt_pres=0;
+	ptptr[pt_offset].pt_acc=0;
+	ptptr[pt_offset].pt_dirty=0;
+	frame_tab[frameNo].dirty=0;
+
+	// XDEBUG_KPRINTF("Frame %d, Vpn %d base %d\n",frameNo,vpn,ptptr[pt_offset].pt_base);
+	// XDEBUG_KPRINTF("Fm no, %d, base: %d\n",frameNo, ptptr[pt_offset].pt_base);
 	//hook out
 	frame_md.reclaimframe=frameNo;
 	hook_pswap_out(pid,vpn,frameNo);

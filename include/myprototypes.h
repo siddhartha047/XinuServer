@@ -147,6 +147,6 @@ extern void printFrameList(frame_t *frame_entry);
 extern int32 get_frame_gca(void);
 
 extern int32 lframeNo; //this is for global clock
-#define SWEEP_TIMES 3
+#define SWEEP_TIMES 4
 
 #endif // __MYPROTOTYPES_H_

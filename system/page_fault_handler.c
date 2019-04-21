@@ -15,9 +15,10 @@ void page_fault_handler(void){
 	uint32 vpn;
 	backing_store_map *bs_map_entry;
 
-	wait(fault_sem);
-	
 	fault_counts++;
+
+	wait(fault_sem);
+
 
 	prptr=&proctab[currpid];
 	pd_entry=prptr->prpd;
@@ -73,8 +74,8 @@ void page_fault_handler(void){
 	
 	if(newframeNo==SYSERR){
 		XDEBUG_KPRINTF("Not enough free frame\n");		
-		kill(currpid);
 		signal(fault_sem);
+		kill(currpid);
 		restore(mask);
 		return;
 	}
@@ -86,16 +87,16 @@ void page_fault_handler(void){
 
 	if(open_bs(bs_map_entry->bsid)==SYSERR){
 		XDEBUG_KPRINTF("Opening backing store failed\n");		
-		kill(currpid);
 		signal(fault_sem);
+		kill(currpid);
 		restore(mask);
 		return;	
 	}
 
 	if(read_bs((char *)frameno_to_address(newframeNo),bs_map_entry->bsid,pg_offset)==SYSERR){
 		XDEBUG_KPRINTF("Frame loading from backing store failed\n");		
-		kill(currpid);
 		signal(fault_sem);
+		kill(currpid);
 		restore(mask);
 		return;	
 	}
@@ -118,7 +119,7 @@ void page_fault_handler(void){
 	XDEBUG_KPRINTF("<--[Page fault handled (%s, %d)]\n",proctab[currpid].prname,currpid);
 	
 
-	
+
 	signal(fault_sem);
 
 	restore(mask);

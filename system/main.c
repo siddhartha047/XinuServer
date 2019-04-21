@@ -13,8 +13,8 @@ void test2(void);
 
 process	main(void)
 {
-  srpolicy(FIFO);
-  //srpolicy(GCA);
+  //srpolicy(FIFO);
+  srpolicy(GCA);
 
   /* Start the network */
   /* DO NOT REMOVE OR COMMENT BELOW */
@@ -77,7 +77,7 @@ void test2(void){
 
 void given_test(char ch){
   page_policy_test();  
-  
+
   XDEBUG_KPRINTF("Policy test Page Faults: -> %d\n",get_faults());
   XTEST_KPRINTF("Policy test ending\n",ch);
 

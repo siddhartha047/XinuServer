@@ -116,7 +116,7 @@ int32 restoreframes(pid32 pid){
 			if(deallocate_bs(i)==SYSERR){
 				XDEBUG_KPRINTF("Kill deallocate bs failed\n");
 				//signal(fault_sem);
-				panic("kill deallocate failed\n");
+				//panic("kill deallocate failed\n");
 				errorflag=TRUE;
 				return SYSERR;
 			}

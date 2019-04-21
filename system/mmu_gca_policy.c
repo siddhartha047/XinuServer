@@ -20,7 +20,7 @@ int32 get_frame_gca(void){
 	//uint32 pg_offset;
 	uint32 vaddress;
 
-	for(int i=0;i<=SWEEP_TIMES*NFRAMES;i++){
+	for(int i=0;i<SWEEP_TIMES*NFRAMES;i++){
 		frame_entry=&frame_tab[frameNo];
 
 		//only replace resident pages
@@ -48,16 +48,21 @@ int32 get_frame_gca(void){
 			if(ptptr->pt_acc==0 && ptptr->pt_dirty==0){
 				//remove this one
 				lframeNo=frameNo;
-				removeFromFrameList(frameNo);
+				ptptr->pt_pres=0;
+				removeFromFrameList(frameNo);				
+				//XDEBUG_KPRINTF("Removed: %d, of pid %d, %d\n",frameNo,pid,ptptr->pt_acc);
+				//printFrameList(frame_head);
 				//restore(mask);
 				return frameNo;
 			}
 			else if(ptptr->pt_acc==1 && ptptr->pt_dirty==0){
 				ptptr->pt_acc=0;
+				//XDEBUG_KPRINTF("[*%d, %d, %d]->",frameNo,ptptr->pt_acc,ptptr->pt_dirty);
 			}
 			else if(ptptr->pt_acc==1 && ptptr->pt_dirty==1){
 				ptptr->pt_dirty=0;
 				frame_entry->dirty=1;
+				//XDEBUG_KPRINTF("[#%d, %d, %d]->",frameNo,ptptr->pt_acc,ptptr->pt_dirty);
 			}			
 
 		}

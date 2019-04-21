@@ -131,14 +131,12 @@ void hook_pswap_out(int16 procid, uint32 pagenum, uint32 framenum) {
         pt_offset=vdptr->pt_offset;
         //pg_offset=vdptr->pg_offset;
 
-        pdptr = proctab[currpid].prpd;
-        pdptr+=pd_offset;
+        pdptr = proctab[procid].prpd;
+    
+        ptptr = (pt_t*)vpn_to_address(pdptr[pd_offset].pd_base);
         
-        ptptr = (pt_t*)vpn_to_address(pdptr->pd_base);
-        ptptr+=pt_offset;
-        
-        if(ptptr->pt_acc == 0 && ptptr->pt_dirty != 0){
-          panic("FAIL\n");
+        if(ptptr[pt_offset].pt_acc == 0 && ptptr[pt_offset].pt_dirty != 0){
+          panic("FAILure others\n");
         }
       }
       
@@ -148,19 +146,34 @@ void hook_pswap_out(int16 procid, uint32 pagenum, uint32 framenum) {
     
     vd = vpn_to_address(pagenum);
     vdptr = (vd_t *)(&vd);
-    pdptr = proctab[currpid].prpd;
+    pdptr = proctab[procid].prpd;
+
+    // pd_offset=vdptr->pd_offset;
+    // pt_offset=vdptr->pt_offset;
+    // //pg_offset=vdptr->pg_offset;
+
+    // pdptr+=pd_offset;
+    // ptptr = (pt_t*)vpn_to_address(pdptr->pd_base);
+
+    // ptptr+=pt_offset;
+
+    // if(!(ptptr->pt_acc == 0 && ptptr->pt_dirty == 0)){
+    //   XDEBUG_KPRINTF("FAILed to verify current %d, %d \n",ptptr->pt_acc,ptptr->pt_dirty );
+    //   XDEBUG_KPRINTF("VPN %d, pres: %d, base %d\n",pagenum,ptptr->pt_pres,ptptr->pt_base);
+    //   panic("FAILed to verify current\n" );
+    // }
 
     pd_offset=vdptr->pd_offset;
     pt_offset=vdptr->pt_offset;
     //pg_offset=vdptr->pg_offset;
 
-    pdptr+=pd_offset;
-    ptptr = (pt_t*)vpn_to_address(pdptr->pd_base);
+    ptptr = (pt_t*)vpn_to_address(pdptr[pd_offset].pd_base);
 
-    ptptr+=pt_offset;
 
-    if(!(ptptr->pt_acc == 0 && ptptr->pt_dirty == 0)){
-      panic("FAIL\n");
+    if(!(ptptr[pt_offset].pt_acc == 0 && ptptr[pt_offset].pt_dirty == 0)){
+      // XDEBUG_KPRINTF("FAILed to verify current %d, %d \n",ptptr[pt_offset].pt_acc,ptptr[pt_offset].pt_dirty );
+      // XDEBUG_KPRINTF("VPN %d, pres: %d, base %d\n",pagenum,ptptr[pt_offset].pt_pres,ptptr[pt_offset].pt_base);
+      panic("FAILed to verify current\n" );
     }
 
     lastfm = lframeNo;
