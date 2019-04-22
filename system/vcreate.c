@@ -102,12 +102,12 @@ pid32	vcreate(
 	
 	// Lab3 TODO. set up page directory, allocate bs etc.
 	//@sid::
-	//wait(fault_sem);
+	wait(fault_sem);
 
 	pd_t *pd_entry=get_page_directory();
 	if(pd_entry==NULL){
 		prcount--;
-		//signal(fault_sem);
+		signal(fault_sem);
 		kill(pid);
 		XDEBUG_KPRINTF("Couldn't allocate pd\n");
 		
@@ -134,7 +134,7 @@ pid32	vcreate(
 
 		if(bsid==SYSERR){
 			remove_bs_map(pid);
-			//signal(fault_sem);
+			signal(fault_sem);
 			kill(pid);
 			XDEBUG_KPRINTF("Not enough space too allocate backing store\n");
 			restore(mask);
@@ -145,7 +145,7 @@ pid32	vcreate(
 
 		if(status==SYSERR){
 			remove_bs_map(pid);
-			//signal(fault_sem);
+			signal(fault_sem);
 
 			kill(pid);
 			XDEBUG_KPRINTF("Couldn't map bsid\n");
@@ -168,7 +168,7 @@ pid32	vcreate(
 		prptr->prxmemlist.mlength=hsize*NBPG;
 	}
 	
-	//signal(fault_sem);
+	signal(fault_sem);
 
 	restore(mask);
 	return pid;

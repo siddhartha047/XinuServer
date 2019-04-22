@@ -52,6 +52,7 @@ int32 get_frame_gca(void){
 				removeFromFrameList(frameNo);				
 				XDEBUG_KPRINTF("Removed: %d, of pid %d, %d\n",frameNo,pid,ptptr->pt_acc);
 				printFrameList(frame_head);
+				ptptr->pt_pres=0;
 				//restore(mask);
 				return frameNo;
 			}

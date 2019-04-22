@@ -70,13 +70,14 @@ void page_fault_handler(void){
 	uint32 pg_offset= vpn-bs_map_entry->vpn;
 	int32 ptframeNo=address_to_frameno(pt_entry);
 	inverted_page_tab[ptframeNo].refcount++;
+	inverted_page_tab[ptframeNo].pid=pid;
 
 	//XDEBUG_KPRINTF("Fault: Page table frame %d refcount %d\n",frameNo,inverted_page_tab[frameNo].refcount);
 
 	pt_entry[pt_offset].pt_pres=0; //added by me
 	int32 newframeNo=get_one_frame();
 	pt_entry[pt_offset].pt_pres=0; //added by me
-	
+
 	if(newframeNo==SYSERR){
 		XDEBUG_KPRINTF("Not enough free frame\n");		
 		signal(fault_sem);

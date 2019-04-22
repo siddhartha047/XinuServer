@@ -83,7 +83,7 @@ int32 restoreframes(pid32 pid){
 	frame_t *frame_entry;
 	inverted_page_t *inverted_page_entry;
 
-	//wait(fault_sem);
+	wait(fault_sem);
 
 	for(int i=0;i<NFRAMES;i++){
 		inverted_page_entry= &inverted_page_tab[i];
@@ -91,7 +91,7 @@ int32 restoreframes(pid32 pid){
 		if(inverted_page_entry->pid==pid){
 			if(removeFromFrameList(i)==SYSERR){
 				XDEBUG_KPRINTF("Something went wrong while removing frame\n");
-				//signal(fault_sem);
+				signal(fault_sem);
 				return SYSERR;
 			}
 			frame_entry=&frame_tab[i];
@@ -118,10 +118,10 @@ int32 restoreframes(pid32 pid){
 		if(bs_map_entry->pid==pid){
 			if(deallocate_bs(i)==SYSERR){
 				XDEBUG_KPRINTF("Kill deallocate bs failed\n");
-				//signal(fault_sem);
+				signal(fault_sem);
 				//panic("kill deallocate failed\n");
 				errorflag=TRUE;
-				//signal(fault_sem);
+				signal(fault_sem);
 				return SYSERR;
 			}
 			bs_map_entry->pid=-1;
@@ -153,7 +153,7 @@ int32 restoreframes(pid32 pid){
 
 	}
 
-	//signal(fault_sem);
+	signal(fault_sem);
 
 	if(errorflag==SYSERR){
 		return SYSERR;

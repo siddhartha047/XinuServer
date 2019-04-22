@@ -60,9 +60,9 @@ static void do_policy_test(void) {
           //pg_offset=vdptr->pg_offset;
 
           pt_t* ptptr = (pt_t*)vpn_to_address(pdptr[pd_offset].pd_base);
-          // XDEBUG_KPRINTF("VPN %d, pres: %d, base %d\n",pagenum,ptptr[pt_offset].pt_pres,ptptr[pt_offset].pt_base-NBPG);
+          // XDEBUG_KPRINTF("VPN %d, pres: %d, base %d\n",pagenum,ptptr[pt_offset].pt_pres,ptptr[pt_offset].pt_base);
       
-          XDEBUG_KPRINTF("Procid %d, addr %d, vpn %d, frame %d, \n",currpid,p,((uint32)p)/NBPG,ptptr[pt_offset].pt_base-NBPG);
+          XDEBUG_KPRINTF("Procid %d, addr %d, vpn %d, frame %d, \n",currpid,p,((uint32)p)/NBPG,ptptr[pt_offset].pt_base);
 
         panic("assert failed\n");
       }
@@ -193,9 +193,9 @@ void mytest1(void){
           //pg_offset=vdptr->pg_offset;
 
           pt_t* ptptr = (pt_t*)vpn_to_address(pdptr[pd_offset].pd_base);
-          // XDEBUG_KPRINTF("VPN %d, pres: %d, base %d\n",pagenum,ptptr[pt_offset].pt_pres,ptptr[pt_offset].pt_base-NBPG);
+          // XDEBUG_KPRINTF("VPN %d, pres: %d, base %d\n",pagenum,ptptr[pt_offset].pt_pres,ptptr[pt_offset].pt_base);
       
-          XDEBUG_KPRINTF("Procid %d, addr %d, vpn %d, frame %d, \n",currpid,p,((uint32)p)/NBPG,ptptr[pt_offset].pt_base-NBPG);
+          XDEBUG_KPRINTF("Procid %d, addr %d, vpn %d, frame %d, \n",currpid,p,((uint32)p)/NBPG,ptptr[pt_offset].pt_base);
 
 
         panic("assert failed\n");
@@ -223,9 +223,9 @@ void mytest1(void){
           //pg_offset=vdptr->pg_offset;
 
           pt_t* ptptr = (pt_t*)vpn_to_address(pdptr[pd_offset].pd_base);
-          // XDEBUG_KPRINTF("VPN %d, pres: %d, base %d\n",pagenum,ptptr[pt_offset].pt_pres,ptptr[pt_offset].pt_base-NBPG);
+          // XDEBUG_KPRINTF("VPN %d, pres: %d, base %d\n",pagenum,ptptr[pt_offset].pt_pres,ptptr[pt_offset].pt_base);
       
-          XDEBUG_KPRINTF("Procid %d, addr %d, vpn %d, frame %d, \n",currpid,p,((uint32)p)/NBPG,ptptr[pt_offset].pt_base-NBPG);
+          XDEBUG_KPRINTF("Procid %d, addr %d, vpn %d, frame %d, \n",currpid,p,((uint32)p)/NBPG,ptptr[pt_offset].pt_base);
 
         panic("assert failed\n");
       }
@@ -311,9 +311,9 @@ void mytest2(void){
           //pg_offset=vdptr->pg_offset;
 
           pt_t* ptptr = (pt_t*)vpn_to_address(pdptr[pd_offset].pd_base);
-          // XDEBUG_KPRINTF("VPN %d, pres: %d, base %d\n",pagenum,ptptr[pt_offset].pt_pres,ptptr[pt_offset].pt_base-NBPG);
+          // XDEBUG_KPRINTF("VPN %d, pres: %d, base %d\n",pagenum,ptptr[pt_offset].pt_pres,ptptr[pt_offset].pt_base);
       
-          XDEBUG_KPRINTF("Procid %d, addr %d, vpn %d, frame %d, \n",currpid,p,((uint32)p)/NBPG,ptptr[pt_offset].pt_base-NBPG);
+          XDEBUG_KPRINTF("Procid %d, addr %d, vpn %d, frame %d, \n",currpid,p,((uint32)p)/NBPG,ptptr[pt_offset].pt_base);
 
         panic("assert failed\n");
       }
@@ -419,9 +419,9 @@ void mytest3(void){
               //pg_offset=vdptr->pg_offset;
 
               pt_t* ptptr = (pt_t*)vpn_to_address(pdptr[pd_offset].pd_base);
-              // XDEBUG_KPRINTF("VPN %d, pres: %d, base %d\n",pagenum,ptptr[pt_offset].pt_pres,ptptr[pt_offset].pt_base-NBPG);
+              // XDEBUG_KPRINTF("VPN %d, pres: %d, base %d\n",pagenum,ptptr[pt_offset].pt_pres,ptptr[pt_offset].pt_base);
           
-              XDEBUG_KPRINTF("Procid %d, addr %d, vpn %d, frame %d, \n",currpid,p,((uint32)p)/NBPG,ptptr[pt_offset].pt_base-NBPG);
+              XDEBUG_KPRINTF("Procid %d, addr %d, vpn %d, frame %d, \n",currpid,p,((uint32)p)/NBPG,ptptr[pt_offset].pt_base);
 
             panic("assert failed\n");
           }

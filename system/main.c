@@ -13,8 +13,8 @@ void test2(void);
 
 process	main(void)
 {
-  srpolicy(FIFO);
-  //srpolicy(GCA);
+  //srpolicy(FIFO);
+  srpolicy(GCA);
 
   /* Start the network */
   /* DO NOT REMOVE OR COMMENT BELOW */
@@ -68,8 +68,12 @@ void test2(void){
   resched_cntl(DEFER_START);  
     int prTest=create(given_test, 2000, INITPRIO, "A", 1,'1' );
     int prTestCustom=create(given_test, 2000, INITPRIO, "C", 1,'2' );
+    int prTest1=create(given_test, 2000, INITPRIO, "A", 1,'1' );
+    int prTestCustom1=create(given_test, 2000, INITPRIO, "C", 1,'2' );
     resume(prTest);
     resume(prTestCustom);
+    resume(prTest1);
+    resume(prTestCustom1);
   resched_cntl(DEFER_STOP);
 }
 
