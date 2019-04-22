@@ -50,19 +50,19 @@ int32 get_frame_gca(void){
 				lframeNo=frameNo;
 				ptptr->pt_pres=0;
 				removeFromFrameList(frameNo);				
-				//XDEBUG_KPRINTF("Removed: %d, of pid %d, %d\n",frameNo,pid,ptptr->pt_acc);
-				//printFrameList(frame_head);
+				XDEBUG_KPRINTF("Removed: %d, of pid %d, %d\n",frameNo,pid,ptptr->pt_acc);
+				printFrameList(frame_head);
 				//restore(mask);
 				return frameNo;
 			}
 			else if(ptptr->pt_acc==1 && ptptr->pt_dirty==0){
 				ptptr->pt_acc=0;
-				//XDEBUG_KPRINTF("[*%d, %d, %d]->",frameNo,ptptr->pt_acc,ptptr->pt_dirty);
+				XDEBUG_KPRINTF("[*%d, %d, %d]->",frameNo,ptptr->pt_acc,ptptr->pt_dirty);
 			}
 			else if(ptptr->pt_acc==1 && ptptr->pt_dirty==1){
 				ptptr->pt_dirty=0;
 				frame_entry->dirty=1;
-				//XDEBUG_KPRINTF("[#%d, %d, %d]->",frameNo,ptptr->pt_acc,ptptr->pt_dirty);
+				XDEBUG_KPRINTF("[#%d, %d, %d]->",frameNo,ptptr->pt_acc,ptptr->pt_dirty);
 			}			
 
 		}

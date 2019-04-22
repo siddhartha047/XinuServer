@@ -58,14 +58,15 @@ int32 swap_frame_back(int32 frameNo){
 
 		pdptr[pd_offset].pd_pres=0;
 
-		hook_ptable_delete(ptframeNo);
 		removeFromFrameList(ptframeNo);
+		hook_ptable_delete(ptframeNo);
+		
 	}
 
 	//dirty then write back
 	if(ptptr[pt_offset].pt_dirty==1|| frame_tab[frameNo].dirty==1){
 
-		XDEBUG_KPRINTF("Dirty Frame: %d \n",frameNo);
+		XDEBUG_KPRINTF("Dirty Frame: %d  started writing ->%d,%d\n",frameNo,pid,currpid);
 
 		backing_store_map *bs_map_entry;
 		bs_map_entry=get_bs_map(pid,vpn);
@@ -100,6 +101,8 @@ int32 swap_frame_back(int32 frameNo){
 			// restore(mask);
 			return SYSERR;		
 		}
+
+		XDEBUG_KPRINTF("Dirty Frame: %d  finished writing-> %d,%d\n",frameNo,pid,currpid);
 
 	}
 	ptptr[pt_offset].pt_pres=0;

@@ -40,7 +40,7 @@ void hook_ptable_delete(uint32 pagenum) {
  */
 void hook_pfault(int16 procid, void *addr, uint32 pagenum, uint32 framenum) {
 #ifdef HOOK_LOG_ON
-	kprintf("\n=== Page fault for address 0x%0X ===\n", addr);
+	kprintf("\n=== Page fault for address 0x%0X, %d ===\n", addr, addr);
 
   if (isbadpid(currpid)) {
     kprintf("[ERR] bad pid\n");

@@ -50,7 +50,23 @@ static void do_policy_test(void) {
     kprintf("Check Iteration [%3d] at 0x%08x\n", i, p);
     for (uint32 j=0; j<PAGESIZE; j=j+4) {
       uint32 v = get_test_value(p);
-      ASSERT(*p++ == v);
+      if(*p++ != v){
+         uint32 vd = vpn_to_address(address_to_vpn(p));
+          vd_t *vdptr = (vd_t *)(&vd);
+          pd_t *pdptr = proctab[currpid].prpd;
+
+          uint32 pd_offset=vdptr->pd_offset;
+          uint32 pt_offset=vdptr->pt_offset;
+          //pg_offset=vdptr->pg_offset;
+
+          pt_t* ptptr = (pt_t*)vpn_to_address(pdptr[pd_offset].pd_base);
+          // XDEBUG_KPRINTF("VPN %d, pres: %d, base %d\n",pagenum,ptptr[pt_offset].pt_pres,ptptr[pt_offset].pt_base-NBPG);
+      
+          XDEBUG_KPRINTF("Procid %d, addr %d, vpn %d, frame %d, \n",currpid,p,((uint32)p)/NBPG,ptptr[pt_offset].pt_base-NBPG);
+
+        panic("assert failed\n");
+      }
+      //ASSERT(*p++ == v);
     }
 
     sleepms(20); // to make it slower
@@ -166,7 +182,25 @@ void mytest1(void){
       kprintf("Check Iteration [%3d] at 0x%08x\n", i, p);
       for (uint32 j=0; j<PAGESIZE; j=j+4) {
         uint32 v = get_test_value(p);
-        ASSERT(*p++ == v);
+        if(*p++ != v){
+        
+          uint32 vd = vpn_to_address(address_to_vpn(p));
+          vd_t *vdptr = (vd_t *)(&vd);
+          pd_t *pdptr = proctab[currpid].prpd;
+
+          uint32 pd_offset=vdptr->pd_offset;
+          uint32 pt_offset=vdptr->pt_offset;
+          //pg_offset=vdptr->pg_offset;
+
+          pt_t* ptptr = (pt_t*)vpn_to_address(pdptr[pd_offset].pd_base);
+          // XDEBUG_KPRINTF("VPN %d, pres: %d, base %d\n",pagenum,ptptr[pt_offset].pt_pres,ptptr[pt_offset].pt_base-NBPG);
+      
+          XDEBUG_KPRINTF("Procid %d, addr %d, vpn %d, frame %d, \n",currpid,p,((uint32)p)/NBPG,ptptr[pt_offset].pt_base-NBPG);
+
+
+        panic("assert failed\n");
+      }
+      //ASSERT(*p++ == v);
       }
 
       sleepms(20); // to make it slower
@@ -179,7 +213,23 @@ void mytest1(void){
       kprintf("Check Iteration [%3d] at 0x%08x\n", i, p);
       for (uint32 j=0; j<PAGESIZE; j=j+4) {
         uint32 v = get_test_value(p);
-        ASSERT(*p++ == v);
+        if(*p++ != v){
+         uint32 vd = vpn_to_address(address_to_vpn(p));
+          vd_t *vdptr = (vd_t *)(&vd);
+          pd_t *pdptr = proctab[currpid].prpd;
+
+          uint32 pd_offset=vdptr->pd_offset;
+          uint32 pt_offset=vdptr->pt_offset;
+          //pg_offset=vdptr->pg_offset;
+
+          pt_t* ptptr = (pt_t*)vpn_to_address(pdptr[pd_offset].pd_base);
+          // XDEBUG_KPRINTF("VPN %d, pres: %d, base %d\n",pagenum,ptptr[pt_offset].pt_pres,ptptr[pt_offset].pt_base-NBPG);
+      
+          XDEBUG_KPRINTF("Procid %d, addr %d, vpn %d, frame %d, \n",currpid,p,((uint32)p)/NBPG,ptptr[pt_offset].pt_base-NBPG);
+
+        panic("assert failed\n");
+      }
+      //ASSERT(*p++ == v);
       }
 
       sleepms(20); // to make it slower
@@ -251,7 +301,23 @@ void mytest2(void){
         kprintf("Check Iteration [%3d] at 0x%08x\n", i, p);
         for (uint32 j=0; j<PAGESIZE; j=j+4) {
           uint32 v = get_test_value(p);
-          ASSERT(*p++ == v);
+          if(*p++ != v){
+         uint32 vd = vpn_to_address(address_to_vpn(p));
+          vd_t *vdptr = (vd_t *)(&vd);
+          pd_t *pdptr = proctab[currpid].prpd;
+
+          uint32 pd_offset=vdptr->pd_offset;
+          uint32 pt_offset=vdptr->pt_offset;
+          //pg_offset=vdptr->pg_offset;
+
+          pt_t* ptptr = (pt_t*)vpn_to_address(pdptr[pd_offset].pd_base);
+          // XDEBUG_KPRINTF("VPN %d, pres: %d, base %d\n",pagenum,ptptr[pt_offset].pt_pres,ptptr[pt_offset].pt_base-NBPG);
+      
+          XDEBUG_KPRINTF("Procid %d, addr %d, vpn %d, frame %d, \n",currpid,p,((uint32)p)/NBPG,ptptr[pt_offset].pt_base-NBPG);
+
+        panic("assert failed\n");
+      }
+      //ASSERT(*p++ == v);
         }
 
         sleepms(20); // to make it slower
@@ -343,7 +409,23 @@ void mytest3(void){
         //kprintf("Check Iteration [%3d] at 0x%08x\n", i, p);
         for (uint32 j=0; j<PAGESIZE; j=j+4) {
           uint32 v = get_test_value(p);
-          ASSERT(*p++ == v);
+          if(*p++ != v){
+             uint32 vd = vpn_to_address(address_to_vpn(p));
+              vd_t *vdptr = (vd_t *)(&vd);
+              pd_t *pdptr = proctab[currpid].prpd;
+
+              uint32 pd_offset=vdptr->pd_offset;
+              uint32 pt_offset=vdptr->pt_offset;
+              //pg_offset=vdptr->pg_offset;
+
+              pt_t* ptptr = (pt_t*)vpn_to_address(pdptr[pd_offset].pd_base);
+              // XDEBUG_KPRINTF("VPN %d, pres: %d, base %d\n",pagenum,ptptr[pt_offset].pt_pres,ptptr[pt_offset].pt_base-NBPG);
+          
+              XDEBUG_KPRINTF("Procid %d, addr %d, vpn %d, frame %d, \n",currpid,p,((uint32)p)/NBPG,ptptr[pt_offset].pt_base-NBPG);
+
+            panic("assert failed\n");
+          }
+      //ASSERT(*p++ == v);
         }
 
         sleepms(20); // to make it slower
@@ -411,6 +493,7 @@ void page_policy_test_methods(int testno){
 
   pid32 p;
 
+  XDEBUG_KPRINTF("Creating process id %d\n",p);
   if(testno==1){
     p = vcreate(do_policy_test1, INITSTK, PAGE_ALLOCATION,INITPRIO, "page rep test 1", 0, NULL);
     resume(p);
@@ -426,6 +509,7 @@ void page_policy_test_methods(int testno){
   else{
       panic("not defined yet");
   }
+  XDEBUG_KPRINTF("Process id %d\n",p);
 
   while (1) {
     if(proctab[p].prstate == PR_FREE) {
