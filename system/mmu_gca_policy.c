@@ -34,6 +34,7 @@ int32 get_frame_gca(void){
 
 			vaddress=vpn_to_address(vpn);
 			vaddptr=(vd_t *)&vaddress;
+
 			pd_offset=vaddptr->pd_offset;
 			pt_offset=vaddptr->pt_offset;
 			//pg_offset=vaddptr->pg_offset;

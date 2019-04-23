@@ -42,7 +42,7 @@ void page_fault_handler(void){
 	if(pd_entry->pd_pres==0){
 		pt_entry=get_one_page();
 		if(pt_entry==NULL){
-			XDEBUG_KPRINTF("No page available\n");		
+			XDEBUG_KPRINTF("No page available/backing sotre failed\n");		
 			signal(fault_sem);
 			kill(pid);
 			restore(mask);
@@ -62,6 +62,7 @@ void page_fault_handler(void){
 
 	if((bs_map_entry=get_bs_map(pid,vpn))==NULL){
 		XDEBUG_KPRINTF("Invalid address from pagefault\n");		
+		panic("invalid address failed");
 		signal(fault_sem);
 		kill(pid);
 		restore(mask);
@@ -81,7 +82,7 @@ void page_fault_handler(void){
 	pt_entry[pt_offset].pt_pres=0; //added by me
 
 	if(newframeNo==SYSERR){
-		XDEBUG_KPRINTF("Not enough free frame\n");		
+		XDEBUG_KPRINTF("Not enough free frame/backing store failed\n");		
 		signal(fault_sem);
 		kill(pid);
 		restore(mask);
@@ -112,8 +113,8 @@ void page_fault_handler(void){
 
 	if(close_bs(bs_map_entry->bsid)==SYSERR){
 		XDEBUG_KPRINTF("Closing backing store failed\n");		
-		kill(pid);
 		signal(fault_sem);
+		kill(pid);
 		restore(mask);
 		return;	
 	}

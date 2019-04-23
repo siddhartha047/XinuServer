@@ -113,9 +113,9 @@ void page_policy_test(void) {
 static void do_policy_test_fifo_gca(void) {
   uint32 npages = PAGE_ALLOCATION - 1;
   uint32 nbytes = npages * PAGESIZE;
-  uint32 oldframe=2;
+  uint32 oldframe=3;
 
-  kprintf("Running Page Replacement Policy Test, with NFRAMES = %d\n", NFRAMES);
+  kprintf("Running Page Replacement Policy Test, with NFRAMES = %d old frame %d\n", NFRAMES,oldframe);
 
   char *mem = vgetmem(nbytes);
   if (mem == (char*) SYSERR) {
@@ -202,7 +202,6 @@ void page_policy_test_fifo_gca(int numproc) {
 
   return;
 }
-
 
 
 // static void do_policy_test(void) {

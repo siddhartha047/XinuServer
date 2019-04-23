@@ -14,8 +14,8 @@ void test2(void);
 
 process	main(void)
 {
-  srpolicy(FIFO);
-  //srpolicy(GCA);
+  //srpolicy(FIFO);
+  srpolicy(GCA);
 
   /* Start the network */
   /* DO NOT REMOVE OR COMMENT BELOW */
@@ -31,9 +31,9 @@ process	main(void)
   /* DO NOT REMOVE OR COMMENT THIS CALL */
   psinit();
   
-  // page_policy_test();
+  //page_policy_test();
   page_policy_test_fifo_gca(4);
-  // page_policy_test_custom();
+  //page_policy_test_custom();
   
   // test0(); //normal cpu process
   // test1();

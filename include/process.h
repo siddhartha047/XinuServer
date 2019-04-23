@@ -93,7 +93,7 @@ extern	int32	prcount;	/* Currently active processes		*/
 extern	pid32	currpid;	/* Currently executing process		*/
 
 #define XTEST 1 
-#define XDEBUG 1 	/* set this to 0 when submitting */
+#define XDEBUG 0 	/* set this to 0 when submitting */
 
 #define min2(a,b) (a<b)? a:b
 #define max2(a,b) (a>b)? a:b

@@ -18,6 +18,9 @@ syscall	kill(
 	int32	i;			/* Index into descriptors	*/
 
 	mask = disable();
+
+
+
 	if (isbadpid(pid) || (pid == NULLPROC)
 	    || ((prptr = &proctab[pid])->prstate) == PR_FREE) {
 		restore(mask);
@@ -84,33 +87,9 @@ int32 restoreframes(pid32 pid){
 	inverted_page_t *inverted_page_entry;
 
 	wait(fault_sem);
-
-	for(int i=0;i<NFRAMES;i++){
-		inverted_page_entry= &inverted_page_tab[i];
-		
-		if(inverted_page_entry->pid==pid){
-			if(removeFromFrameList(i)==SYSERR){
-				XDEBUG_KPRINTF("Something went wrong while removing frame\n");
-				signal(fault_sem);
-				return SYSERR;
-			}
-			frame_entry=&frame_tab[i];
-			frame_entry->id=i;
-			frame_entry->state=FRAME_FREE;
-			frame_entry->type=FRAME_NONE;
-			frame_entry->dirty=0;
-			frame_entry->next=(frame_t *)NULL;
-
-			inverted_page_entry->refcount=0;
-			inverted_page_entry->pid=-1;
-			inverted_page_entry->vpn=0;
-		}
-	}
-
+	
 	backing_store_map *bs_map_entry;
 
-	
-	
 	//int32 errorflag=remove_bs_map(pid);
 	int32 errorflag=FALSE;
 	for(int i=0;i<MAX_BS_ENTRIES;i++){
@@ -131,6 +110,7 @@ int32 restoreframes(pid32 pid){
 		}
 	}
 
+
 	
 	if(USE_HEAP_TO_TRACK==FALSE){
 		xmemlist_t	*prev, *curr, *next;
@@ -144,14 +124,39 @@ int32 restoreframes(pid32 pid){
 		while(curr!=NULL){
 			next=curr->mnext;
 			if(freemem((char*)curr,sizeof(xmemlist_t))==SYSERR){
-				panic("memory tracking nodes cleaning failed\n");
+				//panic("memory tracking nodes cleaning failed\n");
 				signal(fault_sem);
 				return SYSERR;
+				
 			}
 			curr=next;
 		}
 
 	}
+
+	for(int i=0;i<NFRAMES;i++){
+		inverted_page_entry= &inverted_page_tab[i];
+		
+		if(inverted_page_entry->pid==pid){
+			if(removeFromFrameList(i)==SYSERR){
+				XDEBUG_KPRINTF("Something went wrong while removing frame\n");
+				//panic("wrong");
+				signal(fault_sem);
+				return SYSERR;
+			}
+			frame_entry=&frame_tab[i];
+			frame_entry->id=i;
+			frame_entry->state=FRAME_FREE;
+			frame_entry->type=FRAME_NONE;
+			frame_entry->dirty=0;
+			frame_entry->next=(frame_t *)NULL;
+
+			inverted_page_entry->refcount=0;
+			inverted_page_entry->pid=-1;
+			inverted_page_entry->vpn=0;
+		}
+	}
+
 
 	signal(fault_sem);
 

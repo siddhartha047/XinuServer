@@ -167,6 +167,7 @@ pid32	vcreate(
 		//sid: this is to track vheap memory using memory from getmem
 		prptr->prxmemlist.mnext=(xmemlist_t *)getmem(sizeof(xmemlist_t));
 		prptr->prxmemlist.mlength=hsize*NBPG;
+		(prptr->prxmemlist.mnext)->mnext=NULL;
 	}
 	
 	signal(fault_sem);

@@ -35,7 +35,7 @@ int32 get_one_frame(void){
 	int32 frameNo;
 
 	if((frameNo=find_free_frame())==SYSERR){
-		XDEBUG_KPRINTF("Shouldn't happen\n");
+		XDEBUG_KPRINTF("BS failed/didn't find frame/Shouldn't happen\n");
 		//restore(mask);
 		return SYSERR;
 	}
@@ -60,7 +60,7 @@ int32 get_one_frame(void){
 	//for maintaining FIFO policy
 	addToFrameList(frame_entry);
 
-	//printFrameList(frame_head);
+	printFrameList(frame_head);
 
 	// restore(mask);
 	return frameNo;

@@ -73,7 +73,8 @@ int32 swap_frame_back(int32 frameNo){
 
 		if(bs_map_entry==NULL){
 			XDEBUG_KPRINTF("swapping gon wrong at finding map\n");
-			kill(pid);
+			//signal(fault_sem);
+			//kill(pid);
 			// restore(mask);
 			return SYSERR;
 		}
@@ -83,21 +84,21 @@ int32 swap_frame_back(int32 frameNo){
 
 		//opeing
 		if(open_bs(bsid)==SYSERR){
-			kill(pid);
+			//kill(pid);
 			// restore(mask);
 			return SYSERR;
 		}
 
 		//writing
 		if(write_bs((char *)frameno_to_address(frameNo),bsid,offset)==SYSERR){
-			kill(pid);
+			//kill(pid);
 			// restore(mask);
 			return SYSERR;	
 		}
 		
 		//closing
 		if(close_bs(bsid)==SYSERR){
-			kill(pid);
+			//kill(pid);
 			// restore(mask);
 			return SYSERR;		
 		}
