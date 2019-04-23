@@ -7,7 +7,7 @@ pd_t *global_pd; //global page directory
 
 
 pt_t *get_one_page(void);
-pd_t* get_page_directory(void);
+pd_t* get_page_directory(pid32 pid);
 
 //sid: 4 page and 1 device memory
 int32 initialize_global_page_table(void){
@@ -89,17 +89,17 @@ pt_t *get_one_page(void){
 	return pt_entry;
 }
 
-pd_t* get_page_directory(void){
+pd_t* get_page_directory(pid32 pid){
 	// intmask mask=disable();
 
 	int32 frameNo=get_one_frame();
-
-	inverted_page_tab[frameNo].pid=currpid;
 
 	if(frameNo==SYSERR){
 		// restore(mask);
 		return (pd_t*)NULL;
 	}
+
+	inverted_page_tab[frameNo].pid=pid;
 
 	frame_t *frame_entry;
 	frame_entry=&frame_tab[frameNo];

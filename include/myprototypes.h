@@ -89,7 +89,7 @@ extern int32 swap_frame_back(int32 frameNo);
 //--------------------------------//
 //sid: in file mmu_page.c
 extern int32 initialize_global_page_table(void);
-extern pd_t* get_page_directory(void);
+extern pd_t* get_page_directory(pid32 pid);
 extern pt_t *get_one_page(void);
 
 //--------------------------------//

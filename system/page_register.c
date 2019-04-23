@@ -88,8 +88,8 @@ unsigned long read_cr3(void) {
 
 unsigned long read_cr2(void) {
 
-  intmask mask;
-  mask = disable();
+  // intmask mask;
+  //mask = disable();
   unsigned long local_tmp;
 
   asm("pushl %eax");
@@ -99,7 +99,7 @@ unsigned long read_cr2(void) {
 
   local_tmp = tmp;
 
-  restore(mask);
+  //restore(mask);
 
   return local_tmp;
 }

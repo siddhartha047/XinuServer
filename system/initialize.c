@@ -232,7 +232,7 @@ static void initialize_paging()
 	initialize_global_page_table(); 
 
 	XDEBUG_KPRINTF("Setup Global Page Directory\n");
-	global_pd=get_page_directory();
+	global_pd=get_page_directory(NULLPROC);
 
 	if(global_pd==NULL){
 		XDEBUG_KPRINTF("Shouldn't happen: failed to create global page directory");

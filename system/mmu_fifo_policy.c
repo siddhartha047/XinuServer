@@ -13,7 +13,8 @@ int32 get_frame_fifo(void){
 		if(curr->type==FRAME_PR){
 			frameNo=curr->id;
 			if(removeFromFrameList(frameNo)==SYSERR){
-				panic("Frame removing from list failed\n");
+				//panic("Frame removing from list failed\n");
+				return SYSERR;
 			}
 			// restore(mask);
 			return frameNo;

@@ -4,8 +4,7 @@
 
 void page_fault_handler(void){
 	intmask mask=disable();
-	unsigned long cr2=read_cr2();
-
+	unsigned long cr2=read_cr2();	
 	vd_t *faultaddr;
 	pd_t *pd_entry;
 	pt_t *pt_entry;

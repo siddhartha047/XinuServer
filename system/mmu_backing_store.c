@@ -41,7 +41,7 @@ int32 remove_bs_map(pid32 pid){
 		if(backing_store_map_tab[i].allocated==1 && backing_store_map_tab[i].pid==pid){
 			int32 status= deallocate_bs(backing_store_map_tab[i].bsid);
 			if(status==SYSERR){
-				panic("Gone wrong while deallocating\n");
+				//panic("Gone wrong while deallocating\n");
 				errorflag=TRUE;
 				//restore(mask);
 				return SYSERR;

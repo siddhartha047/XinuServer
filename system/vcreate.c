@@ -104,7 +104,8 @@ pid32	vcreate(
 	//@sid::
 	wait(fault_sem);
 
-	pd_t *pd_entry=get_page_directory();
+	pd_t *pd_entry=get_page_directory(pid);
+
 	if(pd_entry==NULL){
 		prcount--;
 		signal(fault_sem);

@@ -48,7 +48,7 @@ struct	memblk	{			/* See roundmb & truncmb	*/
 #endif
 
 
-#define USE_HEAP_TO_TRACK FALSE
+#define USE_HEAP_TO_TRACK TRUE
 
 typedef struct	xmemlist	{			/* See roundmb & truncmb	*/
 	uint32  vheapaddr;
