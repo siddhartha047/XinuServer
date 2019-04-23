@@ -113,6 +113,7 @@ void page_policy_test(void) {
 static void do_policy_test_fifo_gca(void) {
   uint32 npages = PAGE_ALLOCATION - 1;
   uint32 nbytes = npages * PAGESIZE;
+  uint32 oldframe=3;
 
   kprintf("Running Page Replacement Policy Test, with NFRAMES = %d\n", NFRAMES);
 
@@ -130,7 +131,7 @@ static void do_policy_test_fifo_gca(void) {
     uint32 v = get_test_value(p);
     *p = v;
     //access a old one
-    int j = i % 1;
+    int j = i % oldframe;
     p = (uint32*)(mem+(j * PAGESIZE));
     v = get_test_value(p);
     *p = v;
@@ -179,15 +180,22 @@ void page_policy_test_fifo_gca(int numproc) {
   }
   
   resched_cntl(DEFER_STOP);
-
+  int flag=0;
   while (1) {
+    flag=0;
     for(int i=0;i<numproc;i++){
       if(proctab[pids[i]].prstate != PR_FREE) {  
-        sleepms(100);
-        continue;
+         flag=1;
+         break; 
       }
     }
-    break;
+
+    if(flag==1){
+      sleepms(100);
+    }
+    else{
+      break;
+    }
   }
 
   kprintf("\n\n All finished %d.\n\n",get_faults());
