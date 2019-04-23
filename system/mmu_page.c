@@ -68,7 +68,18 @@ pt_t *get_one_page(void){
 	pt_entry=(pt_t *)frameno_to_address(frameNo);
 	
 	for(int i=0;i<PAGETABSIZE;i++){
-		pt_entry[i]=(pt_t){0,1,0,0,0,0,0,0,0,0,0};
+		//pt_entry[i]=(pt_t){0,1,0,0,0,0,0,0,0,0,0};
+		pt_entry[i].pt_pres  = 0;		/* page is present?		*/
+	    pt_entry[i].pt_write = 1;		/* page is writable?		*/
+		pt_entry[i].pt_user	= 0;		/* is use level protection?	*/
+		pt_entry[i].pt_pwt	= 0;		/* write through for this page? */
+		pt_entry[i].pt_pcd	= 0;		/* cache disable for this page? */
+		pt_entry[i].pt_acc	= 0;		/* page was accessed?		*/
+		pt_entry[i].pt_dirty = 0;		/* page was written?		*/
+		pt_entry[i].pt_mbz	= 0;		/* must be zero			*/
+		pt_entry[i].pt_global= 0;		/* should be zero in 586	*/
+		pt_entry[i].pt_avail = 0;		/* for programmer's use		*/
+		pt_entry[i].pt_base = 0;         // this will be aloocated when page is created
 	}
 
 	hook_ptable_create(frameNo);
@@ -99,7 +110,19 @@ pd_t* get_page_directory(void){
 
 	
 	for(int i=0;i<PAGEDIRSIZE;i++){
-		pd_entry[i]=(pd_t){0,1,0,0,0,0,0,0,0,0,0};
+		//pd_entry[i]=(pd_t){0,1,0,0,0,0,0,0,0,0,0};
+		pd_entry[i].pd_pres	= 0;		/* page table present?		*/
+		pd_entry[i].pd_write = 1;		/* page is writable?		*/
+		pd_entry[i].pd_user	= 0;		/* is use level protection?	*/
+		pd_entry[i].pd_pwt	= 0;		/* write through cachine for pt? */
+		pd_entry[i].pd_pcd	= 0;		/* cache disable for this pt?	*/
+		pd_entry[i].pd_acc	= 0;		/* page table was accessed?	*/
+		pd_entry[i].pd_mbz	= 0;		/* must be zero			*/
+		pd_entry[i].pd_fmb	= 0;		/* four MB pages?		*/
+		pd_entry[i].pd_global= 0;
+		pd_entry[i].pd_avail = 0;
+		pd_entry[i].pd_base  = 0;
+
 	}
 
 	for(int i=0;i<GLOBAL_PAGE_NO;i++){

@@ -60,7 +60,7 @@ int32 get_one_frame(void){
 	//for maintaining FIFO policy
 	addToFrameList(frame_entry);
 
-	printFrameList(frame_head);
+	//printFrameList(frame_head);
 
 	// restore(mask);
 	return frameNo;
@@ -96,29 +96,9 @@ int32 find_free_frame(void){
 		panic("invalid policy\n");
 	}
 
-
-
-
 	frame_tab[frameNo].state=FRAME_USED; //added by me
-
-	pid32 pid=inverted_page_tab[frameNo].pid;
-	uint32 vpn=inverted_page_tab[frameNo].vpn;
-
-	uint32 vaddress=vpn_to_address(vpn);
-	vd_t* vaddptr=(vd_t *)&vaddress;
-	uint32 pd_offset=vaddptr->pd_offset;
-	uint32 pt_offset=vaddptr->pt_offset;
-
-
-	pd_t* pdptr=proctab[pid].prpd;
-	pt_t* ptptr=(pt_t *)vpn_to_address(pdptr[pd_offset].pd_base);
-	ptptr=ptptr+pt_offset;
-	ptptr->pt_pres=0;
-
 	
 	int32 status=swap_frame_back(frameNo);
-
-	ptptr->pt_pres=0;
 	
 	if(status==SYSERR){
 		// restore(mask);

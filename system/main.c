@@ -2,6 +2,7 @@
 
 extern void page_policy_test(void);
 extern void page_policy_test_custom(void);
+extern void page_policy_test_fifo_gca(int32 numproc);
 
 void test0(void);
 void cpubound(char ch);
@@ -30,17 +31,17 @@ process	main(void)
   /* DO NOT REMOVE OR COMMENT THIS CALL */
   psinit();
   
-  // page_policy_test();
-  // XDEBUG_KPRINTF("Page Faults: -> %d\n",get_faults());
+  page_policy_test();
+  //page_policy_test_fifo_gca(2);
+  //page_policy_test_custom();
   
-  //test0();
+  //test0(); //normal cpu process
   //test1();
-  test2();
+  //test2();
   
 
 
   XTEST_KPRINTF("Main process ending\n");
-
 
   return OK;
 }
@@ -72,8 +73,8 @@ void test2(void){
     int prTestCustom1=create(given_test, 2000, INITPRIO, "C", 1,'2' );
     resume(prTest);
     resume(prTestCustom);
-    resume(prTest1);
-    resume(prTestCustom1);
+    // resume(prTest1);
+    // resume(prTestCustom1);
   resched_cntl(DEFER_STOP);
 }
 

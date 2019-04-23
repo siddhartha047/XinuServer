@@ -46,7 +46,7 @@ syscall	kill(
 
 	XDEBUG_KPRINTF("Frame after kill->");
 	printFrameList(frame_head);
-	//
+	// //
 
 
 	freestk(prptr->prstkbase, prptr->prstklen);
@@ -118,7 +118,6 @@ int32 restoreframes(pid32 pid){
 		if(bs_map_entry->pid==pid){
 			if(deallocate_bs(i)==SYSERR){
 				XDEBUG_KPRINTF("Kill deallocate bs failed\n");
-				signal(fault_sem);
 				//panic("kill deallocate failed\n");
 				errorflag=TRUE;
 				signal(fault_sem);

@@ -33,7 +33,10 @@ void page_fault_handler(void){
 	uint32 pt_offset=faultaddr->pt_offset;
 	//uint32 pg_offset=faultaddr->pg_offset;
 
+	XDEBUG_KPRINTF("[process trying lock->%d %d (%s, %d)]\n",cr2, vpn, proctab[pid].prname,pid);
 	wait(fault_sem);
+
+	XDEBUG_KPRINTF("[process trying page table->%d %d (%s, %d)]\n",cr2, vpn, proctab[pid].prname,pid);
 
 	pd_entry+=pd_offset;
 	//poitns to correct page table
@@ -56,7 +59,7 @@ void page_fault_handler(void){
 		//pt_entry+=pt_offset;
 	}
 
-
+	XDEBUG_KPRINTF("[process done page table->%d %d (%s, %d)]\n",cr2, vpn, proctab[pid].prname,pid);
 
 	if((bs_map_entry=get_bs_map(pid,vpn))==NULL){
 		XDEBUG_KPRINTF("Invalid address from pagefault\n");		
@@ -90,7 +93,7 @@ void page_fault_handler(void){
 	inverted_page_tab[newframeNo].vpn=vpn;	
 	inverted_page_tab[newframeNo].pid=pid;
 
-	XDEBUG_KPRINTF("Frame: %d  started reading from backup ->%d,%d\n",newframeNo,pid,currpid);
+	XDEBUG_KPRINTF("[process trying frame read->%d %d (%s, %d),%d]\n",cr2, vpn, proctab[pid].prname,pid,newframeNo);
 
 	if(open_bs(bs_map_entry->bsid)==SYSERR){
 		XDEBUG_KPRINTF("Opening backing store failed\n");		
@@ -116,7 +119,7 @@ void page_fault_handler(void){
 		return;	
 	}
 
-	XDEBUG_KPRINTF("Frame: %d finished reading from backup ->%d,%d\n",newframeNo,pid,currpid);
+	XDEBUG_KPRINTF("[process finished frame read->%d %d (%s, %d),%d]\n",cr2, vpn, proctab[pid].prname,pid,newframeNo);
 	
 
 	pt_entry[pt_offset].pt_pres=1;
@@ -126,7 +129,6 @@ void page_fault_handler(void){
 	hook_pfault(pid, (void *)cr2, vpn, newframeNo);
 
 	XDEBUG_KPRINTF("<--[Page fault handled %d %d (%s, %d)]\n",cr2,vpn, proctab[pid].prname,pid);
-
 
 	signal(fault_sem);
 
