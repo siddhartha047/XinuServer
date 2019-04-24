@@ -42,7 +42,7 @@ process	main(void)
 
 
   XTEST_KPRINTF("Main process ending\n");
-  //printFrameList(frame_head);
+  printFrameList(frame_head);
 
   return OK;
 }
