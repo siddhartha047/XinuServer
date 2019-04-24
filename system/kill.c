@@ -41,14 +41,17 @@ syscall	kill(
 	//restore frames and stuff
 
 	XDEBUG_KPRINTF("Frame before kill->");
-	printFrameList(frame_head);
+	//printFrameList(frame_head);
 
-	if(restoreframes(pid)==SYSERR){
-		XDEBUG_KPRINTF("restore frame failed\n");		
+	if(prptr->prtype==PR_VCREATE){
+		if(restoreframes(pid)==SYSERR){
+			XDEBUG_KPRINTF("restore frame failed\n");		
+		}	
 	}
+	
 
 	XDEBUG_KPRINTF("Frame after kill->");
-	printFrameList(frame_head);
+	//printFrameList(frame_head);
 	// //
 
 
@@ -83,8 +86,6 @@ syscall	kill(
 
 
 int32 restoreframes(pid32 pid){
-	frame_t *frame_entry;
-	inverted_page_t *inverted_page_entry;
 
 	wait(fault_sem);
 	
@@ -99,8 +100,8 @@ int32 restoreframes(pid32 pid){
 				XDEBUG_KPRINTF("Kill deallocate bs failed\n");
 				//panic("kill deallocate failed\n");
 				errorflag=TRUE;
-				signal(fault_sem);
-				return SYSERR;
+				//signal(fault_sem);
+				//return SYSERR;
 			}
 			bs_map_entry->pid=-1;
 			bs_map_entry->vpn=0;
@@ -134,6 +135,10 @@ int32 restoreframes(pid32 pid){
 
 	}
 
+	frame_t *frame_entry;
+	inverted_page_t *inverted_page_entry;
+
+
 	for(int i=0;i<NFRAMES;i++){
 		inverted_page_entry= &inverted_page_tab[i];
 		
@@ -141,8 +146,10 @@ int32 restoreframes(pid32 pid){
 			if(removeFromFrameList(i)==SYSERR){
 				XDEBUG_KPRINTF("Something went wrong while removing frame\n");
 				//panic("wrong");
-				signal(fault_sem);
-				return SYSERR;
+				errorflag=TRUE;
+				//signal(fault_sem);
+				//continue;
+				//return SYSERR;
 			}
 			frame_entry=&frame_tab[i];
 			frame_entry->id=i;

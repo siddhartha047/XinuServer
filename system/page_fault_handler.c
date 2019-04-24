@@ -74,6 +74,7 @@ void page_fault_handler(void){
 	int32 ptframeNo=address_to_frameno(pt_entry);
 	inverted_page_tab[ptframeNo].refcount++;
 	inverted_page_tab[ptframeNo].pid=pid;
+	frame_tab[ptframeNo].type=FRAME_PT;
 
 	//XDEBUG_KPRINTF("Fault: Page table frame %d refcount %d\n",frameNo,inverted_page_tab[frameNo].refcount);
 

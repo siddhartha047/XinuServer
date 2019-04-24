@@ -60,7 +60,7 @@ int32 get_one_frame(void){
 	//for maintaining FIFO policy
 	addToFrameList(frame_entry);
 
-	printFrameList(frame_head);
+	//printFrameList(frame_head);
 
 	// restore(mask);
 	return frameNo;

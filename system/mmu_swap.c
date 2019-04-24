@@ -59,7 +59,7 @@ int32 swap_frame_back(int32 frameNo){
 		pdptr[pd_offset].pd_pres=0;
 
 		removeFromFrameList(ptframeNo);
-		hook_ptable_delete(ptframeNo);
+		//hook_ptable_delete(ptframeNo);
 		
 	}
 

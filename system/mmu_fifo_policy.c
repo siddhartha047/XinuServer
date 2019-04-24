@@ -45,6 +45,9 @@ int32 removeFromFrameList(int32 frameNo){
 			else{
 				prev->next=curr->next;				
 			}
+			if(curr->type==FRAME_PT){
+				hook_ptable_delete(frameNo);
+			}
 			curr->next=(frame_t *)NULL;
 			curr->state=FRAME_FREE;
 			curr->type=FRAME_NONE;
